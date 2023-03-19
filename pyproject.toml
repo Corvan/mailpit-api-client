@@ -8,6 +8,8 @@ authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 python = "^3.10"
 dataclasses_json = "^0.5"
 pylint = "*"
+requests = "^*"
+requests-testing = "^0.2.0"
 
 
 [tool.poetry.dev-dependencies]
