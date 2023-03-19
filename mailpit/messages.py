@@ -1,40 +1,47 @@
-from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
-import datetime
-from mailpit.models import Contact
-from typing import Optional
+"""module containing everything related to messages"""
+import typing
+import dataclasses as dc
+import dataclasses_json as dj
+import requests as r
+import mailpit.models as models
 
 
-@dataclass_json
-@dataclass(init=True)
+@dj.dataclass_json
+@dc.dataclass(init=True)
 class Message:
-
-    Read: bool = field(init=True)
+    id: str = dc.field(init=True, metadata=dj.config(field_name="ID"))
+    read: bool = dc.field(init=True, metadata=dj.config(field_name="Read"))
     """always true (message marked read on open)"""
-    From: Optional[Contact] = field(init=True)
-    To: list[Contact] = field(init=True)
-    Cc: Optional[list[Contact]] = field(init=True)
-    Bcc: list[Contact] = field(init=True)
-    Subject: str = field(init=True)
+    from_: typing.Optional[models.Contact] = dc.field(
+        init=True, metadata=dj.config(field_name="From")
+    )
+    to: list[models.Contact] = dc.field(init=True, metadata=dj.config(field_name="To"))
+    cc: typing.Optional[list[models.Contact]] = dc.field(
+        init=True, metadata=dj.config(field_name="Cc")
+    )
+    bcc: list[models.Contact] = dc.field(
+        init=True, metadata=dj.config(field_name="Bcc")
+    )
+    subject: str = dc.field(init=True, metadata=dj.config(field_name="Subject"))
     """Message subject"""
-    Created: datetime.date = field(init=True)
+    created: str = dc.field(init=True, metadata=dj.config(field_name="Created"))
     """Parsed email local date & time from headers"""
-    Size: int = field(init=True)
+    size: int = dc.field(init=True, metadata=dj.config(field_name="Size"))
     """Total size of raw email"""
-    Attachments: int = field(init=True)
+    attachments: int = dc.field(init=True, metadata=dj.config(field_name="Attachments"))
 
 
-@dataclass_json
-@dataclass(init=True)
+@dj.dataclass_json
+@dc.dataclass(init=True)
 class Messages:
 
-    total: int = field(init=True)
+    total: int = dc.field(init=True)
     """Total messages in mailbox"""
-    unread: int = field(init=True)
+    unread: int = dc.field(init=True)
     """Total unread messages in mailbox"""
-    count: int = field(init=True)
+    count: int = dc.field(init=True)
     """Number of messages returned in request"""
-    start: int = field(init=True)
+    start: int = dc.field(init=True)
     """The offset (default=0) for pagination"""
     messages: list[Message]
 
@@ -43,3 +50,5 @@ class Messages:
             raise ValueError("field 'total' may not be negative")
         if self.unread < 0:
             raise ValueError("field 'unread' may not be negative")
+
+def get_messages(limit: int, start: int) -> Messages:

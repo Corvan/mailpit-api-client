@@ -1,9 +1,9 @@
 from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json
+from dataclasses_json import dataclass_json, config
 
 
 @dataclass_json
 @dataclass(init=True)
 class Contact:
-    Name: str = field(init=True)
-    Address: str = field(init=True)
+    name: str = field(init=True, metadata=config(field_name="Name"))
+    address: str = field(init=True, metadata=config(field_name="Address"))
