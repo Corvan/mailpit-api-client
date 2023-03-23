@@ -6,14 +6,73 @@ authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 
 [tool.poetry.dependencies]
 python = "^3.10"
-dataclasses_json = "^0.5"
-pylint = "*"
-requests = "^*"
-requests-testing = "^0.2.0"
-
+dataclasses_json = "*"
+requests = "*"
 
 [tool.poetry.dev-dependencies]
+black = "*"
+mypy = "^1.1.1"
+tox = "^4"
+pylint = "*"
+requests-testing = "*"
+types-requests = "^2.28.11"
 
-[build-system]
-requires = ["poetry-core>=1.0.0"]
-build-backend = "poetry.core.masonry.api"
+#[build-system]
+#requires = ["poetry-core>=1.0.0"]
+#build-backend = "poetry.core.masonry.api"
+
+[tool.tox]
+legacy_tox_ini = """
+
+[tox]
+requires =
+    black
+    dataclasses_json
+    requests
+    requests-testing
+
+skip_missing_interpreters = true
+envlist =
+    py{39,310,311}-{black,lint,mypy,unittest}
+isolated_build = true
+
+[testenv]
+passenv=PYTHONPATH
+
+[testenv:py{39,310,311}-black]
+requires = black
+allowlist_externals =
+    black
+commands = black --check .
+
+[testenv:py{39,310,311}-lint]
+requires = pylint
+allowlist_externals =
+    pylint
+commands = pylint mailpit
+
+[testenv:py{39,310,311}-mypy]
+requires =
+    mypy
+    types-requests
+allowlist_externals =
+    mypy
+commands = mypy mailpit
+
+[testenv:py{39,310,311}-unittest]
+deps =
+    dataclasses_json
+    requests
+    requests-testing
+allowlist_externals =
+    dataclasses_json
+    requests
+    requests-testing
+commands =  python tests/test_unit_messages.py
+
+"""
+
+#[testenv:py{39,310,311}-integration_test]
+#allowlist_externals =
+#   pytest
+#commands = pytest -vvm integration .
