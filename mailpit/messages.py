@@ -1,9 +1,11 @@
 """module containing everything related to messages"""
-import typing
 import dataclasses as dc
+
+import typing
 import dataclasses_json as dj
 import requests as r
-import mailpit.models as m
+
+from . import models as m
 
 
 @dj.dataclass_json
