@@ -3,7 +3,6 @@ import dataclasses as dc
 
 import typing
 import dataclasses_json as dj
-import requests
 
 from . import models as m
 
@@ -62,63 +61,3 @@ class Messages:
             raise ValueError("field 'total' may not be negative")
         if self.unread < 0:
             raise ValueError("field 'unread' may not be negative")
-
-
-class API:
-    """
-    class representing the messages API endpoint
-    """
-
-    def __init__(self, mailpit_url: str, timeout: int = None):
-        self.mailpit_url = mailpit_url
-        self.endpoint = "api/v1/messages"
-        self.timeout = timeout
-        self.last_response = None
-
-    def get(self, limit: int = 50, start: int = 0) -> Messages:
-        # pylint: disable = no-member
-        """
-        send a GET request in order to retrieve messages
-        :param limit: limit the returned number of messages
-        :param start: start at an offset from the beginning
-        :return: the messages returned by mailpit converted into models
-        """
-        response = requests.get(
-            f"{self.mailpit_url}/{self.endpoint}",
-            params={"limit": limit, "start": start},
-            timeout=self.timeout,
-        )
-        response.raise_for_status()
-        self.last_response = response
-        response.raise_for_status()
-        return Messages.from_json(response.text)
-
-    def delete(self, ids: typing.List[int]):
-        """
-        send a DELETE request to delete messages
-        :param ids: the IDs of the messages to delete;
-                    NOTE: passing an empty list will delete *all* messages
-        """
-        response = requests.delete(
-            f"{self.mailpit_url}/{self.endpoint}",
-            data={"ids": ids},
-            timeout=self.timeout,
-        )
-        self.last_response = response
-        response.raise_for_status()
-
-    def put(self, ids: typing.List[int], key: str, value: str):
-        """
-        update existing messages;
-        for example pass "Read" as key and True as value to mark messages read
-        :param ids: the IDs of the messages to update
-        :param key: the message's attribute to update
-        :param value: the value to update the attribute with
-        """
-        response = requests.put(
-            f"{self.mailpit_url}/{self.endpoint}",
-            data={"ids": ids, key: value},
-            timeout=self.timeout,
-        )
-        self.last_response = response
-        response.raise_for_status()
