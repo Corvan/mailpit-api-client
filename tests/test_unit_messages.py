@@ -1,11 +1,11 @@
-import mailpit.messages
-import requests as r
-import requests_testing as rt
 import unittest
+
+import requests_testing as rt
+
+import mailpit.messages
 
 
 class MessagesModelsTestCase(unittest.TestCase):
-
     RESPONSE = """{
         "total": 500,
         "unread": 500,
@@ -95,7 +95,6 @@ class MessagesModelsTestCase(unittest.TestCase):
 
 
 class MessagesAPITestCase(unittest.TestCase):
-
     RESPONSE = """{
         "total": 500,
         "unread": 500,

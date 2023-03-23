@@ -11,6 +11,14 @@ from . import models as m
 @dj.dataclass_json
 @dc.dataclass(init=True)
 class Message:
+    """
+    class representing a single message that has been returned by the messages endpoint
+    """
+
+    # pylint: disable=too-many-instance-attributes
+    # pylint: disable=too-few-public-methods
+    # pylint: disable=invalid-name
+
     id: str = dc.field(init=True, metadata=dj.config(field_name="ID"))
     read: bool = dc.field(init=True, metadata=dj.config(field_name="Read"))
     """always true (message marked read on open)"""
@@ -21,9 +29,7 @@ class Message:
     cc: typing.Optional[list[m.Contact]] = dc.field(
         init=True, metadata=dj.config(field_name="Cc")
     )
-    bcc: list[m.Contact] = dc.field(
-        init=True, metadata=dj.config(field_name="Bcc")
-    )
+    bcc: list[m.Contact] = dc.field(init=True, metadata=dj.config(field_name="Bcc"))
     subject: str = dc.field(init=True, metadata=dj.config(field_name="Subject"))
     """Message subject"""
     created: str = dc.field(init=True, metadata=dj.config(field_name="Created"))
@@ -36,6 +42,10 @@ class Message:
 @dj.dataclass_json
 @dc.dataclass(init=True)
 class Messages:
+    # pylint: disable=too-few-public-methods
+    """
+    class representing the returns of the messages endpoint
+    """
 
     total: int = dc.field(init=True)
     """Total messages in mailbox"""
@@ -66,6 +76,7 @@ class API:
         self.last_response = None
 
     def get(self, limit: int = 50, start: int = 0) -> Messages:
+        # pylint: disable = no-member
         """
         send a GET request in order to retrieve messages
         :param limit: limit the returned number of messages
