@@ -3,7 +3,7 @@ import dataclasses as dc
 
 import typing
 import dataclasses_json as dj
-import requests as r
+import requests
 
 from . import models as m
 
@@ -83,7 +83,7 @@ class API:
         :param start: start at an offset from the beginning
         :return: the messages returned by mailpit converted into models
         """
-        response = r.get(
+        response = requests.get(
             f"{self.mailpit_url}/{self.endpoint}",
             params={"limit": limit, "start": start},
             timeout=self.timeout,
@@ -99,7 +99,7 @@ class API:
         :param ids: the IDs of the messages to delete;
                     NOTE: passing an empty list will delete *all* messages
         """
-        response = r.delete(
+        response = requests.delete(
             f"{self.mailpit_url}/{self.endpoint}",
             data={"ids": ids},
             timeout=self.timeout,
@@ -115,7 +115,7 @@ class API:
         :param key: the message's attribute to update
         :param value: the value to update the attribute with
         """
-        response = r.put(
+        response = requests.put(
             f"{self.mailpit_url}/{self.endpoint}",
             data={"ids": ids, key: value},
             timeout=self.timeout,
