@@ -1,15 +1,18 @@
 """module containing shared model classes"""
-from dataclasses import dataclass, field
-from dataclasses_json import dataclass_json, config
+import dataclasses as dc
+
+import dataclasses_json as dj
 
 
-@dataclass_json
-@dataclass(init=True)
+@dj.dataclass_json
+@dc.dataclass(init=True)
 class Contact:
     """
     class representing a mail contact splitting 'Test User <test@example.com> into
     its name and address parts
     """
 
-    name: str = field(init=True, metadata=config(field_name="Name"))
-    address: str = field(init=True, metadata=config(field_name="Address"))
+    # pylint: disable=too-few-public-methods
+
+    name: str = dc.field(init=True, metadata=dj.config(field_name="Name"))
+    address: str = dc.field(init=True, metadata=dj.config(field_name="Address"))
