@@ -1,7 +1,7 @@
 """module containing API related"""
 import typing
 
-import requests
+import httpx
 
 from mailpit import message
 from mailpit import messages
@@ -20,7 +20,7 @@ class API:
     def __init__(self, mailpit_url: str, timeout: typing.Optional[int] = None):
         self.mailpit_url = mailpit_url
         self.timeout = timeout
-        self.last_response: requests.Response | None = None
+        self.last_response: httpx.Response | None = None
 
     def get_messages(self, limit: int = 50, start: int = 0) -> messages.Messages:
         """
@@ -32,7 +32,7 @@ class API:
 
         # pylint: disable = no-member
 
-        response = requests.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
             params={"limit": limit, "start": start},
             timeout=self.timeout,
@@ -47,15 +47,16 @@ class API:
         :param ids: the IDs of the messages to delete;
                     NOTE: passing an empty list will delete *all* messages
         """
-        response = requests.delete(
-            f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
+        response = httpx.request(
+            method="DELETE",
+            url=f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
             data={"ids": ids},
             timeout=self.timeout,
         )
         self.last_response = response
         response.raise_for_status()
 
-    def put_messages(self, ids: typing.List[int], key: str, value: str):
+    def put_messages(self, ids: typing.List[str], key: str, value: typing.Any):
         """
         update existing messages;
         for example pass "Read" as key and True as value to mark messages read
@@ -63,7 +64,7 @@ class API:
         :param key: the message's attribute to update
         :param value: the value to update the attribute with
         """
-        response = requests.put(
+        response = httpx.put(
             f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
             data={"ids": ids, key: value},
             timeout=self.timeout,
@@ -80,7 +81,7 @@ class API:
 
         # pylint: disable = no-member
 
-        response = requests.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}",
             timeout=self.timeout,
         )
@@ -95,7 +96,7 @@ class API:
         :param part_id:
         :return:
         """
-        response = requests.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/part/{part_id}",
             timeout=self.timeout,
         )

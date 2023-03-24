@@ -7,16 +7,15 @@ authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 [tool.poetry.dependencies]
 python = "^3.10"
 dataclasses_json = "*"
-requests = "*"
+httpx = "*"
 
 [tool.poetry.dev-dependencies]
 black = "*"
 mypy = "^1.1.1"
+pylint = "*"
+respx = "*"
 tox = "^4"
 tox-docker = "*"
-pylint = "*"
-requests-testing = "*"
-types-requests = "^2.28.11"
 
 #[build-system]
 #requires = ["poetry-core>=1.0.0"]
@@ -29,8 +28,8 @@ legacy_tox_ini = """
 requires =
     black
     dataclasses_json
-    requests
-    requests-testing
+    httpx
+    respx
     tox-docker
 
 skip_missing_interpreters = true
@@ -56,7 +55,6 @@ commands = pylint mailpit
 [testenv:py{39,310,311}-mypy]
 requires =
     mypy
-    types-requests
 allowlist_externals =
     mypy
 commands = mypy mailpit
@@ -64,12 +62,12 @@ commands = mypy mailpit
 [testenv:py{39,310,311}-unittest]
 deps =
     dataclasses_json
-    requests
-    requests-testing
+    httpx
+    respx
 allowlist_externals =
     dataclasses_json
-    requests
-    requests-testing
+    httpx
+    respx
 commands =  python -m unittest discover -s tests/unit
 
 """

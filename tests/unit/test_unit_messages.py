@@ -1,6 +1,7 @@
 import unittest
 
-import requests_testing
+import httpx
+import respx
 
 import mailpit.messages
 import mailpit.message
@@ -134,26 +135,30 @@ class MessagesAPITestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.api = mailpit.api.API("https://example.com")
 
-    @requests_testing.activate
+    @respx.mock
     def test_messages_get(self):
-        requests_testing.add(
-            request="https://example.com/api/v1/messages",
-            response=MessagesAPITestCase.RESPONSE,
-        )
+        route = respx.get("https://example.com/api/v1/messages")
+        route.mock(return_value=httpx.Response(200, text=MessagesAPITestCase.RESPONSE))
         messages = self.api.get_messages()
+
         self.assertIsInstance(messages, mailpit.messages.Messages)
+        self.assertTrue(route.called)
         self.assertEqual(200, self.api.last_response.status_code)
 
-    @requests_testing.activate
+    @respx.mock
     def test_messages_delete(self):
-        requests_testing.add(
-            request="https://example.com/api/v1/messages", response={"body": "ok"}
-        )
+        route = respx.delete("https://example.com/api/v1/messages")
+        route.mock(return_value=httpx.Response(200, json={"body": "ok"}))
         self.api.delete_messages(["1", "2", "3"])
+
+        self.assertTrue(route.called)
         self.assertEqual(200, self.api.last_response.status_code)
 
+    @respx.mock
     def test_messages_put(self):
-        self.fail()
+        route = respx.put("https://example.com/api/v1/messages")
+        route.mock(return_value=httpx.Response(200, json={"body": "ok"}))
+        self.api.put_messages(["1", "2", "3"], "Read", True)
 
 
 class MessageAPITestCase(unittest.TestCase):
@@ -201,12 +206,12 @@ class MessageAPITestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.api = mailpit.api.API("https://example.com")
 
-    @requests_testing.activate
+    @respx.mock
     def test_message_get(self):
-        requests_testing.add(
-            request="https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
-            response=MessageAPITestCase.RESPONSE,
+        route = respx.get(
+            "https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
         )
+        route.mock(return_value=httpx.Response(200, text=MessageAPITestCase.RESPONSE))
         message = self.api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
         self.assertIsInstance(message, mailpit.message.Message)
         self.assertEqual(200, self.api.last_response.status_code)
