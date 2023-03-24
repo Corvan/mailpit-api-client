@@ -3,6 +3,8 @@ import unittest
 import requests_testing as rt
 
 import mailpit.messages
+import mailpit.message
+import mailpit.api
 
 
 class MessagesModelsTestCase(unittest.TestCase):
@@ -129,16 +131,80 @@ class MessagesAPITestCase(unittest.TestCase):
         ]
     }"""
 
+    def setUp(self) -> None:
+        self.messages_api = mailpit.api.API("https://example.com")
+
     @rt.activate
     def test_messages_get(self):
         rt.add(
             request="https://example.com/api/v1/messages",
             response=MessagesAPITestCase.RESPONSE,
         )
-        messages_api = mailpit.messages.API("https://example.com")
-        messages = messages_api.get()
+        messages = self.messages_api.get_messages()
         self.assertIsInstance(messages, mailpit.messages.Messages)
-        self.assertEqual(200, messages_api.last_response.status_code)
+        self.assertEqual(200, self.messages_api.last_response.status_code)
+
+    def test_messages_delete(self):
+        self.fail()
+
+    def test_messages_put(self):
+        self.fail()
+
+
+class MessageAPITestCase(unittest.TestCase):
+    RESPONSE = """{
+  "ID": "d7a5543b-96dd-478b-9b60-2b465c9884de",
+  "Read": true,
+  "From": {
+    "Name": "John Doe",
+    "Address": "john@example.com"
+  },
+  "To": [
+    {
+      "Name": "Jane Smith",
+      "Address": "jane@example.com"
+    }
+  ],
+  "Cc": [],
+  "Bcc": [],
+  "Subject": "Message subject",
+  "Date": "2016-09-07T16:46:00+13:00",
+  "Text": "Plain text MIME part of the email",
+  "HTML": "HTML MIME part (if exists)",
+  "Size": 79499,
+  "Inline": [
+    {
+      "PartID": "1.2",
+      "FileName": "filename.gif",
+      "ContentType": "image/gif",
+      "ContentID": "919564503@07092006-1525",
+      "Size": 7760
+    }
+  ],
+  "Attachments": [
+    {
+      "PartID": "2",
+      "FileName": "filename.doc",
+      "ContentType": "application/msword",
+      "ContentID": "",
+      "Size": 43520
+    }
+  ]
+}
+    """
+
+    def setUp(self) -> None:
+        self.message_api = mailpit.api.API("https://example.com")
+
+    @rt.activate
+    def test_message_get(self):
+        rt.add(
+            request="https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
+            response=MessageAPITestCase.RESPONSE,
+        )
+        message = self.message_api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
+        self.assertIsInstance(message, mailpit.message.Message)
+        self.assertEqual(200, self.message_api.last_response.status_code)
 
 
 if __name__ == "__main__":
