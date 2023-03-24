@@ -16,7 +16,6 @@ mypy = "^1.1.1"
 pylint = "*"
 respx = "*"
 tox = "^4"
-tox-docker = "*"
 
 #[build-system]
 #requires = ["poetry-core>=1.0.0"]
@@ -31,7 +30,6 @@ requires =
     dataclasses_json
     httpx
     respx
-    tox-docker
 
 skip_missing_interpreters = true
 envlist =
@@ -70,7 +68,6 @@ allowlist_externals =
     httpx
     respx
 commands =  python -m unittest discover -s tests/unit
-
 """
 
 #[testenv:py{39,310,311}-integration_test]
