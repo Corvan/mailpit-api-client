@@ -37,6 +37,7 @@ class Message:
     # pylint: disable=too-few-public-methods
     # pylint: disable=invalid-name
 
+    id: str = dc.field(init=True, metadata=dj.config(field_name="ID"))
     read: bool = dc.field(init=True, metadata=dj.config(field_name="Read"))
     """always true (message marked read on open)"""
     from_: Optional[m.Contact] = dc.field(
