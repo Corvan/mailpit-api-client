@@ -98,39 +98,26 @@ class MessagesModelsTestCase(unittest.TestCase):
 
 
 class MessagesAPITestCase(unittest.TestCase):
-    RESPONSE = """{
+    RESPONSE = {
         "total": 500,
         "unread": 500,
         "count": 50,
         "start": 0,
         "messages": [
             {
-              "ID": "1c575821-70ba-466f-8cee-2e1cf0fcdd0f",
-              "Read": false,
-              "From": {
-                "Name": "John Doe",
-                "Address": "john@example.com"
-              },
-              "To": [
-                {
-                  "Name": "Jane Smith",
-                  "Address": "jane@example.com"
-                }
-              ],
-              "Cc": [
-                {
-                  "Name": "Accounts",
-                  "Address": "accounts@example.com"
-                }
-              ],
-              "Bcc": [],
-              "Subject": "Message subject",
-              "Created": "2022-10-03T21:35:32.228605299+13:00",
-              "Size": 6144,
-              "Attachments": 0
+                "ID": "1c575821-70ba-466f-8cee-2e1cf0fcdd0f",
+                "Read": False,
+                "From": {"Name": "John Doe", "Address": "john@example.com"},
+                "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
+                "Cc": [{"Name": "Accounts", "Address": "accounts@example.com"}],
+                "Bcc": [],
+                "Subject": "Message subject",
+                "Created": "2022-10-03T21:35:32.228605299+13:00",
+                "Size": 6144,
+                "Attachments": 0,
             }
-        ]
-    }"""
+        ],
+    }
 
     def setUp(self) -> None:
         self.api = mailpit.api.API("https://example.com")
@@ -138,7 +125,8 @@ class MessagesAPITestCase(unittest.TestCase):
     @respx.mock
     def test_messages_get(self):
         route = respx.get("https://example.com/api/v1/messages")
-        route.mock(return_value=httpx.Response(200, text=MessagesAPITestCase.RESPONSE))
+        route.mock(return_value=httpx.Response(200, json=MessagesAPITestCase.RESPONSE))
+
         messages = self.api.get_messages()
 
         self.assertIsInstance(messages, mailpit.messages.Messages)
@@ -149,6 +137,7 @@ class MessagesAPITestCase(unittest.TestCase):
     def test_messages_delete(self):
         route = respx.delete("https://example.com/api/v1/messages")
         route.mock(return_value=httpx.Response(200, json={"body": "ok"}))
+
         self.api.delete_messages(["1", "2", "3"])
 
         self.assertTrue(route.called)
@@ -158,50 +147,45 @@ class MessagesAPITestCase(unittest.TestCase):
     def test_messages_put(self):
         route = respx.put("https://example.com/api/v1/messages")
         route.mock(return_value=httpx.Response(200, json={"body": "ok"}))
+
         self.api.put_messages(["1", "2", "3"], "Read", True)
+
+        self.assertTrue(route.called)
+        self.assertEqual(200, self.api.last_response.status_code)
 
 
 class MessageAPITestCase(unittest.TestCase):
-    RESPONSE = """{
-  "ID": "d7a5543b-96dd-478b-9b60-2b465c9884de",
-  "Read": true,
-  "From": {
-    "Name": "John Doe",
-    "Address": "john@example.com"
-  },
-  "To": [
-    {
-      "Name": "Jane Smith",
-      "Address": "jane@example.com"
+    RESPONSE = {
+        "ID": "d7a5543b-96dd-478b-9b60-2b465c9884de",
+        "Read": True,
+        "From": {"Name": "John Doe", "Address": "john@example.com"},
+        "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
+        "Cc": [],
+        "Bcc": [],
+        "Subject": "Message subject",
+        "Date": "2016-09-07T16:46:00+13:00",
+        "Text": "Plain text MIME part of the email",
+        "HTML": "HTML MIME part (if exists)",
+        "Size": 79499,
+        "Inline": [
+            {
+                "PartID": "1.2",
+                "FileName": "filename.gif",
+                "ContentType": "image/gif",
+                "ContentID": "919564503@07092006-1525",
+                "Size": 7760,
+            }
+        ],
+        "Attachments": [
+            {
+                "PartID": "2",
+                "FileName": "filename.doc",
+                "ContentType": "application/msword",
+                "ContentID": "",
+                "Size": 43520,
+            }
+        ],
     }
-  ],
-  "Cc": [],
-  "Bcc": [],
-  "Subject": "Message subject",
-  "Date": "2016-09-07T16:46:00+13:00",
-  "Text": "Plain text MIME part of the email",
-  "HTML": "HTML MIME part (if exists)",
-  "Size": 79499,
-  "Inline": [
-    {
-      "PartID": "1.2",
-      "FileName": "filename.gif",
-      "ContentType": "image/gif",
-      "ContentID": "919564503@07092006-1525",
-      "Size": 7760
-    }
-  ],
-  "Attachments": [
-    {
-      "PartID": "2",
-      "FileName": "filename.doc",
-      "ContentType": "application/msword",
-      "ContentID": "",
-      "Size": 43520
-    }
-  ]
-}
-    """
 
     def setUp(self) -> None:
         self.api = mailpit.api.API("https://example.com")
@@ -211,7 +195,7 @@ class MessageAPITestCase(unittest.TestCase):
         route = respx.get(
             "https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
         )
-        route.mock(return_value=httpx.Response(200, text=MessageAPITestCase.RESPONSE))
+        route.mock(return_value=httpx.Response(200, json=MessageAPITestCase.RESPONSE))
         message = self.api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
         self.assertIsInstance(message, mailpit.message.Message)
         self.assertEqual(200, self.api.last_response.status_code)
