@@ -41,7 +41,7 @@ class API:
         response.raise_for_status()
         return messages.Messages.from_json(response.text)  # type: ignore
 
-    def delete_messages(self, ids: typing.List[int]):
+    def delete_messages(self, ids: typing.List[str]):
         """
         send a DELETE request to delete messages
         :param ids: the IDs of the messages to delete;

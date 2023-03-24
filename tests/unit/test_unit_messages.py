@@ -1,6 +1,6 @@
 import unittest
 
-import requests_testing as rt
+import requests_testing
 
 import mailpit.messages
 import mailpit.message
@@ -132,20 +132,25 @@ class MessagesAPITestCase(unittest.TestCase):
     }"""
 
     def setUp(self) -> None:
-        self.messages_api = mailpit.api.API("https://example.com")
+        self.api = mailpit.api.API("https://example.com")
 
-    @rt.activate
+    @requests_testing.activate
     def test_messages_get(self):
-        rt.add(
+        requests_testing.add(
             request="https://example.com/api/v1/messages",
             response=MessagesAPITestCase.RESPONSE,
         )
-        messages = self.messages_api.get_messages()
+        messages = self.api.get_messages()
         self.assertIsInstance(messages, mailpit.messages.Messages)
-        self.assertEqual(200, self.messages_api.last_response.status_code)
+        self.assertEqual(200, self.api.last_response.status_code)
 
+    @requests_testing.activate
     def test_messages_delete(self):
-        self.fail()
+        requests_testing.add(
+            request="https://example.com/api/v1/messages", response={"body": "ok"}
+        )
+        self.api.delete_messages(["1", "2", "3"])
+        self.assertEqual(200, self.api.last_response.status_code)
 
     def test_messages_put(self):
         self.fail()
@@ -194,17 +199,17 @@ class MessageAPITestCase(unittest.TestCase):
     """
 
     def setUp(self) -> None:
-        self.message_api = mailpit.api.API("https://example.com")
+        self.api = mailpit.api.API("https://example.com")
 
-    @rt.activate
+    @requests_testing.activate
     def test_message_get(self):
-        rt.add(
+        requests_testing.add(
             request="https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
             response=MessageAPITestCase.RESPONSE,
         )
-        message = self.message_api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
+        message = self.api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
         self.assertIsInstance(message, mailpit.message.Message)
-        self.assertEqual(200, self.message_api.last_response.status_code)
+        self.assertEqual(200, self.api.last_response.status_code)
 
 
 if __name__ == "__main__":
