@@ -8,6 +8,7 @@ authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 python = "^3.10"
 dataclasses_json = "*"
 httpx = "*"
+ruff = "^0.0.259"
 
 [tool.poetry.dev-dependencies]
 black = "*"
@@ -47,10 +48,10 @@ allowlist_externals =
 commands = black --check .
 
 [testenv:py{39,310,311}-lint]
-requires = pylint
+requires = ruff
 allowlist_externals =
-    pylint
-commands = pylint mailpit
+    ruff
+commands = ruff check mailpit
 
 [testenv:py{39,310,311}-mypy]
 requires =
