@@ -113,6 +113,27 @@ class MessageAPITestCase(unittest.TestCase):
             "https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
         )
         route.mock(return_value=httpx.Response(200, json=MessageAPITestCase.RESPONSE))
+
         message = self.api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
+
         self.assertIsInstance(message, m.Message)
         self.assertEqual(200, self.api.last_response.status_code)
+
+
+@respx.mock
+class AttachmentAPITestCase(unittest.TestCase):
+    def setUp(self) -> None:
+        self.api = mailpit.api.API("https://example.com")
+
+    def test_attachment_get(self):
+        route = respx.get(
+            "https://example.com/api/v1/message/"
+            "d7a5543b-96dd-478b-9b60-2b465c9884de/part/2"
+        )
+        route.mock(return_value=httpx.Response(200, text="Test"))
+
+        attachment = self.api.get_attachment(
+            "d7a5543b-96dd-478b-9b60-2b465c9884de", "2"
+        )
+
+        self.assertEqual("Test", attachment)
