@@ -25,6 +25,7 @@ class API:
     def get_messages(self, limit: int = 50, start: int = 0) -> messages.Messages:
         """
         send a GET request in order to retrieve messages
+
         :param limit: limit the returned number of messages
         :param start: start at an offset from the beginning
         :return: the messages returned by mailpit converted into models
@@ -44,6 +45,7 @@ class API:
     def delete_messages(self, ids: typing.List[str]):
         """
         send a DELETE request to delete messages
+
         :param ids: the IDs of the messages to delete;
                     NOTE: passing an empty list will delete *all* messages
         """
@@ -60,6 +62,7 @@ class API:
         """
         update existing messages;
         for example pass "Read" as key and True as value to mark messages read
+
         :param ids: the IDs of the messages to update
         :param key: the message's attribute to update
         :param value: the value to update the attribute with
@@ -75,8 +78,8 @@ class API:
     def get_message(self, message_id: str) -> message.Message:
         """
 
+
         :param message_id:
-        :return:
         """
 
         # pylint: disable = no-member
@@ -89,12 +92,12 @@ class API:
         response.raise_for_status()
         return message.Message.from_json(response.text)  # type: ignore
 
-    def get_attachment(self, message_id: str, part_id: str):
+    def get_message_attachment(self, message_id: str, part_id: str):
         """
+
 
         :param message_id:
         :param part_id:
-        :return:
         """
         response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/part/{part_id}",
@@ -103,3 +106,17 @@ class API:
         self.last_response = response
         response.raise_for_status()
         return response.text
+
+    def get_message_headers(self, message_id: str):
+        """
+
+
+        :param message_id:
+        """
+        response = httpx.get(
+            f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/headers",
+            timeout=self.timeout,
+        )
+        self.last_response = response
+        response.raise_for_status()
+        return message.Headers.from_json(response.text)  # type: ignore

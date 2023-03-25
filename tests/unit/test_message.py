@@ -120,11 +120,11 @@ class MessageAPITestCase(unittest.TestCase):
         self.assertEqual(200, self.api.last_response.status_code)
 
 
-@respx.mock
 class AttachmentAPITestCase(unittest.TestCase):
     def setUp(self) -> None:
         self.api = mailpit.api.API("https://example.com")
 
+    @respx.mock
     def test_attachment_get(self):
         route = respx.get(
             "https://example.com/api/v1/message/"
@@ -132,8 +132,53 @@ class AttachmentAPITestCase(unittest.TestCase):
         )
         route.mock(return_value=httpx.Response(200, text="Test"))
 
-        attachment = self.api.get_attachment(
+        attachment = self.api.get_message_attachment(
             "d7a5543b-96dd-478b-9b60-2b465c9884de", "2"
         )
 
         self.assertEqual("Test", attachment)
+
+
+class HeadersAPITestCase(unittest.TestCase):
+    RESPONSE = {
+        "Content-Type": [
+            'multipart/related; type="multipart/alternative"; '
+            'boundary="----=_NextPart_000_0013_01C6A60C.47EEAB80"'
+        ],
+        "Date": ["Wed, 12 Jul 2006 23:38:30 +1200"],
+        "Delivered-To": ["user@example.com", "user-alias@example.com"],
+        "From": ['"User Name" \\u003remote@example.com\\u003e'],
+        "Message-Id": ["\\u003c001701c6a5a7$b3205580$0201010a@HomeOfficeSM\\u003e"],
+    }
+
+    def setUp(self) -> None:
+        self.api = mailpit.api.API("https://example.com")
+
+    @respx.mock
+    def test_header_get(self):
+        route = respx.get(
+            "https://example.com/api/v1/message/"
+            "d7a5543b-96dd-478b-9b60-2b465c9884de/headers"
+        )
+        route.mock(return_value=httpx.Response(200, json=self.RESPONSE))
+
+        headers = self.api.get_message_headers("d7a5543b-96dd-478b-9b60-2b465c9884de")
+
+        self.assertEqual(
+            (
+                'multipart/related; type="multipart/alternative"; '
+                'boundary="----=_NextPart_000_0013_01C6A60C.47EEAB80"'
+            ),
+            headers.content_type[0],
+        )
+        self.assertEqual("Wed, 12 Jul 2006 23:38:30 +1200", headers.date[0])
+        self.assertEqual(
+            ["user@example.com", "user-alias@example.com"], headers.delivered_to
+        )
+        self.assertEqual(
+            '"User Name" \\u003remote@example.com\\u003e', headers.from_[0]
+        )
+        self.assertEqual(
+            "\\u003c001701c6a5a7$b3205580$0201010a@HomeOfficeSM\\u003e",
+            headers.message_id[0],
+        )

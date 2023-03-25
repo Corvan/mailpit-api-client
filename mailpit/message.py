@@ -64,3 +64,22 @@ class Message:
     attachments: list[Attachment] = dc.field(
         init=True, metadata=dj.config(field_name="Attachments")
     )
+
+
+@dj.dataclass_json(undefined=dj.Undefined.INCLUDE)
+@dc.dataclass(init=True)
+class Headers:
+    content_type: list[str] = dc.field(
+        init=True, metadata=dj.config(field_name="Content-Type")
+    )
+    date: list[datetime.date] = dc.field(
+        init=True, metadata=dj.config(field_name="Date")
+    )
+    delivered_to: list[str] = dc.field(
+        init=True, metadata=dj.config(field_name="Delivered-To")
+    )
+    from_: list[str] = dc.field(init=True, metadata=dj.config(field_name="From"))
+    message_id: list[str] = dc.field(
+        init=True, metadata=dj.config(field_name="Message-Id")
+    )
+    unknown_things: dj.CatchAll
