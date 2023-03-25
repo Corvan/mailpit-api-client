@@ -1,0 +1,63 @@
+version: "3.5"
+#name: mailpit_api_client_${PYTHON_VERSION:-3.10}
+services:
+  black:
+    image: black:${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    build:
+      context: ../../
+      dockerfile: tests/docker/black.Dockerfile
+      args:
+        python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    profiles:
+      - unittest
+    volumes:
+      - type: bind
+        source: ./../../mailpit
+        target: /root/mailpit
+    command: black /root/mailpit
+  lint:
+    image: lint:${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    build:
+      context: ../../
+      dockerfile: tests/docker/lint.Dockerfile
+      args:
+        python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    profiles:
+      - unittest
+    volumes:
+      - type: bind
+        source: ./../../mailpit
+        target: /root/mailpit
+    command: ruff check /root/mailpit
+  mypy:
+    image: mypy:${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    build:
+      context: ../../
+      dockerfile: tests/docker/mypy.Dockerfile
+      args:
+        python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    profiles:
+      - unittest
+    volumes:
+      - type: bind
+        source: ./../../mailpit
+        target: /root/mailpit
+    environment:
+      PYTHONPATH: /usr/lib/python3/dist-packages
+    command: python3 -m mypy /root/mailpit
+  unittest:
+    image: unittest:${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    build:
+      context: ../../
+      dockerfile: tests/docker/unittest.Dockerfile
+      args:
+        python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    profiles:
+      - unittest
+    volumes:
+      - type: bind
+        source: ./../../
+        target: /root/mailpit-api-client
+    environment:
+      PYTHONPATH: /root/mailpit-api-client
+    command: python -m unittest discover -s /root/mailpit-api-client/tests/unit

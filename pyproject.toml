@@ -9,6 +9,7 @@ python = "^3.10"
 dataclasses_json = "*"
 httpx = "*"
 ruff = "^0.0.259"
+invoke = "^2.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "*"
@@ -17,60 +18,9 @@ pylint = "*"
 respx = "*"
 tox = "^4"
 
-#[build-system]
-#requires = ["poetry-core>=1.0.0"]
-#build-backend = "poetry.core.masonry.api"
-
-[tool.tox]
-legacy_tox_ini = """
-
-[tox]
-requires =
-    black
-    dataclasses_json
-    httpx
-    respx
-
-skip_missing_interpreters = true
-envlist =
-    py{39,310,311}-{black,lint,mypy,unittest}
-isolated_build = true
-
-[testenv]
-passenv=PYTHONPATH
-
-[testenv:py{39,310,311}-black]
-requires = black
-allowlist_externals =
-    black
-commands = black --check .
-
-[testenv:py{39,310,311}-lint]
-requires = ruff
-allowlist_externals =
-    ruff
-commands = ruff check mailpit
-
-[testenv:py{39,310,311}-mypy]
-requires =
-    mypy
-allowlist_externals =
-    mypy
-commands = mypy mailpit
-
-[testenv:py{39,310,311}-unittest]
-deps =
-    dataclasses_json
-    httpx
-    respx
-allowlist_externals =
-    dataclasses_json
-    httpx
-    respx
-commands =  python -m unittest discover -s tests/unit
-"""
-
-#[testenv:py{39,310,311}-integration_test]
-#allowlist_externals =
-#   pytest
-#commands = pytest -vvm integration .
+[tool.invoke.test]
+python_versions = [
+    "3.9",
+    "3.10",
+    "3.11"
+]
