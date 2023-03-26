@@ -16,37 +16,57 @@ def unittest(c):
     config = read_pyproject_toml()
     profile = "unittest"
     for python_version in config["python_versions"]:
-        project_name = f"{PROJECT_NAME}-{python_version}"
+        project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
         env = {"PYTHON_VERSION": python_version}
 
         c.run(
             (
-                f"docker-compose -p {project_name} "
-                f"--profile {profile} -f {DOCKER_COMPOSE_PATH} up black"
+                f"docker compose "
+                f"-p {project_name} "
+                f"--profile {profile} "
+                f"-f {DOCKER_COMPOSE_PATH} "
+                f"up "
+                f"--exit-code-from black "
+                f"black"
             ),
             env=env,
         )
 
         c.run(
             (
-                f"docker-compose -p {project_name} "
-                f"--profile {profile} -f {DOCKER_COMPOSE_PATH} up lint"
+                f"docker compose "
+                f"-p {project_name} "
+                f"--profile {profile} "
+                f"-f {DOCKER_COMPOSE_PATH} "
+                f"up "
+                f"--exit-code-from lint "
+                f"lint"
             ),
             env=env,
         )
 
         c.run(
             (
-                f"docker-compose -p {project_name } "
-                f"--profile {profile} -f tests/docker/docker-compose.yml up mypy"
+                f"docker compose "
+                f"-p {project_name} "
+                f"--profile {profile} "
+                f"-f tests/docker/docker-compose.yml "
+                f"up "
+                f"--exit-code-from mypy "
+                f"mypy"
             ),
             env=env,
         )
 
         c.run(
             (
-                f"docker-compose -p {project_name} "
-                f"--profile {profile} -f tests/docker/docker-compose.yml up unittest"
+                f"docker compose "
+                f"-p {project_name} "
+                f"--profile {profile} "
+                f"-f tests/docker/docker-compose.yml "
+                f"up "
+                f"--exit-code-from unittest "
+                f"unittest"
             ),
             env=env,
         )
