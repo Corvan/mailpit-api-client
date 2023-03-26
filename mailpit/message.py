@@ -82,4 +82,4 @@ class Headers:
     message_id: list[str] = dc.field(
         init=True, metadata=dj.config(field_name="Message-Id")
     )
-    unknown_things: dj.CatchAll
+    additional: dj.CatchAll
