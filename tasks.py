@@ -75,8 +75,9 @@ def unittest(c):
 @task
 def unittest_build(c):
     profile = "unittest"
-    for python_version in ["3.9", "3.10", "3.11"]:
-        project_name = f"{PROJECT_NAME}-{python_version}"
+    config = read_pyproject_toml()
+    for python_version in config["python_versions"]:
+        project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
         env = {"PYTHON_VERSION": python_version}
 
         c.run(
