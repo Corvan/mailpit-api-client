@@ -29,9 +29,10 @@ def build_containers(c: inv.Context, profile: str):
         c.run(
             (
                 f"docker-compose -p {project_name} "
-                f"--profile {profile} -f {DOCKER_COMPOSE_PATH} build"
+                f"--profile {profile} -f {DOCKER_COMPOSE_PATH} build --pull"
             ),
             env=env,
+            pty=True,
         )
 
 
