@@ -1,12 +1,16 @@
+import logging
 import pathlib
 
 import tomli
 import invoke as inv
 import tests.unit.tasks as ut
 import tests.integration.tasks as it
+import logging518.config
 
 PROJECT_NAME = "mailpit-api-client"
 DOCKER_COMPOSE_PATH = "tests/docker/docker-compose.yml"
+
+logging518.config.fileConfig("pyproject.toml")
 
 
 def read_pyproject_toml():
@@ -32,33 +36,42 @@ def build_containers(c, profile: str):
 
 @inv.task
 def unit(c):
+    logger = logging.getLogger("test_runner.unit")
+    logger.info("unit testing started")
+
     config = read_pyproject_toml()
     profile = "unittest"
     tools = ["black", "lint", "mypy", "unittest"]
 
     for python_version in config["python_versions"]:
+        logger.info(f"running with Python {python_version}")
         project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
         env = {"PYTHON_VERSION": python_version}
-
+        logger.debug(f"set environment variables to: {env}")
         for tool in tools:
+            logger.info(f"Running tool in container: {tool}")
             ut.run_tool_in_container(c, env, profile, project_name, tool)
 
 
 @inv.task
 def integration(c):
+    logger = logging.getLogger("test_runner.integration")
+    logger.info("integration testing started")
     config = read_pyproject_toml()
     profile = "integration"
     path = pathlib.Path("tests/integration")
-    for file in path.iterdir():
-        if file.name.startswith("test"):
-            for python_version in config["python_versions"]:
+    for python_version in config["python_versions"]:
+        logger.info(f"running with Python {python_version}")
+        for file in path.iterdir():
+            if file.name.startswith("test"):
+                logger.info(f"running tests in file {file}")
                 project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
-                print(file)
                 env = {
                     "PYTHON_VERSION": python_version,
                     "TEST_FILE": str(file),
                     "PYTHONTRACEMALLOC": "1",
                 }
+                logger.debug(f"set environment variables to: {env}")
 
                 it.run_test(c, env, profile, project_name, file)
 

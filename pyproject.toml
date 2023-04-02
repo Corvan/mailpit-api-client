@@ -10,6 +10,7 @@ dataclasses_json = "*"
 httpx = "*"
 ruff = "^0.0.259"
 invoke = "^2.0.0"
+logging518 = "^1.0.0"
 
 [tool.poetry.dev-dependencies]
 black = "*"
@@ -25,3 +26,23 @@ python_versions = [
     "3.11",
     "3.12.0a6"
 ]
+
+[tool.logging]
+version = 1
+#disable_existing_loggers = true
+
+[tool.logging.formatters.formatter]
+class = "logging.Formatter"
+format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+
+[tool.logging.handlers.ch]
+level = "DEBUG"
+class = "logging.StreamHandler"
+formatter = "formatter"
+
+[tool.logging.loggers.test_runner]
+level = "DEBUG"
+handlers = ["ch"]
+
+[tool.logging.loggers.test_runner.auxiliary]
+propagate = false
