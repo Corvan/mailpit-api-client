@@ -19,7 +19,7 @@ def read_pyproject_toml():
     return config["tool"]["invoke"]["test"]
 
 
-def build_containers(c, profile: str):
+def build_containers(c: inv.Context, profile: str):
     config = read_pyproject_toml()
     for python_version in config["python_versions"]:
         project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
@@ -35,7 +35,7 @@ def build_containers(c, profile: str):
 
 
 @inv.task
-def unit(c):
+def unit(c: inv.Context):
     logger = logging.getLogger("test_runner.unit")
     logger.info("unit testing started")
 
@@ -54,7 +54,7 @@ def unit(c):
 
 
 @inv.task
-def integration(c):
+def integration(c: inv.Context):
     logger = logging.getLogger("test_runner.integration")
     logger.info("integration testing started")
     config = read_pyproject_toml()
@@ -77,12 +77,12 @@ def integration(c):
 
 
 @inv.task
-def unittest_build(c):
+def unittest_build(c: inv.Context):
     profile = "integration"
     build_containers(c, profile)
 
 
 @inv.task
-def integration_build(c):
+def integration_build(c: inv.Context):
     profile = "integration"
     build_containers(c, profile)

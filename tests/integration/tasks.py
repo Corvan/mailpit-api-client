@@ -1,10 +1,12 @@
 import logging
 import pathlib
 
+import invoke as inv
+
 DOCKER_COMPOSE_PATH = "tests/docker/docker-compose.yml"
 
 
-def start_mailpit_container(c, env, profile, project_name):
+def start_mailpit_container(c: inv.Context, env, profile, project_name):
     logger = logging.getLogger("test_runner.integration.tasks.start_mailpit_container")
     command = (
         f"docker compose "
@@ -24,7 +26,7 @@ def start_mailpit_container(c, env, profile, project_name):
     )
 
 
-def stop_mailpit_container(c, env, profile, project_name):
+def stop_mailpit_container(c: inv.Context, env: dict, profile: str, project_name: str):
     logger = logging.getLogger("test_runner.integration.tasks.stop_mailpit_container")
     command = (
         f"docker compose "
@@ -65,7 +67,9 @@ def run_test_in_container(
     )
 
 
-def run_test(c, env, profile, project_name, test: pathlib.Path):
+def run_test(
+    c: inv.Context, env: dict, profile: str, project_name: str, test: pathlib.Path
+):
     logger = logging.getLogger("test_runner.integration.tasks.run_test")
     logger.info("run test in container environment")
     try:
