@@ -1,19 +1,7 @@
-import unittest
-import smtplib
-
-import mailpit.api
+import tests.integration
 
 
-class TestMessages(unittest.TestCase):
-    def setUp(self) -> None:
-        self.api_endpoint = "http://mailpit:8025"
-        self.smtp_server = smtplib.SMTP("mailpit", 1025)
-        self.api = mailpit.api.API(self.api_endpoint)
-
-    def tearDown(self) -> None:
-        self.smtp_server.quit()
-        self.smtp_server.close()
-
+class TestMessages(tests.integration.MailpitClientIntegrationSMTPCase):
     def test_smtp__connect(self):
 
         response = self.smtp_server.connect("mailpit", 1025)
