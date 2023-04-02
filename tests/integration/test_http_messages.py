@@ -1,11 +1,31 @@
 import email
 import logging
 import smtplib
+import unittest
 
-import tests.integration
+import mailpit.api
+import mailpit.messages
+import mailpit.models
+
+import logging518.config
 
 
-class TestMessages(tests.integration.MailpitClientIntegrationCase):
+class TestMessages(unittest.TestCase):
+    def setUp(self):
+        self.maxDiff = None
+        self.project_path = "/root/mailpit-api-client"
+        logging518.config.fileConfig(f"{self.project_path}/pyproject.toml")
+        logger = logging.getLogger("tests.integration.setUp.TestMessages.setUp")
+        self.api_endpoint = "http://mailpit:8025"
+        self.api = mailpit.api.API(self.api_endpoint)
+        logger.info("connecting to smtp_server")
+        self.smtp_server = smtplib.SMTP("mailpit", 1025)
+
+    def tearDown(self) -> None:
+        logger = logging.getLogger("tests.integration.TestMessages.tearDown")
+        logger.info("closing smtp server connection")
+        self.smtp_server.quit()
+
     def test_messages_endpoint__empty(self):
         messages = self.api.get_messages()
         self.assertEqual(len(messages.messages), 0)
@@ -14,10 +34,8 @@ class TestMessages(tests.integration.MailpitClientIntegrationCase):
         logger = logging.getLogger(
             "tests.integration.test_messages_endpoint__sendmessage"
         )
-        logger.info("connecting to smtp_server")
-        self.smtp_server = smtplib.SMTP("mailpit", 1025)
         logger.info("reading mail from file")
-        with open(f"{self.PROJECT_PATH}/tests/mail/email.eml") as fp:
+        with open(f"{self.project_path}/tests/mail/email.eml") as fp:
             mail = email.message_from_file(fp)
         logger.info("sending message")
         self.smtp_server.send_message(
@@ -29,9 +47,35 @@ class TestMessages(tests.integration.MailpitClientIntegrationCase):
         messages = self.api.get_messages()
 
         logger.info("closing smtp connection")
-        self.smtp_server.quit()
-        self.smtp_server.close()
 
         logger.info("checking asserts")
-        self.assertEqual(1, messages.count)
-        self.assertEqual(1, len(messages.messages))
+        messages_expected = mailpit.messages.Messages(
+            total=1,
+            count=1,
+            unread=1,
+            start=0,
+            messages=[
+                mailpit.messages.Message(
+                    # NOTE: this is on purpose,
+                    # because those next 3 values cannot be predicted
+                    id=messages.messages[0].id,
+                    created=messages.messages[0].created,
+                    size=messages.messages[0].size,
+                    from_=mailpit.models.Contact(
+                        name="Sender Smith", address="sender@example.com"
+                    ),
+                    to=[
+                        mailpit.models.Contact(
+                            name="Recipient Ross", address="recipient@example.com"
+                        )
+                    ],
+                    cc=[],
+                    bcc=[],
+                    read=False,
+                    subject="Plain text message",
+                    attachments=0,
+                )
+            ],
+        )
+
+        self.assertEqual(messages_expected, messages)
