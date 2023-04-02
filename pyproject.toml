@@ -46,3 +46,7 @@ handlers = ["ch"]
 
 [tool.logging.loggers.test_runner.auxiliary]
 propagate = false
+
+[tool.logging.loggers.tests]
+level = "DEBUG"
+handlers = ["ch"]
