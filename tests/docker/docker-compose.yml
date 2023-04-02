@@ -61,3 +61,28 @@ services:
     environment:
       PYTHONPATH: /root/mailpit-api-client
     command: python -m unittest discover -s /root/mailpit-api-client/tests/unit
+
+  mailpit:
+    image: axllent/mailpit:latest
+    profiles:
+      - integration
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+  integration:
+    image: integration:${PYTHIN_VERSION:-3.10}-${DEBIAN_CODENAME:-bullsexe}
+    build:
+      context: ../../
+      dockerfile: tests/docker/integration.Dockerfile
+      args:
+        python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
+    profiles:
+      - integration
+    volumes:
+      - type: bind
+        source: ./../../
+        target: /root/mailpit-api-client
+    environment:
+      PYTHONPATH: /root/mailpit-api-client
+    command: python -m unittest /root/mailpit-api-client/${TEST_FILE}
+
