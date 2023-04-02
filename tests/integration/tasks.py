@@ -65,9 +65,15 @@ def run_test(
     try:
         start_mailpit_container(c, env, profile, project_name)
         run_test_in_container(c, env, profile, project_name, test)
-    except Exception as e:
+    except inv.Failure as fe:
         logger.error("An error occurred on running test in container enviroment")
-        logger.exception(e)
-        raise e
+        logger.exception(fe)
+        raise fe
+    except inv.UnexpectedExit as ue:
+        logger.error(
+            f"Running test exited unexpectedly with Error Code:{ue.result.error_code}"
+        )
+        logger.exception(ue)
+        raise ue
     finally:
         stop_mailpit_container(c, env, profile, project_name)
