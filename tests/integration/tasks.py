@@ -20,10 +20,7 @@ def start_mailpit_container(c: inv.Context, env, profile, project_name):
 
     logger.info("Starting mailpit container")
     logger.debug(f"command: `{command}`")
-    c.run(
-        command,
-        env=env,
-    )
+    c.run(command, env=env, pty=True)
 
 
 def stop_mailpit_container(c: inv.Context, env: dict, profile: str, project_name: str):
@@ -39,10 +36,7 @@ def stop_mailpit_container(c: inv.Context, env: dict, profile: str, project_name
 
     logger.info("Stopping mailpit container")
     logger.debug(f"command: `{command}`")
-    c.run(
-        command,
-        env=env,
-    )
+    c.run(command, env=env, pty=True)
 
 
 def run_test_in_container(
@@ -55,16 +49,12 @@ def run_test_in_container(
         f"--profile {profile} "
         f"-f {DOCKER_COMPOSE_PATH} "
         f"up "
-        f"--exit-code-from integration "
         f"integration"
     )
 
     logger.info(f'running test file `{path}` in container "integration"')
     logger.debug(f"command: `{command}`")
-    c.run(
-        command,
-        env=env,
-    )
+    c.run(command, env=env, pty=True)
 
 
 def run_test(

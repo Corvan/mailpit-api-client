@@ -20,7 +20,4 @@ def run_tool_in_container(
         f"{tool}"
     )
     logger.debug(f"command: {command}")
-    c.run(
-        command,
-        env=env,
-    )
+    c.run(command, env=env, pty=True)
