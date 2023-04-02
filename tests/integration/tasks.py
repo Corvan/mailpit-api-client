@@ -49,6 +49,7 @@ def run_test_in_container(
         f"--profile {profile} "
         f"-f {DOCKER_COMPOSE_PATH} "
         f"up "
+        f"--exit-code-from integration "
         f"integration"
     )
 
