@@ -84,5 +84,5 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: python -m unittest /root/mailpit-api-client/${TEST_FILE}
+    command: python -m unittest --locals /root/mailpit-api-client/${TEST_FILE}
 
