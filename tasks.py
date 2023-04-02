@@ -11,6 +11,7 @@ PROJECT_NAME = "mailpit-api-client"
 DOCKER_COMPOSE_PATH = "tests/docker/docker-compose.yml"
 
 logging518.config.fileConfig("pyproject.toml")
+namespace = inv.Collection()
 
 
 def read_pyproject_toml():
@@ -86,3 +87,19 @@ def unittest_build(c: inv.Context):
 def integration_build(c: inv.Context):
     profile = "integration"
     build_containers(c, profile)
+
+
+tests = inv.Collection("tests")
+
+tests.add_task(unit)
+tests.add_task(integration)
+
+docker = inv.Collection("docker")
+build = inv.Collection("build")
+build.add_task(integration_build, name="integration")
+build.add_task(unittest_build, name="unit")
+
+docker.add_collection(build)
+
+namespace.add_collection(tests)
+namespace.add_collection(docker)
