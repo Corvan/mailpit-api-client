@@ -7,7 +7,7 @@ import logging518.config
 
 
 class TestSMTPConnect(unittest.TestCase):
-    @unittest.skip
+    @unittest.skip("This leads to python socket complaining about an unclosed socket")
     def test_smtp__connect(self):
         logger = logging.getLogger(
             "tests.integration.TestSMTPConnect.test_smtp__connect"

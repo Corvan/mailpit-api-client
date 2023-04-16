@@ -27,16 +27,22 @@ class TestMessages(unittest.TestCase):
         self.smtp_server.quit()
 
     def test_messages_endpoint__empty(self):
+        logger = logging.getLogger(
+            "tests.integration.TestMessagetest_messages_endpoint__empty"
+        )
+        logger.info("call `api.getmessages()`")
         messages = self.api.get_messages()
+        logger.debug(f"messages: {messages}")
         self.assertEqual(len(messages.messages), 0)
 
     def test_messages_endpoint__sendmessage(self):
         logger = logging.getLogger(
-            "tests.integration.test_messages_endpoint__sendmessage"
+            "tests.integration.TestMessagetest_messages_endpoint__sendmessage"
         )
         logger.info("reading mail from file")
         with open(f"{self.project_path}/tests/mail/email.eml") as fp:
             mail = email.message_from_file(fp)
+            logger.debug(f"mail: `{mail}`")
         logger.info("sending message")
         self.smtp_server.send_message(
             mail,
@@ -45,8 +51,7 @@ class TestMessages(unittest.TestCase):
         )
         logger.info("retrieving messages via API-endpoint")
         messages = self.api.get_messages()
-
-        logger.info("closing smtp connection")
+        logger.debug(f"messages: {messages}")
 
         logger.info("checking asserts")
         messages_expected = mailpit.messages.Messages(
