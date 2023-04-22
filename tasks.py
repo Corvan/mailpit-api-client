@@ -1,7 +1,11 @@
 import logging
 import pathlib
 
-import tomli
+try:
+    import tomllib as toml
+except ImportError:
+    import tomli as toml
+
 import invoke as inv
 import tests.unit.tasks as ut
 import tests.integration.tasks as it
@@ -16,7 +20,7 @@ namespace = inv.Collection()
 
 def read_pyproject_toml():
     with open("pyproject.toml", "rb") as fp:
-        config = tomli.load(fp)
+        config = toml.load(fp)
     return config["tool"]["invoke"]["test"]
 
 
