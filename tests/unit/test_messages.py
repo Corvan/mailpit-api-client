@@ -1,15 +1,17 @@
-import unittest
-
 import httpx
+import pytest
 import respx
 
 import mailpit.client.messages as _c_messages
-import mailpit.client. models as _c_models
+import mailpit.client.models as _c_models
 import mailpit.client.api as _c_api
 
 
-class MessagesModelsTestCase(unittest.TestCase):
-    RESPONSE = """{
+class TestMessagesModels:
+
+    @pytest.fixture(scope="class")
+    def response(self) -> str:
+        yield """{
         "total": 500,
         "unread": 500,
         "count": 50,
@@ -42,117 +44,108 @@ class MessagesModelsTestCase(unittest.TestCase):
             }
         ]
     }"""
-    messages: _c_messages.Messages = _c_messages.Messages.from_json(RESPONSE)
-    message: _c_messages.Message = messages.messages[0]
 
-    def test_messages(self):
-        self.assertIsInstance(
-            MessagesModelsTestCase.messages, _c_messages.Messages
-        )
-        self.assertEqual(500, MessagesModelsTestCase.messages.total)
-        self.assertEqual(500, MessagesModelsTestCase.messages.unread)
-        self.assertEqual(50, MessagesModelsTestCase.messages.count)
-        self.assertEqual(0, MessagesModelsTestCase.messages.start)
+    @pytest.fixture(scope="class")
+    def messages(self, response) -> _c_messages.Messages:
+        yield _c_messages.Messages.from_json(response)
 
-    def test_message(self):
-        self.assertIsInstance(MessagesModelsTestCase.message, _c_messages.Message)
-        self.assertEqual(
-            "1c575821-70ba-466f-8cee-2e1cf0fcdd0f", MessagesModelsTestCase.message.id
-        )
-        self.assertIs(False, MessagesModelsTestCase.message.read)
-        self.assertEqual("Message subject", MessagesModelsTestCase.message.subject)
-        self.assertEqual(
-            "2022-10-03T21:35:32.228605299+13:00",
-            MessagesModelsTestCase.message.created,
-        )
-        self.assertEqual(6144, MessagesModelsTestCase.message.size)
-        self.assertEqual(0, MessagesModelsTestCase.message.attachments)
+    @pytest.fixture(scope="class")
+    def message(self, messages) -> _c_messages.Message:
+        yield messages.messages[0]
 
-    def test_message_from(self):
-        self.assertIsInstance(
-            MessagesModelsTestCase.message.from_, _c_models.Contact
-        )
-        self.assertEqual("John Doe", MessagesModelsTestCase.message.from_.name)
-        self.assertEqual(
-            "john@example.com", MessagesModelsTestCase.message.from_.address
-        )
+    def test_messages(self, messages):
+        assert isinstance(messages, _c_messages.Messages)
 
-    def test_message_to(self):
-        self.assertIsInstance(
-            MessagesModelsTestCase.message.to[0], _c_models.Contact
-        )
-        self.assertEqual("Jane Smith", MessagesModelsTestCase.message.to[0].name)
-        self.assertEqual(
-            "jane@example.com", MessagesModelsTestCase.message.to[0].address
-        )
+        assert 500 == messages.total
+        assert 500 == messages.unread
+        assert 50 == messages.count
+        assert 0 == messages.start
 
-    def test_message_cc(self):
-        self.assertIsInstance(self.message.cc[0], _c_models.Contact)
-        self.assertEqual("Accounts", MessagesModelsTestCase.message.cc[0].name)
-        self.assertEqual(
-            "accounts@example.com", MessagesModelsTestCase.message.cc[0].address
-        )
+    def test_message(self, message):
+        assert isinstance(message, _c_messages.Message)
+        assert "1c575821-70ba-466f-8cee-2e1cf0fcdd0f" == message.id
+        assert message.read is False
+        assert "Message subject" == message.subject
+        assert "2022-10-03T21:35:32.228605299+13:00" == message.created
+        assert 6144 == message.size
+        assert 0 == message.attachments
 
-    def test_message_bcc(self):
-        self.assertEqual([], MessagesModelsTestCase.message.bcc)
+    def test_message_from(self, message):
+        assert isinstance(message.from_, _c_models.Contact)
+        assert "John Doe" == message.from_.name
+        assert "john@example.com" == message.from_.address
+
+    def test_message_to(self, message):
+        assert isinstance(message.to[0], _c_models.Contact)
+        assert "Jane Smith" == message.to[0].name
+        assert "jane@example.com" == message.to[0].address
+
+    def test_message_cc(self, message):
+        assert isinstance(message.cc[0], _c_models.Contact)
+        assert "Accounts" == message.cc[0].name
+        assert "accounts@example.com" == message.cc[0].address
+
+    def test_message_bcc(self, message):
+        assert [] == message.bcc
 
 
-class MessagesAPITestCase(unittest.TestCase):
-    RESPONSE = {
-        "total": 500,
-        "unread": 500,
-        "count": 50,
-        "start": 0,
-        "messages": [
-            {
-                "ID": "1c575821-70ba-466f-8cee-2e1cf0fcdd0f",
-                "Read": False,
-                "From": {"Name": "John Doe", "Address": "john@example.com"},
-                "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
-                "Cc": [{"Name": "Accounts", "Address": "accounts@example.com"}],
-                "Bcc": [],
-                "Subject": "Message subject",
-                "Created": "2022-10-03T21:35:32.228605299+13:00",
-                "Size": 6144,
-                "Attachments": 0,
-            }
-        ],
-    }
+class TestMessagesAPI:
 
-    def setUp(self) -> None:
-        self.api = _c_api.API("https://example.com")
+    @pytest.fixture(scope="class")
+    def response(self) -> str:
+        yield {
+            "total": 500,
+            "unread": 500,
+            "count": 50,
+            "start": 0,
+            "messages": [
+                {
+                    "ID": "1c575821-70ba-466f-8cee-2e1cf0fcdd0f",
+                    "Read": False,
+                    "From": {"Name": "John Doe", "Address": "john@example.com"},
+                    "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
+                    "Cc": [{"Name": "Accounts", "Address": "accounts@example.com"}],
+                    "Bcc": [],
+                    "Subject": "Message subject",
+                    "Created": "2022-10-03T21:35:32.228605299+13:00",
+                    "Size": 6144,
+                    "Attachments": 0,
+                }
+            ],
+        }
+
+    @pytest.fixture
+    def api(self) -> _c_api.API:
+        yield _c_api.API("https://example.com")
 
     @respx.mock
-    def test_messages_get(self):
+    def test_messages_get(self, api, response):
         route = respx.get("https://example.com/api/v1/messages")
-        route.mock(return_value=httpx.Response(200, json=MessagesAPITestCase.RESPONSE))
+        route.mock(return_value=httpx.Response(200, json=response))
 
-        messages = self.api.get_messages()
+        messages = api.get_messages()
 
-        self.assertIsInstance(messages, _c_messages.Messages)
-        self.assertTrue(route.called)
-        self.assertEqual(200, self.api.last_response.status_code)
+        assert isinstance(messages, _c_messages.Messages)
+        assert route.called is True
+        assert 200 == api.last_response.status_code
 
     @respx.mock
-    def test_messages_delete(self):
+    def test_messages_delete(self, api):
         route = respx.delete("https://example.com/api/v1/messages")
         route.mock(return_value=httpx.Response(200, json={"body": "ok"}))
 
-        self.api.delete_messages(["1", "2", "3"])
+        api.delete_messages(["1", "2", "3"])
 
-        self.assertTrue(route.called)
-        self.assertEqual(200, self.api.last_response.status_code)
+        assert route.called is True
+        assert 200 == api.last_response.status_code
 
     @respx.mock
-    def test_messages_put(self):
+    def test_messages_put(self, api):
         route = respx.put("https://example.com/api/v1/messages")
         route.mock(return_value=httpx.Response(200, json={"body": "ok"}))
 
-        self.api.put_messages(["1", "2", "3"], "Read", True)
+        api.put_messages(["1", "2", "3"], "Read", True)
 
-        self.assertTrue(route.called)
-        self.assertEqual(200, self.api.last_response.status_code)
+        assert route.called is True
+        assert 200 == api.last_response.status_code
 
-
-if __name__ == "__main__":
-    unittest.main()
