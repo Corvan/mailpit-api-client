@@ -17,7 +17,6 @@ black = "*"
 mypy = "^1.1.1"
 pylint = "*"
 respx = "*"
-tox = "^4"
 
 [tool.invoke.test]
 python_versions = [
