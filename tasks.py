@@ -90,7 +90,7 @@ def integration(c: inv.Context):
 
 @inv.task
 def unittest_build(c: inv.Context):
-    profile = "integration"
+    profile = "unit"
     build_containers(c, profile)
 
 
