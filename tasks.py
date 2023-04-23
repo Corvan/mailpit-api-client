@@ -79,7 +79,9 @@ def integration(c: inv.Context):
         logger.info(f"running with Debian {debian_codename}")
         if file.name.startswith("test"):
             logger.info(f"running tests in file {file}")
-            project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}-{debian_codename}"
+            project_name = (f"{PROJECT_NAME}"
+                            f"-{python_version.replace('.', '')}"
+                            f"-{debian_codename}")
             env = {
                 "PYTHON_VERSION": python_version,
                 "TEST_FILE": str(file),
