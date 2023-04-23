@@ -3,9 +3,9 @@ import unittest
 import httpx
 import respx
 
-from mailpit.client import messages as _c_messages
-from mailpit.client import models as _c_models
-from mailpit.client import api as _c_api
+import mailpit.client.messages as _c_messages
+import mailpit.client. models as _c_models
+import mailpit.client.api as _c_api
 
 
 class MessagesModelsTestCase(unittest.TestCase):

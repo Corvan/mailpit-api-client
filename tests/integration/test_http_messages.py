@@ -3,9 +3,9 @@ import logging
 import smtplib
 import unittest
 
-from mailpit.client import api as _c_api
-from mailpit.client import messages as _c_messages
-from mailpit.client import models as _c_models
+import mailpit.client.api as _c_api
+import mailpit.client.messages as _c_messages
+import mailpit.client.models as _c_models
 
 
 import logging518.config
