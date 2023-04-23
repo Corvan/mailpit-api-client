@@ -3,8 +3,8 @@ import typing
 
 import httpx
 
-from mailpit import message
-from mailpit import messages
+import mailpit.client.message as _c_message
+import mailpit.client.messages as _c_messages
 
 
 class API:
@@ -20,9 +20,9 @@ class API:
     def __init__(self, mailpit_url: str, timeout: typing.Optional[int] = None):
         self.mailpit_url = mailpit_url
         self.timeout = timeout
-        self.last_response: httpx.Response | None = None
+        self.last_response: typing.Optional[httpx.Response] = None
 
-    def get_messages(self, limit: int = 50, start: int = 0) -> messages.Messages:
+    def get_messages(self, limit: int = 50, start: int = 0) -> _c_messages.Messages:
         """
         send a GET request in order to retrieve messages
 
@@ -40,7 +40,7 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
-        return messages.Messages.from_json(response.text)  # type: ignore
+        return _c_messages.Messages.from_json(response.text)  # type: ignore
 
     def delete_messages(self, ids: typing.List[str]):
         """
@@ -75,7 +75,7 @@ class API:
         self.last_response = response
         response.raise_for_status()
 
-    def get_message(self, message_id: str) -> message.Message:
+    def get_message(self, message_id: str) -> _c_message.Message:
         """
 
 
@@ -90,7 +90,7 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
-        return message.Message.from_json(response.text)  # type: ignore
+        return _c_message.Message.from_json(response.text)  # type: ignore
 
     def get_message_attachment(self, message_id: str, part_id: str):
         """
@@ -119,4 +119,4 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
-        return message.Headers.from_json(response.text)  # type: ignore
+        return _c_message.Headers.from_json(response.text)  # type: ignore

@@ -3,9 +3,9 @@ import unittest
 import httpx
 import respx
 
-import mailpit.api
-import mailpit.message as m
-import mailpit.models
+from mailpit.client import api as _c_api
+from mailpit.client import message as _c_m
+from mailpit.client import models as _c_models
 
 
 class MessageModelTestCase(unittest.TestCase):
@@ -41,10 +41,10 @@ class MessageModelTestCase(unittest.TestCase):
         ]
     }"""
 
-    message: m.Message = m.Message.from_json(RESPONSE)
+    message: _c_m.Message = _c_m.Message.from_json(RESPONSE)
 
     def test_message(self):
-        self.assertIsInstance(MessageModelTestCase.message, m.Message)
+        self.assertIsInstance(MessageModelTestCase.message, _c_m.Message)
         self.assertEqual("d7a5543b-96dd-478b-9b60-2b465c9884de", self.message.id)
         self.assertEqual(True, MessageModelTestCase.message.read)
         self.assertEqual("Message subject", self.message.subject)
@@ -54,13 +54,13 @@ class MessageModelTestCase(unittest.TestCase):
         self.assertEqual(79499, self.message.size)
 
     def test_message_from(self):
-        self.assertIsInstance(self.message.from_, mailpit.models.Contact)
+        self.assertIsInstance(self.message.from_, _c_models.Contact)
         self.assertEqual("John Doe", self.message.from_.name)
         self.assertEqual("john@example.com", self.message.from_.address)
 
     def test_message_to(self):
         self.assertEqual(1, len(self.message.to))
-        self.assertIsInstance(self.message.to[0], mailpit.models.Contact)
+        self.assertIsInstance(self.message.to[0], _c_models.Contact)
         self.assertEqual("Jane Smith", self.message.to[0].name)
         self.assertEqual("jane@example.com", self.message.to[0].address)
 
@@ -105,7 +105,7 @@ class MessageAPITestCase(unittest.TestCase):
     }
 
     def setUp(self) -> None:
-        self.api = mailpit.api.API("https://example.com")
+        self.api = _c_api.API("https://example.com")
 
     @respx.mock
     def test_message_get(self):
@@ -116,13 +116,13 @@ class MessageAPITestCase(unittest.TestCase):
 
         message = self.api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
-        self.assertIsInstance(message, m.Message)
+        self.assertIsInstance(message, _c_m.Message)
         self.assertEqual(200, self.api.last_response.status_code)
 
 
 class AttachmentAPITestCase(unittest.TestCase):
     def setUp(self) -> None:
-        self.api = mailpit.api.API("https://example.com")
+        self.api = _c_api.API("https://example.com")
 
     @respx.mock
     def test_attachment_get(self):
@@ -248,7 +248,7 @@ class HeadersAPITestCase(unittest.TestCase):
     }
 
     def setUp(self) -> None:
-        self.api = mailpit.api.API("https://example.com")
+        self.api = _c_api.API("https://example.com")
 
     @respx.mock
     def test_header_get(self):
@@ -291,7 +291,7 @@ class HeadersAPITestCase(unittest.TestCase):
         headers = self.api.get_message_headers(
             "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
         )
-        self.assertIsInstance(headers, m.Headers)
+        self.assertIsInstance(headers, _c_m.Headers)
         self.assertEqual("Sender Smith <sender@example.com>", headers.from_[0])
         self.assertEqual(
             """from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])

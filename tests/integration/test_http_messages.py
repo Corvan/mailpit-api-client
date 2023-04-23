@@ -3,9 +3,10 @@ import logging
 import smtplib
 import unittest
 
-import mailpit.api
-import mailpit.messages
-import mailpit.models
+from mailpit.client import api as _c_api
+from mailpit.client import messages as _c_messages
+from mailpit.client import models as _c_models
+
 
 import logging518.config
 
@@ -17,7 +18,7 @@ class TestMessages(unittest.TestCase):
         logging518.config.fileConfig(f"{self.project_path}/pyproject.toml")
         logger = logging.getLogger("tests.integration.setUp.TestMessages.setUp")
         self.api_endpoint = "http://mailpit:8025"
-        self.api = mailpit.api.API(self.api_endpoint)
+        self.api = _c_api.API(self.api_endpoint)
         logger.info("connecting to smtp_server")
         self.smtp_server = smtplib.SMTP("mailpit", 1025)
 
@@ -54,23 +55,23 @@ class TestMessages(unittest.TestCase):
         logger.debug(f"messages: {messages}")
 
         logger.info("checking asserts")
-        messages_expected = mailpit.messages.Messages(
+        messages_expected = _c_messages.Messages(
             total=1,
             count=1,
             unread=1,
             start=0,
             messages=[
-                mailpit.messages.Message(
+                _c_messages.Message(
                     # NOTE: this is on purpose,
                     # because those next 3 values cannot be predicted
                     id=messages.messages[0].id,
                     created=messages.messages[0].created,
                     size=messages.messages[0].size,
-                    from_=mailpit.models.Contact(
+                    from_=_c_models.Contact(
                         name="Sender Smith", address="sender@example.com"
                     ),
                     to=[
-                        mailpit.models.Contact(
+                        _c_models.Contact(
                             name="Recipient Ross", address="recipient@example.com"
                         )
                     ],

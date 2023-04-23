@@ -3,9 +3,9 @@ import unittest
 import httpx
 import respx
 
-import mailpit.messages
-import mailpit.message
-import mailpit.api
+from mailpit.client import messages as _c_messages
+from mailpit.client import models as _c_models
+from mailpit.client import api as _c_api
 
 
 class MessagesModelsTestCase(unittest.TestCase):
@@ -42,12 +42,12 @@ class MessagesModelsTestCase(unittest.TestCase):
             }
         ]
     }"""
-    messages: mailpit.messages.Messages = mailpit.messages.Messages.from_json(RESPONSE)
-    message: mailpit.messages.Message = messages.messages[0]
+    messages: _c_messages.Messages = _c_messages.Messages.from_json(RESPONSE)
+    message: _c_messages.Message = messages.messages[0]
 
     def test_messages(self):
         self.assertIsInstance(
-            MessagesModelsTestCase.messages, mailpit.messages.Messages
+            MessagesModelsTestCase.messages, _c_messages.Messages
         )
         self.assertEqual(500, MessagesModelsTestCase.messages.total)
         self.assertEqual(500, MessagesModelsTestCase.messages.unread)
@@ -55,7 +55,7 @@ class MessagesModelsTestCase(unittest.TestCase):
         self.assertEqual(0, MessagesModelsTestCase.messages.start)
 
     def test_message(self):
-        self.assertIsInstance(MessagesModelsTestCase.message, mailpit.messages.Message)
+        self.assertIsInstance(MessagesModelsTestCase.message, _c_messages.Message)
         self.assertEqual(
             "1c575821-70ba-466f-8cee-2e1cf0fcdd0f", MessagesModelsTestCase.message.id
         )
@@ -70,7 +70,7 @@ class MessagesModelsTestCase(unittest.TestCase):
 
     def test_message_from(self):
         self.assertIsInstance(
-            MessagesModelsTestCase.message.from_, mailpit.models.Contact
+            MessagesModelsTestCase.message.from_, _c_models.Contact
         )
         self.assertEqual("John Doe", MessagesModelsTestCase.message.from_.name)
         self.assertEqual(
@@ -79,7 +79,7 @@ class MessagesModelsTestCase(unittest.TestCase):
 
     def test_message_to(self):
         self.assertIsInstance(
-            MessagesModelsTestCase.message.to[0], mailpit.models.Contact
+            MessagesModelsTestCase.message.to[0], _c_models.Contact
         )
         self.assertEqual("Jane Smith", MessagesModelsTestCase.message.to[0].name)
         self.assertEqual(
@@ -87,7 +87,7 @@ class MessagesModelsTestCase(unittest.TestCase):
         )
 
     def test_message_cc(self):
-        self.assertIsInstance(self.message.cc[0], mailpit.models.Contact)
+        self.assertIsInstance(self.message.cc[0], _c_models.Contact)
         self.assertEqual("Accounts", MessagesModelsTestCase.message.cc[0].name)
         self.assertEqual(
             "accounts@example.com", MessagesModelsTestCase.message.cc[0].address
@@ -120,7 +120,7 @@ class MessagesAPITestCase(unittest.TestCase):
     }
 
     def setUp(self) -> None:
-        self.api = mailpit.api.API("https://example.com")
+        self.api = _c_api.API("https://example.com")
 
     @respx.mock
     def test_messages_get(self):
@@ -129,7 +129,7 @@ class MessagesAPITestCase(unittest.TestCase):
 
         messages = self.api.get_messages()
 
-        self.assertIsInstance(messages, mailpit.messages.Messages)
+        self.assertIsInstance(messages, _c_messages.Messages)
         self.assertTrue(route.called)
         self.assertEqual(200, self.api.last_response.status_code)
 
