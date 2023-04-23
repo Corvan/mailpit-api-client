@@ -12,6 +12,7 @@ ruff = "^0"
 invoke = "^2.0.0"
 logging518 = "^1.0.0"
 pytest = "^7.3.1"
+pytest-docker = "^1.0.1"
 
 [tool.poetry.dev-dependencies]
 black = "*"
