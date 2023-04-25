@@ -30,17 +30,42 @@ def build_containers(c: inv.Context, profile: str):
     for python_version, debian_codename in itertools.product(
             config["python_versions"], config["debian_codenames"]
     ):
-        project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
+        project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}-{debian_codename}"
         env = {"PYTHON_VERSION": python_version, "DEBIAN_CODENAME": debian_codename}
-
-        c.run(
-            (
+        command = (
                 f"docker-compose -p {project_name} "
                 f"--profile {profile} -f {DOCKER_COMPOSE_PATH} build --pull"
-            ),
+            )
+        print(command)
+        c.run(
+            command,
             env=env,
             pty=True,
         )
+
+
+def run(c, logger, profile, debian_codename, python_version, tool):
+    logger.info(f"running with Python {python_version}")
+    logger.info(f"running with Debian {debian_codename}")
+    logger.info(f"running with checker {tool}")
+    project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
+    env = {"PYTHON_VERSION": python_version, "DEBIAN_CODENAME": debian_codename}
+    logger.debug(f"set environment variables to: {env}")
+    ut.run_tool_in_container(c, env, profile, project_name, tool)
+
+
+@inv.task
+def checks(c: inv.Context):
+    logger = logging.getLogger("test_runner.checks")
+    logger.info("code checking started")
+
+    config = read_pyproject_toml()
+    profile = "checks"
+
+    for python_version, debian_codename, tool in itertools.product(
+            config["python_versions"], config["debian_codenames"], config["checkers"]
+    ):
+        run(c, logger, profile, debian_codename, python_version, tool)
 
 
 @inv.task
@@ -50,19 +75,12 @@ def unit(c: inv.Context):
 
     config = read_pyproject_toml()
     profile = "unittest"
-    tools = ["black", "lint", "mypy", "unittest"]
+    tools = ["unittest"]
 
-    for python_version, debian_codename in itertools.product(
-            config["python_versions"], config["debian_codenames"]
+    for python_version, debian_codename, tool in itertools.product(
+            config["python_versions"], config["debian_codenames"], tools
     ):
-        logger.info(f"running with Python {python_version}")
-        logger.info(f"running with Debian {debian_codename}")
-        project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
-        env = {"PYTHON_VERSION": python_version, "DEBIAN_CODENAME": debian_codename}
-        logger.debug(f"set environment variables to: {env}")
-        for tool in tools:
-            logger.info(f"Running tool in container: {tool}")
-            ut.run_tool_in_container(c, env, profile, project_name, tool)
+        run(c, logger, profile, debian_codename, python_version, tool)
 
 
 @inv.task
@@ -94,28 +112,49 @@ def integration(c: inv.Context):
 
 
 @inv.task
-def unittest_build(c: inv.Context):
-    profile = "unit"
-    build_containers(c, profile)
+def build_checks(c: inv.Context):
+    build_containers(c, profile="checks")
 
 
 @inv.task
-def integration_build(c: inv.Context):
-    profile = "integration"
-    build_containers(c, profile)
+def build_unittest(c: inv.Context):
+    build_containers(c, profile="unittest")
+
+
+@inv.task
+def build_integration(c: inv.Context):
+    build_containers(c, profile="integration")
 
 
 tests = inv.Collection("tests")
-
+tests.add_task(checks)
 tests.add_task(unit)
 tests.add_task(integration)
 
 docker = inv.Collection("docker")
+
 build = inv.Collection("build")
-build.add_task(integration_build, name="integration")
-build.add_task(unittest_build, name="unit")
+build.add_task(build_checks, "checks")
+build.add_task(build_integration, name="integration")
+build.add_task(build_unittest, name="unit")
 
 docker.add_collection(build)
 
 namespace.add_collection(tests)
 namespace.add_collection(docker)
+
+# poetry run -v docker compose -f tests/docker/docker-compose.yml --profile unittest -p mailpit-api-client-310 ps -a
+# Using virtualenv: /home/lars/.cache/pypoetry/virtualenvs/mailpit-api-client-39aPZNZh-py3.11
+# NAME                                IMAGE                    COMMAND                  SERVICE             CREATED             STATUS                      PORTS
+# mailpit-api-client-310-black-1      black:3.10-bullseye      "black /root/mailpit"    black               27 minutes ago      Exited (0) 27 minutes ago   
+# mailpit-api-client-310-lint-1       lint:3.10-bullseye       "ruff check /root/ma…"   lint                27 minutes ago      Exited (0) 27 minutes ago   
+# mailpit-api-client-310-mypy-1       mypy:3.10-bullseye       "python3 -m mypy /ro…"   mypy                27 minutes ago      Exited (0) 27 minutes ago   
+# mailpit-api-client-310-unittest-1   unittest:3.10-bullseye   "pytest -slx --log-l…"   unittest            8 minutes ago       Exited (0) 8 minutes ago
+
+# poetry run -v docker compose -f tests/docker/docker-compose.yml --profile unittest -p mailpit-api-client-310 images   
+# Using virtualenv: /home/lars/.cache/pypoetry/virtualenvs/mailpit-api-client-39aPZNZh-py3.11
+# CONTAINER                           REPOSITORY          TAG                 IMAGE ID            SIZE
+# mailpit-api-client-310-black-1      black               3.10-bullseye       5d82696b2403        952MB
+# mailpit-api-client-310-lint-1       lint                3.10-bullseye       1b5f22ccd2c1        964MB
+# mailpit-api-client-310-mypy-1       mypy                3.10-bullseye       868cf0869e14        1GB
+# mailpit-api-client-310-unittest-1   unittest            3.10-bullseye       6ed0cfb2a9a4        951MB

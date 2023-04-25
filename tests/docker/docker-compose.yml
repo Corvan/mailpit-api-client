@@ -9,7 +9,7 @@ services:
       args:
         python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
     profiles:
-      - unittest
+      - checks
     volumes:
       - type: bind
         source: ./../../mailpit
@@ -23,7 +23,7 @@ services:
       args:
         python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
     profiles:
-      - unittest
+      - checks
     volumes:
       - type: bind
         source: ./../../mailpit
@@ -37,7 +37,7 @@ services:
       args:
         python_version: ${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
     profiles:
-      - unittest
+      - checks
     volumes:
       - type: bind
         source: ./../../mailpit
@@ -45,6 +45,7 @@ services:
     environment:
       PYTHONPATH: /usr/lib/python3/dist-packages
     command: python3 -m mypy /root/mailpit
+
   unittest:
     image: unittest:${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
     build:
@@ -84,5 +85,5 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: python -m unittest --locals /root/mailpit-api-client/${TEST_FILE:-}
+    command: pytest -lsx /root/mailpit-api-client/${TEST_FILE:-}
 
