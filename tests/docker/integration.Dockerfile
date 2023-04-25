@@ -6,5 +6,5 @@ RUN --mount=type=cache,target=/var/cache/apt <<EOF
 set -e
 apt-get update
 apt-get upgrade -y
-pip -qq install dataclasses_json httpx logging518
+pip -qq install dataclasses_json httpx logging518 pytest
 EOF

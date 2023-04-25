@@ -142,19 +142,3 @@ docker.add_collection(build)
 
 namespace.add_collection(tests)
 namespace.add_collection(docker)
-
-# poetry run -v docker compose -f tests/docker/docker-compose.yml --profile unittest -p mailpit-api-client-310 ps -a
-# Using virtualenv: /home/lars/.cache/pypoetry/virtualenvs/mailpit-api-client-39aPZNZh-py3.11
-# NAME                                IMAGE                    COMMAND                  SERVICE             CREATED             STATUS                      PORTS
-# mailpit-api-client-310-black-1      black:3.10-bullseye      "black /root/mailpit"    black               27 minutes ago      Exited (0) 27 minutes ago   
-# mailpit-api-client-310-lint-1       lint:3.10-bullseye       "ruff check /root/ma…"   lint                27 minutes ago      Exited (0) 27 minutes ago   
-# mailpit-api-client-310-mypy-1       mypy:3.10-bullseye       "python3 -m mypy /ro…"   mypy                27 minutes ago      Exited (0) 27 minutes ago   
-# mailpit-api-client-310-unittest-1   unittest:3.10-bullseye   "pytest -slx --log-l…"   unittest            8 minutes ago       Exited (0) 8 minutes ago
-
-# poetry run -v docker compose -f tests/docker/docker-compose.yml --profile unittest -p mailpit-api-client-310 images   
-# Using virtualenv: /home/lars/.cache/pypoetry/virtualenvs/mailpit-api-client-39aPZNZh-py3.11
-# CONTAINER                           REPOSITORY          TAG                 IMAGE ID            SIZE
-# mailpit-api-client-310-black-1      black               3.10-bullseye       5d82696b2403        952MB
-# mailpit-api-client-310-lint-1       lint                3.10-bullseye       1b5f22ccd2c1        964MB
-# mailpit-api-client-310-mypy-1       mypy                3.10-bullseye       868cf0869e14        1GB
-# mailpit-api-client-310-unittest-1   unittest            3.10-bullseye       6ed0cfb2a9a4        951MB
