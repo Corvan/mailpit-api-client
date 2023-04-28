@@ -43,9 +43,7 @@ class Message:
             field_name="Created",
             encoder=datetime.datetime.isoformat,
             decoder=datetime.datetime.fromisoformat,
-            mm_field=marshmallow.fields.DateTime(
-                "iso"
-            )
+            mm_field=marshmallow.fields.DateTime("iso"),
         ),
     )
     """Parsed email local date & time from headers"""
