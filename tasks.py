@@ -46,9 +46,6 @@ def build_containers(c: inv.Context, profile: str):
 
 
 def run(c, logger, profile, debian_codename, python_version, tool):
-    logger.info(f"running with Python {python_version}")
-    logger.info(f"running with Debian {debian_codename}")
-    logger.info(f"running with checker {tool}")
     project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}"
     env = {"PYTHON_VERSION": python_version, "DEBIAN_CODENAME": debian_codename}
     logger.debug(f"set environment variables to: {env}")
