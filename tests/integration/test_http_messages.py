@@ -1,57 +1,26 @@
-import email
 import logging
-import smtplib
 
-import logging518.config
-import pytest as _pt
-
-import mailpit.client.api as _c_api
 import mailpit.client.messages as _c_messages
 import mailpit.client.models as _c_models
 
 
-_log = logging.getLogger("tests")
-_project_path = "/root/mailpit-api-client"
-logging518.config.fileConfig(f"{_project_path}/pyproject.toml")
-
-
 class TestMessages:
 
-    @_pt.fixture
-    def api(self):
-        return _c_api.API("http://mailpit:8025")
-
-    @_pt.fixture
-    def smtp_server(self):
-        _log.info("connecting to smtp_server")
-        smtp_server = smtplib.SMTP("mailpit", 1025)
-        yield smtp_server
-        _log.info("closing smtp server connection")
-        smtp_server.quit()
-
-    def test_messages_endpoint__empty(self, api):
-        _log.info("call `api.getmessages()`")
+    def test_messages_endpoint__empty(self, log, api):
+        log.info("call `api.getmessages()`")
         messages = api.get_messages()
-        _log.debug(f"messages: {messages}")
+        log.debug(f"messages: {messages}")
         assert len(messages.messages) == 0
 
-    def test_messages_endpoint__sendmessage(self, smtp_server, api):
-        _log = logging.getLogger("tests")
-        _log.info("reading mail from file")
-        with open(f"{_project_path}/tests/mail/email.eml") as fp:
-            mail = email.message_from_file(fp)
-            _log.debug(f"mail: `{mail}`")
-        _log.info("sending message")
-        smtp_server.send_message(
-            mail,
-            from_addr="Sender Smith <sender@example.com>",
-            to_addrs="Recipient Ross <recipient@example.com>",
-        )
-        _log.info("retrieving messages via API-endpoint")
-        messages = api.get_messages()
-        _log.debug(f"messages: {messages}")
+    def test_messages_endpoint__sendmessage(self, log, smtp_server, message, api):
+        log = logging.getLogger("tests")
+        log.info("reading mail from file")
 
-        _log.info("checking asserts")
+        log.info("retrieving messages via API-endpoint")
+        messages = api.get_messages()
+        log.debug(f"messages: {messages}")
+
+        log.info("checking asserts")
         messages_expected = _c_messages.Messages(
             total=1,
             count=1,
