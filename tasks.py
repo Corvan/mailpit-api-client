@@ -16,6 +16,7 @@ PROJECT_NAME = "mailpit-api-client"
 DOCKER_COMPOSE_PATH = "tests/docker/docker-compose.yml"
 
 logging518.config.fileConfig("pyproject.toml")
+logger = logging.getLogger("test_runner.integration")
 namespace = inv.Collection()
 
 
@@ -56,7 +57,6 @@ def run(c, logger, profile, debian_codename, python_version, tool):
 
 @inv.task
 def checks(c: inv.Context):
-    logger = logging.getLogger("test_runner.checks")
     logger.info("code checking started")
 
     config = read_pyproject_toml()
@@ -70,7 +70,6 @@ def checks(c: inv.Context):
 
 @inv.task
 def unit(c: inv.Context):
-    logger = logging.getLogger("test_runner.unit")
     logger.info("unit testing started")
 
     config = read_pyproject_toml()
@@ -85,7 +84,6 @@ def unit(c: inv.Context):
 
 @inv.task
 def integration(c: inv.Context):
-    logger = logging.getLogger("test_runner.integration")
     logger.info("integration testing started")
     config = read_pyproject_toml()
     profile = "integration"

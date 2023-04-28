@@ -37,7 +37,7 @@ version = 1
 
 [tool.logging.formatters.formatter]
 class = "logging.Formatter"
-format = "%(asctime)s - %(levelname)s - %(name)s - %(message)s"
+format = "%(asctime)s - %(levelname)s - %(pathname)s - line: %(lineno)s - %(funcName)s() - %(message)s"
 
 [tool.logging.handlers.ch]
 level = "DEBUG"

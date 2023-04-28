@@ -1,60 +1,57 @@
 import email
 import logging
 import smtplib
-import unittest
+
+import logging518.config
+import pytest as _pt
 
 import mailpit.client.api as _c_api
 import mailpit.client.messages as _c_messages
 import mailpit.client.models as _c_models
 
 
-import logging518.config
+_log = logging.getLogger("tests")
+_project_path = "/root/mailpit-api-client"
+logging518.config.fileConfig(f"{_project_path}/pyproject.toml")
 
 
-class TestMessages(unittest.TestCase):
-    def setUp(self):
-        self.maxDiff = None
-        self.project_path = "/root/mailpit-api-client"
-        logging518.config.fileConfig(f"{self.project_path}/pyproject.toml")
-        logger = logging.getLogger("tests.integration.setUp.TestMessages.setUp")
-        self.api_endpoint = "http://mailpit:8025"
-        self.api = _c_api.API(self.api_endpoint)
-        logger.info("connecting to smtp_server")
-        self.smtp_server = smtplib.SMTP("mailpit", 1025)
+class TestMessages:
 
-    def tearDown(self) -> None:
-        logger = logging.getLogger("tests.integration.TestMessages.tearDown")
-        logger.info("closing smtp server connection")
-        self.smtp_server.quit()
+    @_pt.fixture
+    def api(self):
+        return _c_api.API("http://mailpit:8025")
 
-    def test_messages_endpoint__empty(self):
-        logger = logging.getLogger(
-            "tests.integration.TestMessagetest_messages_endpoint__empty"
-        )
-        logger.info("call `api.getmessages()`")
-        messages = self.api.get_messages()
-        logger.debug(f"messages: {messages}")
-        self.assertEqual(len(messages.messages), 0)
+    @_pt.fixture
+    def smtp_server(self):
+        _log.info("connecting to smtp_server")
+        smtp_server = smtplib.SMTP("mailpit", 1025)
+        yield smtp_server
+        _log.info("closing smtp server connection")
+        smtp_server.quit()
 
-    def test_messages_endpoint__sendmessage(self):
-        logger = logging.getLogger(
-            "tests.integration.TestMessagetest_messages_endpoint__sendmessage"
-        )
-        logger.info("reading mail from file")
-        with open(f"{self.project_path}/tests/mail/email.eml") as fp:
+    def test_messages_endpoint__empty(self, api):
+        _log.info("call `api.getmessages()`")
+        messages = api.get_messages()
+        _log.debug(f"messages: {messages}")
+        assert len(messages.messages) == 0
+
+    def test_messages_endpoint__sendmessage(self, smtp_server, api):
+        _log = logging.getLogger("tests")
+        _log.info("reading mail from file")
+        with open(f"{_project_path}/tests/mail/email.eml") as fp:
             mail = email.message_from_file(fp)
-            logger.debug(f"mail: `{mail}`")
-        logger.info("sending message")
-        self.smtp_server.send_message(
+            _log.debug(f"mail: `{mail}`")
+        _log.info("sending message")
+        smtp_server.send_message(
             mail,
             from_addr="Sender Smith <sender@example.com>",
             to_addrs="Recipient Ross <recipient@example.com>",
         )
-        logger.info("retrieving messages via API-endpoint")
-        messages = self.api.get_messages()
-        logger.debug(f"messages: {messages}")
+        _log.info("retrieving messages via API-endpoint")
+        messages = api.get_messages()
+        _log.debug(f"messages: {messages}")
 
-        logger.info("checking asserts")
+        _log.info("checking asserts")
         messages_expected = _c_messages.Messages(
             total=1,
             count=1,
@@ -84,4 +81,4 @@ class TestMessages(unittest.TestCase):
             ],
         )
 
-        self.assertEqual(messages_expected, messages)
+        assert messages == messages_expected
