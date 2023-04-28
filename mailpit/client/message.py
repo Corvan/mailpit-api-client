@@ -4,6 +4,7 @@ from typing import Optional
 
 import dataclasses as _dc
 import dataclasses_json as _dj
+import marshmallow.fields
 
 import mailpit.client.models as _c_models
 
@@ -54,7 +55,17 @@ class Message:
     )
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
     """Message subject"""
-    date: datetime.date = _dc.field(init=True, metadata=_dj.config(field_name="Date"))
+    date: datetime.date = _dc.field(
+        init=True,
+        metadata=_dj.config(
+            field_name="Date",
+            encoder=datetime.datetime.isoformat,
+            decoder=datetime.datetime.fromisoformat,
+            mm_field=marshmallow.fields.DateTime(
+                "iso"
+            )
+        ),
+    )
     """Parsed email local date & time from headers"""
     text: Optional[str] = _dc.field(init=True, metadata=_dj.config(field_name="Text"))
     """Plain text MIME part of the email"""

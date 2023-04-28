@@ -1,8 +1,10 @@
 """module containing everything related to messages"""
+import datetime
 import typing
 
 import dataclasses as _dc
 import dataclasses_json as _dj
+import marshmallow
 
 import mailpit.client.models as _c_models
 
@@ -35,7 +37,17 @@ class Message:
     )
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
     """Message subject"""
-    created: str = _dc.field(init=True, metadata=_dj.config(field_name="Created"))
+    created: datetime.date = _dc.field(
+        init=True,
+        metadata=_dj.config(
+            field_name="Created",
+            encoder=datetime.datetime.isoformat,
+            decoder=datetime.datetime.fromisoformat,
+            mm_field=marshmallow.fields.DateTime(
+                "iso"
+            )
+        ),
+    )
     """Parsed email local date & time from headers"""
     size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
     """Total size of raw email"""

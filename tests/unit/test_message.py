@@ -1,3 +1,5 @@
+import datetime
+
 import httpx
 import pytest
 import respx
@@ -43,36 +45,58 @@ class TestMessageModel:
         ]
     }"""
 
-    @pytest.fixture(scope="class")
-    def message(self, response) -> _c_message.Message:
-        yield _c_message.Message.from_json(response)
-
-    def test_message(self, message):
-        assert isinstance(message, _c_message.Message)
-        assert "d7a5543b-96dd-478b-9b60-2b465c9884de" == message.id
-        assert message.read is True
-        assert "Message subject" == message.subject
-        assert "2016-09-07T16:46:00+13:00" == message.date
-        assert "Plain text MIME part of the email" == message.text
-        assert "HTML MIME part (if exists)" == message.html
-        assert 79499 == message.size
-
-    def test_message_from(self, message):
-        assert isinstance(message.from_, _c_models.Contact)
-        assert "John Doe" == message.from_.name
-        assert "john@example.com" == message.from_.address
-
-    def test_message_to(self, message):
-        assert 1 == len(message.to)
-        assert isinstance(message.to[0], _c_models.Contact)
-        assert "Jane Smith" == message.to[0].name
-        assert "jane@example.com" == message.to[0].address
-
-    def test_message_cc(self, message):
-        assert [] == message.cc
-
-    def test_message_bcc(self, message):
-        assert [] == message.bcc
+    def test_message(self, response):
+        assert _c_message.Message.from_json(response) == _c_message.Message(
+            id="d7a5543b-96dd-478b-9b60-2b465c9884de",
+            read=True,
+            subject="Message subject",
+            date=datetime.datetime(
+                year=2016,
+                month=9,
+                day=7,
+                hour=16,
+                minute=46,
+                second=00,
+                tzinfo=datetime.timezone(
+                    datetime.timedelta(
+                        hours=13
+                    )
+                )
+            ),
+            text="Plain text MIME part of the email",
+            html="HTML MIME part (if exists)",
+            size=79499,
+            from_=_c_models.Contact(
+                name="John Doe",
+                address="john@example.com"
+            ),
+            to=[
+                _c_models.Contact(
+                    name="Jane Smith",
+                    address="jane@example.com"
+                )
+            ],
+            cc=[],
+            bcc=[],
+            inline=[
+                _c_message.Attachment(
+                    part_id='1.2',
+                    file_name='filename.gif',
+                    content_type='image/gif',
+                    content_id='919564503@07092006-1525',
+                    size=7760
+                )
+            ],
+            attachments=[
+                _c_message.Attachment(
+                    part_id='2',
+                    file_name='filename.doc',
+                    content_type='application/msword',
+                    content_id='',
+                    size=43520
+                )
+            ]
+        )
 
 
 @pytest.fixture
@@ -125,7 +149,7 @@ class TestMessageAPI:
         message = api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
         assert isinstance(message, _c_message.Message)
-        assert 200 == api.last_response.status_code
+        assert api.last_response.status_code == 200
 
 
 class TestAttachmentAPI:
@@ -142,7 +166,7 @@ class TestAttachmentAPI:
             "d7a5543b-96dd-478b-9b60-2b465c9884de", "2"
         )
 
-        assert "Test" == attachment
+        assert attachment == "Test"
 
 
 class TestHeadersAPI:
@@ -270,16 +294,15 @@ class TestHeadersAPI:
 
         headers = api.get_message_headers("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
-        assert (
+        assert headers.content_type[0] == (
                    'multipart/related; type="multipart/alternative"; '
                    'boundary="----=_NextPart_000_0013_01C6A60C.47EEAB80"'
-               ) == headers.content_type[0]
+               )
         assert "Wed, 12 Jul 2006 23:38:30 +1200" == headers.date[0]
-        assert ["user@example.com", "user-alias@example.com"] == headers.delivered_to
-        assert '"User Name" \\u003remote@example.com\\u003e' == headers.from_[0]
+        assert headers.delivered_to == ["user@example.com", "user-alias@example.com"]
+        assert headers.from_[0] == '"User Name" \\u003remote@example.com\\u003e'
         assert (
-                "\\u003c001701c6a5a7$b3205580$0201010a@HomeOfficeSM\\u003e"
-                == headers.message_id[0]
+                headers.message_id[0] == "\\u003c001701c6a5a7$b3205580$0201010a@HomeOfficeSM\\u003e"
         )
 
     @respx.mock
@@ -294,9 +317,9 @@ class TestHeadersAPI:
             "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
         )
         assert isinstance(headers, _c_message.Headers)
-        assert "Sender Smith <sender@example.com>" == headers.from_[0]
-        assert """from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        assert headers.from_[0] == "Sender Smith <sender@example.com>"
+        assert headers.additional["Received"][1] == """from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
         by mx.google.com with SMTPS id t3-20020a17090a2f8300b001f25e258dfasor335081pjd.34.2022.07.26.20.45.07
         for <recipient@example.com>
         (Google Transport Security);
-        Tue, 26 Jul 2022 20:45:07 -0700 (PDT)""" == headers.additional["Received"][1]
+        Tue, 26 Jul 2022 20:45:07 -0700 (PDT)"""

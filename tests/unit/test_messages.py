@@ -1,3 +1,5 @@
+import datetime
+
 import httpx
 import pytest
 import respx
@@ -38,7 +40,7 @@ class TestMessagesModels:
               ],
               "Bcc": [],
               "Subject": "Message subject",
-              "Created": "2022-10-03T21:35:32.228605299+13:00",
+              "Created": "2022-10-03T21:35:32.228605+13:00",
               "Size": 6144,
               "Attachments": 0
             }
@@ -56,37 +58,50 @@ class TestMessagesModels:
     def test_messages(self, messages):
         assert isinstance(messages, _c_messages.Messages)
 
-        assert 500 == messages.total
-        assert 500 == messages.unread
-        assert 50 == messages.count
-        assert 0 == messages.start
+        assert messages.total == 500
+        assert messages.unread == 500
+        assert messages.count == 50
+        assert messages.start == 0
 
     def test_message(self, message):
         assert isinstance(message, _c_messages.Message)
         assert "1c575821-70ba-466f-8cee-2e1cf0fcdd0f" == message.id
         assert message.read is False
-        assert "Message subject" == message.subject
-        assert "2022-10-03T21:35:32.228605299+13:00" == message.created
+        assert message.subject == "Message subject"
+        assert message.created == datetime.datetime(
+                year=2022,
+                month=10,
+                day=3,
+                hour=21,
+                minute=35,
+                second=32,
+                microsecond=228605,
+                tzinfo=datetime.timezone(
+                    datetime.timedelta(
+                        hours=13
+                    )
+                )
+            )
         assert 6144 == message.size
         assert 0 == message.attachments
 
     def test_message_from(self, message):
         assert isinstance(message.from_, _c_models.Contact)
-        assert "John Doe" == message.from_.name
-        assert "john@example.com" == message.from_.address
+        assert message.from_.name == "John Doe"
+        assert message.from_.address == "john@example.com"
 
     def test_message_to(self, message):
         assert isinstance(message.to[0], _c_models.Contact)
-        assert "Jane Smith" == message.to[0].name
-        assert "jane@example.com" == message.to[0].address
+        assert message.to[0].name == "Jane Smith"
+        assert message.to[0].address == "jane@example.com"
 
     def test_message_cc(self, message):
         assert isinstance(message.cc[0], _c_models.Contact)
-        assert "Accounts" == message.cc[0].name
-        assert "accounts@example.com" == message.cc[0].address
+        assert message.cc[0].name == "Accounts"
+        assert message.cc[0].address == "accounts@example.com"
 
     def test_message_bcc(self, message):
-        assert [] == message.bcc
+        assert message.bcc == []
 
 
 class TestMessagesAPI:
@@ -107,7 +122,7 @@ class TestMessagesAPI:
                     "Cc": [{"Name": "Accounts", "Address": "accounts@example.com"}],
                     "Bcc": [],
                     "Subject": "Message subject",
-                    "Created": "2022-10-03T21:35:32.228605299+13:00",
+                    "Created": "2022-10-03T21:35:32.228605+13:00",
                     "Size": 6144,
                     "Attachments": 0,
                 }
@@ -127,7 +142,7 @@ class TestMessagesAPI:
 
         assert isinstance(messages, _c_messages.Messages)
         assert route.called is True
-        assert 200 == api.last_response.status_code
+        assert api.last_response.status_code == 200
 
     @respx.mock
     def test_messages_delete(self, api):
@@ -137,7 +152,7 @@ class TestMessagesAPI:
         api.delete_messages(["1", "2", "3"])
 
         assert route.called is True
-        assert 200 == api.last_response.status_code
+        assert api.last_response.status_code == 200
 
     @respx.mock
     def test_messages_put(self, api):
@@ -147,5 +162,4 @@ class TestMessagesAPI:
         api.put_messages(["1", "2", "3"], "Read", True)
 
         assert route.called is True
-        assert 200 == api.last_response.status_code
-
+        assert api.last_response.status_code == 200
