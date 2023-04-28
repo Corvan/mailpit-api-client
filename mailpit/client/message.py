@@ -1,6 +1,7 @@
 """module containing classes for the message-endpoint"""
-import datetime
-from typing import Optional
+import datetime as _dt
+import email.utils
+from typing import Optional, Iterable
 
 import dataclasses as _dc
 import dataclasses_json as _dj
@@ -55,12 +56,12 @@ class Message:
     )
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
     """Message subject"""
-    date: datetime.date = _dc.field(
+    date: _dt.date = _dc.field(
         init=True,
         metadata=_dj.config(
             field_name="Date",
-            encoder=datetime.datetime.isoformat,
-            decoder=datetime.datetime.fromisoformat,
+            encoder=_dt.datetime.isoformat,
+            decoder=_dt.datetime.fromisoformat,
             mm_field=marshmallow.fields.DateTime(
                 "iso"
             )
@@ -81,14 +82,39 @@ class Message:
     )
 
 
+def _datelist_encoder(encodes: Iterable[_dt.datetime]) -> list[str]:
+    return list(
+        map(
+            lambda encode: email.utils.format_datetime(encode),
+            encodes
+        )
+    )
+
+
+def _datelist_decoder(decodes: Iterable[str]) -> list[_dt.datetime]:
+    return list(
+        map(
+            lambda decode: email.utils.parsedate_to_datetime(decode),
+            decodes
+        )
+    )
+
+
 @_dj.dataclass_json(undefined=_dj.Undefined.INCLUDE)
 @_dc.dataclass(init=True)
 class Headers:
     content_type: list[str] = _dc.field(
         init=True, metadata=_dj.config(field_name="Content-Type")
     )
-    date: list[datetime.date] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Date")
+    date: list[_dt.date] = _dc.field(
+        init=True, metadata=_dj.config(
+            field_name="Date",
+            encoder=_datelist_encoder,
+            decoder=_datelist_decoder,
+            mm_field=marshmallow.fields.List(
+                marshmallow.fields.DateTime("iso")
+            )
+        )
     )
     delivered_to: list[str] = _dc.field(
         init=True, metadata=_dj.config(field_name="Delivered-To")

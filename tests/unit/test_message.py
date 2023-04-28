@@ -298,7 +298,10 @@ class TestHeadersAPI:
                    'multipart/related; type="multipart/alternative"; '
                    'boundary="----=_NextPart_000_0013_01C6A60C.47EEAB80"'
                )
-        assert "Wed, 12 Jul 2006 23:38:30 +1200" == headers.date[0]
+        assert headers.date[0] == datetime.datetime(
+            2006, 7, 12, 23, 38, 30,
+            tzinfo=datetime.timezone(datetime.timedelta(seconds=43200))
+        )
         assert headers.delivered_to == ["user@example.com", "user-alias@example.com"]
         assert headers.from_[0] == '"User Name" \\u003remote@example.com\\u003e'
         assert (
