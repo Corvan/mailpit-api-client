@@ -32,6 +32,12 @@ debian_codenames = [
     "bullseye",
 ]
 
+checkers = [
+    "black",
+    "lint",
+    "mypy"
+]
+
 [tool.logging]
 version = 1
 
