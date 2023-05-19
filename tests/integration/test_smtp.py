@@ -1,45 +1,61 @@
-import logging
 import re
 
-import pytest
+import pytest as _pt
 
 
 class TestSMTPConnect:
-    
-    def test_smtp__connect(self, log, smtp_server):
+    @_pt.fixture
+    def connection_response(self, log, smtp_server):
         log.info("connecting to smtp_server")
         response = smtp_server.connect("mailpit", 1025)
         log.debug(f"response: {response}")
+        return response
 
-        assert 220 == response[0]
-        assert "Mailpit ESMTP Service" in response[1].decode("UTF-8") 
+    def test_smtp_connect__response_code(self, connection_response):
+        assert 220 == connection_response[0]
+
+    def test_smtp_connect__response_message(self, connection_response):
+        assert "Mailpit ESMTP Service" in connection_response[1].decode("UTF-8")
+
+    def test_smtp_connect__check_esmtp(self, smtp_server):
         assert smtp_server.does_esmtp is False
 
-        log.info("closing connection to smtp_server")
-        
 
 class TestSMTP:
-    
-    def test_helo(self, log, smtp_server):
+    @_pt.fixture
+    def server_helo_response(self, log, smtp_server):
         log.info("sending HELO to SMTP-server")
         response = smtp_server.helo("integration")
         log.debug(f"response: {response}")
-        assert 250 == response[0]
-        assert re.match(r"[a-zA-Z0-9]{0,12} greets integration", 
-                        response[1].decode("UTF-8"))
+        return response
 
-    def test_ehlo(self, log, smtp_server):
-        logger = logging.getLogger("tests.integration.TestSMTP.test_ehlo")
-        logger.info("sending EHLO to SMTP-server")
+    @_pt.fixture
+    def server_ehlo_response(self, log, smtp_server):
+        log.info("sending EHLO to SMTP-server")
         response = smtp_server.ehlo("integration")
-        logger.debug(f"response: {response}")
-        assert 250 == response[0]
-        assert re.match(r"[a-zA-Z0-9]{0,12} greets integration",
-                        response[1].decode("UTF-8"))
+        log.debug(f"response: {response}")
+        return response
 
-    def test_sendmail(self, log, smtp_server: pytest.fixture):
-        logger = logging.getLogger("tests.integration.TestSMTP.test_sendmail")
-        logger.info("sending mail to SMTP-server")
+    def test_helo__response_code(self, server_helo_response):
+        assert 250 == server_helo_response[0]
+
+    def test_helo__response_message(self, server_helo_response):
+        assert re.match(
+            r"[a-zA-Z0-9]{0,12} greets integration",
+            server_helo_response[1].decode("UTF-8"),
+        )
+
+    def test_ehlo__response_code(self, server_ehlo_response):
+        assert 250 == server_ehlo_response[0]
+
+    def test_ehlo__response_message(self, server_ehlo_response):
+        assert re.match(
+            r"[a-zA-Z0-9]{0,12} greets integration",
+            server_ehlo_response[1].decode("UTF-8"),
+        )
+
+    def test_sendmail(self, log, smtp_server):
+        log.info("sending mail to SMTP-server")
         response = smtp_server.sendmail(
             from_addr="test@example.com",
             to_addrs="receipient@example.com",
@@ -49,5 +65,5 @@ class TestSMTP:
 
 This is a test """,
         )
-        logger.debug(f"response: {response}")
+        log.debug(f"response: {response}")
         assert {} == response
