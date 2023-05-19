@@ -3,13 +3,12 @@ import logging
 import invoke as inv
 
 DOCKER_COMPOSE_PATH = "tests/docker/docker-compose.yml"
+logger = logging.getLogger("test_runner")
 
 
 def run_tool_in_container(
     c: inv.Context, env: dict, profile: str, project_name: str, tool: str
 ):
-    logger = logging.getLogger("test_runner.unit.tasks.run_tool_in_container")
-
     command = (
         f"docker compose "
         f"-p {project_name} "

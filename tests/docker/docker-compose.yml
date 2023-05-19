@@ -68,8 +68,8 @@ services:
     profiles:
       - integration
     ports:
-      - "8025:8025"
-      - "1025:1025"
+      - "127.0.0.1:8025:8025"
+      - "127.0.0.1:1025:1025"
   integration:
     image: integration:${PYTHIN_VERSION:-3.10}-${DEBIAN_CODENAME:-bullsexe}
     build:
@@ -85,5 +85,5 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: pytest -lsx /root/mailpit-api-client/${TEST_FILE:-}
+    command: pytest --showlocals --exitfirst /root/mailpit-api-client/tests/integration
 

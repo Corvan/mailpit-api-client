@@ -19,11 +19,15 @@ def log():
 
 @_pt.fixture
 def api():
-    return _c_api.API("http://mailpit:8025")
+    client_api = _c_api.API("http://mailpit:8025")
+    yield client_api
+    client_api.delete_messages(
+        message.id for message in client_api.get_messages().messages
+    )
 
 
 @_pt.fixture
-def smtp_server(log):
+def smtp_server(log, api):
     log.info("connecting to smtp_server")
     server = smtplib.SMTP("mailpit", 1025)
     yield server

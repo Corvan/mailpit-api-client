@@ -1,6 +1,5 @@
 import itertools
 import logging
-import pathlib
 
 try:
     import tomllib as toml
@@ -29,14 +28,16 @@ def read_pyproject_toml():
 def build_containers(c: inv.Context, profile: str):
     config = read_pyproject_toml()
     for python_version, debian_codename in itertools.product(
-            config["python_versions"], config["debian_codenames"]
+        config["python_versions"], config["debian_codenames"]
     ):
-        project_name = f"{PROJECT_NAME}-{python_version.replace('.', '')}-{debian_codename}"
+        project_name = (
+            f"{PROJECT_NAME}-{python_version.replace('.', '')}-{debian_codename}"
+        )
         env = {"PYTHON_VERSION": python_version, "DEBIAN_CODENAME": debian_codename}
         command = (
-                f"docker-compose -p {project_name} "
-                f"--profile {profile} -f {DOCKER_COMPOSE_PATH} build --pull"
-            )
+            f"docker-compose -p {project_name} "
+            f"--profile {profile} -f {DOCKER_COMPOSE_PATH} build --pull"
+        )
         print(command)
         c.run(
             command,
@@ -60,7 +61,7 @@ def checks(c: inv.Context):
     profile = "checks"
 
     for python_version, debian_codename, tool in itertools.product(
-            config["python_versions"], config["debian_codenames"], config["checkers"]
+        config["python_versions"], config["debian_codenames"], config["checkers"]
     ):
         run(c, logger, profile, debian_codename, python_version, tool)
 
@@ -74,7 +75,7 @@ def unit(c: inv.Context):
     tools = ["unittest"]
 
     for python_version, debian_codename, tool in itertools.product(
-            config["python_versions"], config["debian_codenames"], tools
+        config["python_versions"], config["debian_codenames"], tools
     ):
         run(c, logger, profile, debian_codename, python_version, tool)
 
@@ -84,26 +85,27 @@ def integration(c: inv.Context):
     logger.info("integration testing started")
     config = read_pyproject_toml()
     profile = "integration"
-    path = pathlib.Path("tests/integration")
-    for python_version, debian_codename, file in itertools.product(
-            config["python_versions"], config["debian_codenames"],  path.iterdir()
+    for python_version, debian_codename in itertools.product(
+        config["python_versions"], config["debian_codenames"]
     ):
         logger.info(f"running with Python {python_version}")
         logger.info(f"running with Debian {debian_codename}")
-        if file.name.startswith("test"):
-            logger.info(f"running tests in file {file}")
-            project_name = (f"{PROJECT_NAME}"
-                            f"-{python_version.replace('.', '')}"
-                            f"-{debian_codename}")
-            env = {
-                "PYTHON_VERSION": python_version,
-                "TEST_FILE": str(file),
-                "PYTHONTRACEMALLOC": "1",
-                "DEBIAN_CODENAME": debian_codename,
-            }
-            logger.debug(f"set environment variables to: {env}")
-
-            it.run_test(c, env, profile, project_name, file)
+        project_name = (
+            f"{PROJECT_NAME}"
+            f"-{python_version.replace('.', '')}"
+            f"-{debian_codename}"
+        )
+        env = {
+            "PYTHON_VERSION": python_version,
+            "PYTHONTRACEMALLOC": "1",
+            "DEBIAN_CODENAME": debian_codename,
+        }
+        logger.debug(f"set environment variables to: {env}")
+        it.start_mailpit_container(c, env, profile, project_name)
+        try:
+            it.run_tests(c, env, profile, project_name)
+        finally:
+            it.stop_mailpit_container(c, env, profile, project_name)
 
 
 @inv.task
