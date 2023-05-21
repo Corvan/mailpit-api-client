@@ -1,12 +1,45 @@
 """module containing everything related to messages"""
-import datetime
+from __future__ import annotations
+import datetime as _dt
+import decimal as _d
+import logging
 import typing
+
+import re as _re
 
 import dataclasses as _dc
 import dataclasses_json as _dj
 import marshmallow
 
 import mailpit.client.models as _c_models
+
+
+_log = logging.getLogger("mailpit_client")
+
+
+def millis_to_3_digit(isoformat: str) -> str:
+    """replaces milliseconds with
+    three-digits long value using zero padding before"""
+    millis = _re.search(r"\.\d{0,3}", isoformat)
+    _log.debug(f"millis: {millis.group(0)}, {_d.Decimal(millis.group(0)):.03f}")
+    return isoformat.replace(
+        f"{millis.group(0)}", f".{int(_d.Decimal(millis.group(0)) * 1000):03}"
+    )
+
+
+def zulu_to_utc_shift(isoformat: str) -> str:
+    """replaces 'Z' with '+00:00' for UTC"""
+    return isoformat.replace("Z", "+00:00")
+
+
+def datetime_decoder(isoformat: str) -> _dt.datetime:
+    """replaces golang isoformat with Python parsable isoformat
+    and decodes it to `datetime.datetime`"""
+    _log.debug(f"old isdoformat: {isoformat}")
+
+    result = zulu_to_utc_shift(millis_to_3_digit(isoformat))
+    _log.debug(f"new isoformat: {result}")
+    return _dt.datetime.fromisoformat(result)
 
 
 @_dj.dataclass_json
@@ -37,12 +70,12 @@ class Message:
     )
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
     """Message subject"""
-    created: datetime.date = _dc.field(
+    created: _dt.date = _dc.field(
         init=True,
         metadata=_dj.config(
             field_name="Created",
-            encoder=datetime.datetime.isoformat,
-            decoder=datetime.datetime.fromisoformat,
+            encoder=_dt.datetime.isoformat,
+            decoder=datetime_decoder,
             mm_field=marshmallow.fields.DateTime("iso"),
         ),
     )

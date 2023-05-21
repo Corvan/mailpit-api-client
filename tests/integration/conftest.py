@@ -21,9 +21,8 @@ def log():
 def api():
     client_api = _c_api.API("http://mailpit:8025")
     yield client_api
-    client_api.delete_messages(
-        message.id for message in client_api.get_messages().messages
-    )
+    messages = client_api.get_messages()
+    client_api.delete_messages([message.id for message in messages.messages])
 
 
 @_pt.fixture
@@ -36,14 +35,22 @@ def smtp_server(log, api):
 
 
 @_pt.fixture
-def message(smtp_server, log):
+def sent_message_id(smtp_server, api, log):
     log.info("reading mail from file")
     with open(f"{_project_path}/tests/mail/email.eml") as fp:
         mail = email.message_from_file(fp)
-        # _log.debug(f"mail: `{mail}`")
     log.info("sending message")
     smtp_server.send_message(
         mail,
         from_addr="Sender Smith <sender@example.com>",
         to_addrs="Recipient Ross <recipient@example.com>",
     )
+    messages = api.get_messages()
+    log.debug(f"Message ID: {messages.messages[0].id}")
+    yield messages.messages[0].id
+    api.delete_messages([message.id for message in messages.messages])
+
+
+@_pt.fixture
+def sent_message(sent_message_id: str, api: _c_api.API):
+    return api.get_message(sent_message_id)

@@ -1,10 +1,13 @@
 """module containing API related"""
+import logging
 import typing
 
 import httpx
 
 import mailpit.client.message as _c_message
 import mailpit.client.messages as _c_messages
+
+_log = logging.getLogger("mailpit_client")
 
 
 class API:
@@ -40,6 +43,7 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
+        _log.debug(response.text)
         return _c_messages.Messages.from_json(response.text)  # type: ignore
 
     def delete_messages(self, ids: typing.List[str]):
@@ -90,7 +94,9 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
-        return _c_message.Message.from_json(response.text)  # type: ignore
+        _log.debug(response.text)
+        message = _c_message.Message.from_json(response.text)
+        return message  # type: ignore
 
     def get_message_attachment(self, message_id: str, part_id: str):
         """

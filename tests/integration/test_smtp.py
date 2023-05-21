@@ -18,7 +18,7 @@ class TestSMTPConnect:
         assert "Mailpit ESMTP Service" in connection_response[1].decode("UTF-8")
 
     def test_smtp_connect__check_esmtp(self, smtp_server):
-        assert smtp_server.does_esmtp is False
+        assert not smtp_server.does_esmtp
 
 
 class TestSMTP:

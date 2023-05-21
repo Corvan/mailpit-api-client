@@ -5,15 +5,13 @@ import mailpit.client.models as _c_models
 
 
 class TestMessages:
-
     def test_messages_endpoint__empty(self, log, api):
         log.info("call `api.getmessages()`")
         messages = api.get_messages()
         log.debug(f"messages: {messages}")
         assert len(messages.messages) == 0
 
-    def test_messages_endpoint__sendmessage(self, log, smtp_server, message, api):
-        log = logging.getLogger("tests")
+    def test_messages_endpoint__sendmessage(self, log, sent_message_id, api):
         log.info("reading mail from file")
 
         log.info("retrieving messages via API-endpoint")
