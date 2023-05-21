@@ -2,6 +2,7 @@ import datetime as _dt
 import pytest as _pt
 
 import mailpit.client.api as _api
+import mailpit.client.models.message as _m
 
 
 @_pt.fixture(scope="class")
@@ -9,55 +10,60 @@ def sent_message(sent_message_id: str, api: _api.API):
     return api.get_message(sent_message_id)
 
 
+@_pt.fixture(scope="class")
+def message_headers(sent_message_id: str, api: _api.API):
+    return api.get_message_headers(sent_message_id)
+
+
 class TestMessageApiGet:
-    def test_get_message__subject(self, sent_message):
+    def test_get_message__subject(self, sent_message: _m.Message):
         assert sent_message.subject == "Plain text message"
 
-    def test_get_message__message_id(self, sent_message):
+    def test_get_message__message_id(self, sent_message: _m.Message):
         assert (
             sent_message.message_id
             == "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
         )
 
-    def test_get_message__size(self, sent_message):
+    def test_get_message__size(self, sent_message: _m.Message):
         assert 7917 <= sent_message.size <= 7927
 
-    def test_get_message__attachment(self, sent_message):
+    def test_get_message__attachment(self, sent_message: _m.Message):
         assert len(sent_message.attachments) == 0
 
-    def test_get_message_from__name(self, sent_message):
+    def test_get_message_from__name(self, sent_message: _m.Message):
         assert sent_message.from_.name == "Sender Smith"
 
-    def test_get_message_from__address(self, sent_message):
+    def test_get_message_from__address(self, sent_message: _m.Message):
         assert sent_message.from_.address == "sender@example.com"
 
-    def test_get_message_to__count(self, sent_message):
+    def test_get_message_to__count(self, sent_message: _m.Message):
         assert len(sent_message.to) == 1
 
-    def test_get_message_to__name(self, sent_message):
+    def test_get_message_to__name(self, sent_message: _m.Message):
         assert sent_message.to[0].name == "Recipient Ross"
 
-    def test_get_message_to__address(self, sent_message):
+    def test_get_message_to__address(self, sent_message: _m.Message):
         assert sent_message.to[0].address == "recipient@example.com"
 
-    def test_get_message_cc__count(self, sent_message):
+    def test_get_message_cc__count(self, sent_message: _m.Message):
         assert len(sent_message.cc) == 0
 
-    def test_get_message_bcc__count(self, sent_message):
+    def test_get_message_bcc__count(self, sent_message: _m.Message):
         assert len(sent_message.bcc) == 0
 
-    def test_get_message__date(self, sent_message):
+    def test_get_message__date(self, sent_message: _m.Message):
         assert sent_message.date == _dt.datetime.fromisoformat(
             "2022-07-27 15:44:41.000000+12:00"
         )
 
-    def test_get_message__read(self, sent_message):
+    def test_get_message__read(self, sent_message: _m.Message):
         assert sent_message.read is True
 
-    def test_get_message_inline(self, sent_message):
+    def test_get_message_inline(self, sent_message: _m.Message):
         assert len(sent_message.inline) == 0
 
-    def test_get_message_text(self, sent_message):
+    def test_get_message_text(self, sent_message: _m.Message):
         assert (
             sent_message.text
             == "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
@@ -130,7 +136,7 @@ class TestMessageApiGet:
             "Aliquam dapibus ac felis vitae cursus.\r\n"
         )
 
-    def test_get_message_html(self, sent_message):
+    def test_get_message_html(self, sent_message: _m.Message):
         assert sent_message.html == ""
 
 
@@ -147,4 +153,110 @@ class TestMessageApiAttachments:
 
 
 class TestMessageApiHeaders:
-    ...
+    def test_get_headers__content_type(self, message_headers: _m.Headers):
+        assert message_headers.content_type[0] == "text/plain; charset=us-ascii"
+
+    def test_get_headers__date(self, message_headers: _m.Headers):
+        assert message_headers.date[0] == _dt.datetime(
+            2022, 7, 27, 15, 44, 41, tzinfo=_dt.timezone(_dt.timedelta(seconds=43200))
+        )
+
+    def test_get_headers__delivered_to(self, message_headers: _m.Headers):
+        assert message_headers.delivered_to[0] == "recipient@example.com"
+
+    def test_get_headers__from(self, message_headers: _m.Headers):
+        assert message_headers.from_[0] == "Sender Smith <sender@example.com>"
+
+    def test_get_headers__message_id(self, message_headers: _m.Headers):
+        assert (
+            message_headers.message_id[0]
+            == "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
+        )
+
+    def test_get_headers__addtitional(self, message_headers: _m.Headers):
+        del message_headers.additional["Received"]  # Not predictable, bc current time
+        # and hostnames included
+        assert message_headers.additional == {
+            "Arc-Authentication-Results": [
+                "i=1; mx.google.com; dkim=pass header.i=@gmail.com header.s=20210112 "
+                "header.b=fpxRepVP; spf=pass (google.com: domain of sender@example.com "
+                "designates 209.85.220.41 as permitted sender) "
+                "smtp.mailfrom=sender@example.com; dmarc=pass "
+                "(p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com"
+            ],
+            "Arc-Message-Signature": [
+                "i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816; "
+                "h=content-disposition:mime-version:message-id:subject:to:from:date "
+                ":dkim-signature; bh=8shE8duj4atyKhQhO1qlS4/NgHN4ubjWq86U+mmAH9M=; "
+                "b=TGK9vlNQRpyHvcpQonLjrFuLubL2mo9vT15CPwtC6ltsrYccKUozKiyb+id79dPatM "
+                "y2unMpJqJFB4rZnASRm20Ck9dFRulM8bowO4l9BWKAUti9+u7bmLYbOPQCgDmJRA88ij "
+                "YTkSKE8TuFMZQMJTkyZZTwE3F/Vrv84fAekWzGlwFoV3D6r6t1D5EUYUoR4xCVZdpMo1 "
+                "Ic0bEqgmRXl44uEqyVNpIC0w86Hzz84zl2V+nca+gxfObMzbJheDkOwVKkNNmr0ja936 "
+                "QZK+aO9s9VQGtqmjWtWhc1OWO50Bc5vE/krLFvZM6+vbMBEuDE5rkfHdf5mSD9Ix4xWl "
+                "6/Rg=="
+            ],
+            "Arc-Seal": [
+                "i=1; a=rsa-sha256; t=1658893507; cv=none; d=google.com; "
+                "s=arc-20160816; b=KrXcumoy4Oldq3Ny6ZLUfED4+/+4ndNbrM3uw1COEhqCVWWv7lL"
+                "fFeNHTyxJQJLBK3 tVgmPBX2XRmX+531CFRNquUDrqhsvc4kgIq0ExWPz99wG2vgsKWQ2x"
+                "89AIfQ8sEYMwxY HOwErTH6XQuJ45YE+5Lt4pjMP+7NqnJ1NTRQyc7FB/c1Wt1JdTWscga"
+                "JGqUMnIFSbCPG xi0xpJnrIkh4giARIhabCRmVoo1g8BfzYrmy8uHtbIcDDuCJ8tN2lML"
+                "scwfw3u8hZWm6 e1nAx4iDYyShdMZPPoUVoMHDf9P39DKwhdfb/xP/cQ6ulv7ECzVSp5D"
+                "M8aLpfjw6SU9G JYJA=="
+            ],
+            "Authentication-Results": [
+                "mx.google.com; dkim=pass header.i=@gmail.com header.s=20210112 "
+                "header.b=fpxRepVP; spf=pass (google.com: domain of sender@example.com "
+                "designates 209.85.220.41 as permitted sender) smtp.mailfrom=sender@e"
+                "xample.com; dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) "
+                "header.from=gmail.com"
+            ],
+            "Content-Disposition": ["inline"],
+            "Dkim-Signature": [
+                "v=1; a=rsa-sha256; c=relaxed/relaxed; d=gmail.com; s=20210112; "
+                "h=date:from:to:subject:message-id:mime-version:content-disposition; "
+                "bh=8shE8duj4atyKhQhO1qlS4/NgHN4ubjWq86U+mmAH9M=; "
+                "b=fpxRepVPdRgZF9VI4rCzO4n1l9+OHrm254/c1PaNcNnC1+0Rr78o1ASLvDKoQY4INc "
+                "gRN1kJIk+ozQumJSfQPEIe+rHbJxe+wzjbYhEfUwBUnFHZykqvYWl6Xmjwg61IhxwwWk "
+                "b3Gp/ODHkdQrm5QqIFACEn1fQmqkk4XBlcKMYEU/NOswGDOFULfbrhDcBWmR/gp2kHmT "
+                "DkqRA9UJ1Cc6GO9lG+McRi8uLNaTymuLwzBydVV0bZOQTLxHQcQBTfUFrp/fwjHc9V19 "
+                "l9uQcn5rOOsh3vR37NGpv8WPi7BORLRFGjMVD0DZ7CtJwTDHz4EVvdLijt6YbUV9ecp1 "
+                "df3Q=="
+            ],
+            "Mime-Version": ["1.0"],
+            "Received-Spf": [
+                "pass (google.com: domain of sender@example.com designates "
+                "209.85.220.41 as permitted sender) client-ip=209.85.220.41;"
+            ],
+            "Return-Path": ["<sender@example.com>", "<sender@example.com>"],
+            "Subject": ["Plain text message"],
+            "To": ["Recipient Ross <recipient@example.com>"],
+            "X-Gm-Message-State": [
+                "AJIora+ZXWhiNwKn6ik6LuIUHc1hskP3Nneo2J0m0wSC9wwGXI1RPi1a "
+                "Ml5Ex/pAryQwTi7MXqbUQkCIrEe5kU0="
+            ],
+            "X-Google-Dkim-Signature": [
+                "v=1; a=rsa-sha256; c=relaxed/relaxed; d=1e100.net; "
+                "s=20210112; h=x-gm-message-state:date:from:to:subject:"
+                "message-id:mime-version :content-disposition; "
+                "bh=8shE8duj4atyKhQhO1qlS4/NgHN4ubjWq86U+mmAH9M=; "
+                "b=Z8ndxERf1NU67swjZ7cSjkSTTaa2YzhtrRyJkg0vnRxi87af7ECZNT+Zaxuxmxmqvb "
+                "5T3IN2ymjPu1Y52EqRdZQpnzS/E5OjHbA6AYSn5qneNXNDxqJwp5qVSXuyB265QOo/9M "
+                "bGp4fqfi8Qe5pmgkzyTqyrigWFOzcl23sCGXqvnrD8+0e+/n1dqo2tYk4v2KpSoAUxF0 "
+                "SNwHocpTDBDxOMEulUkQpqNlyZsgqNGdRhZmUN+2tQnpCQULd4B7+pydyWBCp9o8J1W4 "
+                "0IqmhJiNT8pB8MVzyUsWNG+WX9GBh8PK6XndOjmp2WvYh0LcUKeEYQ6zBsIdDFNEkMD1 "
+                "dU9w=="
+            ],
+            "X-Google-Smtp-Source": [
+                "AGRyM1v7CWOR6/X4d18Wv11XTnkfT25QfmsqBowwGsebQlPqhR1ogD3bo1sZRs/"
+                "OSAHP7AjywIebfw=="
+            ],
+            "X-Received": [
+                "by 2002:a17:90a:1943:b0:1ef:8146:f32f with SMTP id "
+                "3-20020a17090a194300b001ef8146f32fmr2327371pjh.112.1658893508159; "
+                "Tue, 26 Jul 2022 20:45:08 -0700 (PDT)",
+                "by 2002:a17:90a:5e0b:b0:1f0:5565:ee6e with SMTP id "
+                "w11-20020a17090a5e0b00b001f05565ee6emr2290528pjf.128.1658893506447; "
+                "Tue, 26 Jul 2022 20:45:06 -0700 (PDT)",
+            ],
+        }
