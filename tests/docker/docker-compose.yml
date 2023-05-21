@@ -85,5 +85,5 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: pytest --showlocals --exitfirst /root/mailpit-api-client/tests/integration
+    command: pytest --showlocals --exitfirst -s /root/mailpit-api-client/tests/integration
 
