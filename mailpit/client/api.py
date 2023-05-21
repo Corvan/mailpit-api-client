@@ -4,8 +4,8 @@ import typing
 
 import httpx
 
-import mailpit.client.message as _c_message
-import mailpit.client.messages as _c_messages
+import mailpit.client.models.message as _c_message
+import mailpit.client.models.messages as _c_messages
 
 _log = logging.getLogger("mailpit_client")
 

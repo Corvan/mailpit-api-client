@@ -1,4 +1,4 @@
-"""module containing shared model classes"""
+"""package containing shared model classes"""
 import dataclasses as _dc
 
 import dataclasses_json as _dj

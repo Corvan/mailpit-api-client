@@ -4,13 +4,12 @@ import httpx
 import pytest
 import respx
 
-import mailpit.client.messages as _c_messages
+import mailpit.client.models.messages as _c_messages
 import mailpit.client.models as _c_models
 import mailpit.client.api as _c_api
 
 
 class TestMessagesModels:
-
     @pytest.fixture(scope="class")
     def response(self) -> str:
         yield """{
@@ -69,19 +68,15 @@ class TestMessagesModels:
         assert message.read is False
         assert message.subject == "Message subject"
         assert message.created == datetime.datetime(
-                year=2022,
-                month=10,
-                day=3,
-                hour=21,
-                minute=35,
-                second=32,
-                microsecond=228605,
-                tzinfo=datetime.timezone(
-                    datetime.timedelta(
-                        hours=13
-                    )
-                )
-            )
+            year=2022,
+            month=10,
+            day=3,
+            hour=21,
+            minute=35,
+            second=32,
+            microsecond=228605,
+            tzinfo=datetime.timezone(datetime.timedelta(hours=13)),
+        )
         assert 6144 == message.size
         assert 0 == message.attachments
 
@@ -105,7 +100,6 @@ class TestMessagesModels:
 
 
 class TestMessagesAPI:
-
     @pytest.fixture(scope="class")
     def response(self) -> str:
         yield {

@@ -1,10 +1,8 @@
-import logging
-
-import mailpit.client.messages as _c_messages
+import mailpit.client.models.messages as _c_messages
 import mailpit.client.models as _c_models
 
 
-class TestMessages:
+class TestAPIMessages:
     def test_messages_endpoint__empty(self, log, api):
         log.info("call `api.getmessages()`")
         messages = api.get_messages()

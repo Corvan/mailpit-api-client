@@ -1,7 +1,6 @@
 """module containing classes for the message-endpoint"""
 import datetime as _dt
-import email.utils
-from typing import Optional, Iterable
+from typing import Optional
 
 import dataclasses as _dc
 import dataclasses_json as _dj

@@ -5,12 +5,11 @@ import pytest
 import respx
 
 import mailpit.client.api as _c_api
-import mailpit.client.message as _c_message
+import mailpit.client.models.message as _c_message
 import mailpit.client.models as _c_models
 
 
 class TestMessageModel:
-
     @pytest.fixture(scope="class")
     def response(self) -> str:
         yield """{
@@ -57,45 +56,33 @@ class TestMessageModel:
                 hour=16,
                 minute=46,
                 second=00,
-                tzinfo=datetime.timezone(
-                    datetime.timedelta(
-                        hours=13
-                    )
-                )
+                tzinfo=datetime.timezone(datetime.timedelta(hours=13)),
             ),
             text="Plain text MIME part of the email",
             html="HTML MIME part (if exists)",
             size=79499,
-            from_=_c_models.Contact(
-                name="John Doe",
-                address="john@example.com"
-            ),
-            to=[
-                _c_models.Contact(
-                    name="Jane Smith",
-                    address="jane@example.com"
-                )
-            ],
+            from_=_c_models.Contact(name="John Doe", address="john@example.com"),
+            to=[_c_models.Contact(name="Jane Smith", address="jane@example.com")],
             cc=[],
             bcc=[],
             inline=[
                 _c_message.Attachment(
-                    part_id='1.2',
-                    file_name='filename.gif',
-                    content_type='image/gif',
-                    content_id='919564503@07092006-1525',
-                    size=7760
+                    part_id="1.2",
+                    file_name="filename.gif",
+                    content_type="image/gif",
+                    content_id="919564503@07092006-1525",
+                    size=7760,
                 )
             ],
             attachments=[
                 _c_message.Attachment(
-                    part_id='2',
-                    file_name='filename.doc',
-                    content_type='application/msword',
-                    content_id='',
-                    size=43520
+                    part_id="2",
+                    file_name="filename.doc",
+                    content_type="application/msword",
+                    content_id="",
+                    size=43520,
                 )
-            ]
+            ],
         )
 
 
@@ -153,7 +140,6 @@ class TestMessageAPI:
 
 
 class TestAttachmentAPI:
-
     @respx.mock
     def test_attachment_get(self, api):
         route = respx.get(
@@ -170,7 +156,6 @@ class TestAttachmentAPI:
 
 
 class TestHeadersAPI:
-
     @pytest.fixture(scope="class")
     def response(self):
         yield {
@@ -295,17 +280,23 @@ class TestHeadersAPI:
         headers = api.get_message_headers("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
         assert headers.content_type[0] == (
-                   'multipart/related; type="multipart/alternative"; '
-                   'boundary="----=_NextPart_000_0013_01C6A60C.47EEAB80"'
-               )
+            'multipart/related; type="multipart/alternative"; '
+            'boundary="----=_NextPart_000_0013_01C6A60C.47EEAB80"'
+        )
         assert headers.date[0] == datetime.datetime(
-            2006, 7, 12, 23, 38, 30,
-            tzinfo=datetime.timezone(datetime.timedelta(seconds=43200))
+            2006,
+            7,
+            12,
+            23,
+            38,
+            30,
+            tzinfo=datetime.timezone(datetime.timedelta(seconds=43200)),
         )
         assert headers.delivered_to == ["user@example.com", "user-alias@example.com"]
         assert headers.from_[0] == '"User Name" \\u003remote@example.com\\u003e'
         assert (
-                headers.message_id[0] == "\\u003c001701c6a5a7$b3205580$0201010a@HomeOfficeSM\\u003e"
+            headers.message_id[0]
+            == "\\u003c001701c6a5a7$b3205580$0201010a@HomeOfficeSM\\u003e"
         )
 
     @respx.mock
@@ -321,8 +312,11 @@ class TestHeadersAPI:
         )
         assert isinstance(headers, _c_message.Headers)
         assert headers.from_[0] == "Sender Smith <sender@example.com>"
-        assert headers.additional["Received"][1] == """from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        assert (
+            headers.additional["Received"][1]
+            == """from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
         by mx.google.com with SMTPS id t3-20020a17090a2f8300b001f25e258dfasor335081pjd.34.2022.07.26.20.45.07
         for <recipient@example.com>
         (Google Transport Security);
         Tue, 26 Jul 2022 20:45:07 -0700 (PDT)"""
+        )
