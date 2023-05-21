@@ -13,6 +13,12 @@ class TestMessageApiGet:
     def test_get_message__subject(self, sent_message):
         assert sent_message.subject == "Plain text message"
 
+    def test_get_message__message_id(self, sent_message):
+        assert (
+            sent_message.message_id
+            == "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
+        )
+
     def test_get_message__size(self, sent_message):
         assert 7917 <= sent_message.size <= 7927
 

@@ -40,6 +40,7 @@ class Message:
     # pylint: disable=invalid-name
 
     id: str = _dc.field(init=True, metadata=_dj.config(field_name="ID"))
+    message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
     read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
     """always true (message marked read on open)"""
     from_: Optional[_c_models.Contact] = _dc.field(

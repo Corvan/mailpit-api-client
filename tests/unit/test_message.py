@@ -14,6 +14,7 @@ class TestMessageModel:
     def response(self) -> str:
         yield """{
         "ID": "d7a5543b-96dd-478b-9b60-2b465c9884de",
+        "MessageID": "20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
         "Read": true,
         "From": {"Name": "John Doe", "Address": "john@example.com"},
         "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
@@ -47,6 +48,7 @@ class TestMessageModel:
     def test_message(self, response):
         assert _c_message.Message.from_json(response) == _c_message.Message(
             id="d7a5543b-96dd-478b-9b60-2b465c9884de",
+            message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             read=True,
             subject="Message subject",
             date=datetime.datetime(
@@ -96,6 +98,7 @@ class TestMessageAPI:
     def response(self):
         yield {
             "ID": "d7a5543b-96dd-478b-9b60-2b465c9884de",
+            "MessageID": "20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             "Read": True,
             "From": {"Name": "John Doe", "Address": "john@example.com"},
             "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
