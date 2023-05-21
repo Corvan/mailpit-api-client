@@ -118,3 +118,11 @@ class TestMessageApiGet:
 
     def test_get_message_html(self, sent_message):
         assert sent_message.html == ""
+
+
+class TestMessageDelete:
+    ...
+
+
+class TestMessagePut:
+    ...
