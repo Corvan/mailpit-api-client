@@ -1,6 +1,7 @@
 """module containing classes for the message-endpoint"""
 import datetime as _dt
-from typing import Optional
+import email.utils
+from typing import Optional, Iterable
 
 import dataclasses as _dc
 import dataclasses_json as _dj
@@ -77,3 +78,36 @@ class Message:
     attachments: list[Attachment] = _dc.field(
         init=True, metadata=_dj.config(field_name="Attachments")
     )
+
+
+def _datelist_encoder(encodes: Iterable[_dt.datetime]) -> list[str]:
+    return list(map(lambda encode: email.utils.format_datetime(encode), encodes))
+
+
+def _datelist_decoder(decodes: Iterable[str]) -> list[_dt.datetime]:
+    return list(map(lambda decode: email.utils.parsedate_to_datetime(decode), decodes))
+
+
+@_dj.dataclass_json(undefined=_dj.Undefined.INCLUDE)
+@_dc.dataclass(init=True)
+class Headers:
+    content_type: list[str] = _dc.field(
+        init=True, metadata=_dj.config(field_name="Content-Type")
+    )
+    date: list[_dt.date] = _dc.field(
+        init=True,
+        metadata=_dj.config(
+            field_name="Date",
+            encoder=_datelist_encoder,
+            decoder=_datelist_decoder,
+            mm_field=marshmallow.fields.List(marshmallow.fields.DateTime("iso")),
+        ),
+    )
+    delivered_to: list[str] = _dc.field(
+        init=True, metadata=_dj.config(field_name="Delivered-To")
+    )
+    from_: list[str] = _dc.field(init=True, metadata=_dj.config(field_name="From"))
+    message_id: list[str] = _dc.field(
+        init=True, metadata=_dj.config(field_name="Message-Id")
+    )
+    additional: _dj.CatchAll
