@@ -1,4 +1,12 @@
 import datetime as _dt
+import pytest as _pt
+
+import mailpit.client.api as _api
+
+
+@_pt.fixture(scope="class")
+def sent_message(sent_message_id: str, api: _api.API):
+    return api.get_message(sent_message_id)
 
 
 class TestMessageApiGet:
@@ -120,9 +128,17 @@ class TestMessageApiGet:
         assert sent_message.html == ""
 
 
-class TestMessageDelete:
+class TestMessageApiDelete:
     ...
 
 
-class TestMessagePut:
+class TestMessageApiPut:
+    ...
+
+
+class TestMessageApiAttachments:
+    ...
+
+
+class TestMessageApiHeaders:
     ...

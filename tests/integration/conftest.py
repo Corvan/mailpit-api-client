@@ -49,8 +49,3 @@ def sent_message_id(smtp_server, api, log):
     log.debug(f"Message ID: {messages.messages[0].id}")
     yield messages.messages[0].id
     api.delete_messages([message.id for message in messages.messages])
-
-
-@_pt.fixture(scope="class")
-def sent_message(sent_message_id: str, api: _c_api.API):
-    return api.get_message(sent_message_id)
