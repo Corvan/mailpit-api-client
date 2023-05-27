@@ -5,68 +5,30 @@ import mailpit.client.api as _api
 import mailpit.client.models.message as _m
 
 
-@_pt.fixture(scope="class")
-def sent_message(sent_message_id: str, api: _api.API):
-    return api.get_message(sent_message_id)
-
-
-@_pt.fixture(scope="class")
-def message_headers(sent_message_id: str, api: _api.API):
-    return api.get_message_headers(sent_message_id)
-
-
+# noinspection PyShadowingNames
 class TestMessageApiGet:
-    def test_get_message__subject(self, sent_message: _m.Message):
-        assert sent_message.subject == "Plain text message"
-
-    def test_get_message__message_id(self, sent_message: _m.Message):
+    def test_get_message(self, sent_message_id_without_attachment: str, api: _api.API):
+        message = api.get_message(sent_message_id_without_attachment)
+        assert message.subject == "Plain text message"
         assert (
-            sent_message.message_id
-            == "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
+            message.message_id == "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
         )
-
-    def test_get_message__size(self, sent_message: _m.Message):
-        assert 7917 <= sent_message.size <= 7927
-
-    def test_get_message__attachment(self, sent_message: _m.Message):
-        assert len(sent_message.attachments) == 0
-
-    def test_get_message_from__name(self, sent_message: _m.Message):
-        assert sent_message.from_.name == "Sender Smith"
-
-    def test_get_message_from__address(self, sent_message: _m.Message):
-        assert sent_message.from_.address == "sender@example.com"
-
-    def test_get_message_to__count(self, sent_message: _m.Message):
-        assert len(sent_message.to) == 1
-
-    def test_get_message_to__name(self, sent_message: _m.Message):
-        assert sent_message.to[0].name == "Recipient Ross"
-
-    def test_get_message_to__address(self, sent_message: _m.Message):
-        assert sent_message.to[0].address == "recipient@example.com"
-
-    def test_get_message_cc__count(self, sent_message: _m.Message):
-        assert len(sent_message.cc) == 0
-
-    def test_get_message_bcc__count(self, sent_message: _m.Message):
-        assert len(sent_message.bcc) == 0
-
-    def test_get_message__date(self, sent_message: _m.Message):
-        assert sent_message.date == _dt.datetime.fromisoformat(
+        assert 7900 <= message.size <= 7945
+        assert len(message.attachments) == 0
+        assert message.from_.name == "Sender Smith"
+        assert message.from_.address == "sender@example.com"
+        assert len(message.to) == 1
+        assert message.to[0].name == "Recipient Ross"
+        assert message.to[0].address == "recipient@example.com"
+        assert len(message.cc) == 0
+        assert len(message.bcc) == 0
+        assert message.date == _dt.datetime.fromisoformat(
             "2022-07-27 15:44:41.000000+12:00"
         )
-
-    def test_get_message__read(self, sent_message: _m.Message):
-        assert sent_message.read is True
-
-    def test_get_message_inline(self, sent_message: _m.Message):
-        assert len(sent_message.inline) == 0
-
-    def test_get_message_text(self, sent_message: _m.Message):
+        assert message.read is True
+        assert len(message.inline) == 0
         assert (
-            sent_message.text
-            == "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
+            message.text == "Lorem ipsum dolor sit amet, consectetur adipiscing elit. "
             "Cras non massa lacinia, \r\n"
             "fringilla ex vel, ornare nulla. Suspendisse "
             "dapibus commodo sapien, non \r\n"
@@ -135,9 +97,7 @@ class TestMessageApiGet:
             "lectus vel, tristique lacinia libero. "
             "Aliquam dapibus ac felis vitae cursus.\r\n"
         )
-
-    def test_get_message_html(self, sent_message: _m.Message):
-        assert sent_message.html == ""
+        assert message.html == ""
 
 
 class TestMessageApiDelete:
@@ -148,35 +108,38 @@ class TestMessageApiPut:
     ...
 
 
+# noinspection PyShadowingNames
 class TestMessageApiAttachments:
-    ...
+    def test_get_message_without_attachment(
+        self, sent_message_id_without_attachment: str, api: _api.API
+    ):
+        message = api.get_message(sent_message_id_without_attachment)
+        assert len(message.attachments) == 0
+        assert len(message.inline) == 0
+
+    def test_get_message_with_attachment(
+        self, sent_message_id_with_attachment: str, api: _api.API
+    ):
+        ...
 
 
+# noinspection PyShadowingNames
 class TestMessageApiHeaders:
-    def test_get_headers__content_type(self, message_headers: _m.Headers):
-        assert message_headers.content_type[0] == "text/plain; charset=us-ascii"
-
-    def test_get_headers__date(self, message_headers: _m.Headers):
-        assert message_headers.date[0] == _dt.datetime(
+    def test_get_headers(self, sent_message_id_without_attachment: str, api: _api.API):
+        headers = api.get_message_headers(sent_message_id_without_attachment)
+        assert headers.content_type[0] == "text/plain; charset=us-ascii"
+        assert headers.date[0] == _dt.datetime(
             2022, 7, 27, 15, 44, 41, tzinfo=_dt.timezone(_dt.timedelta(seconds=43200))
         )
-
-    def test_get_headers__delivered_to(self, message_headers: _m.Headers):
-        assert message_headers.delivered_to[0] == "recipient@example.com"
-
-    def test_get_headers__from(self, message_headers: _m.Headers):
-        assert message_headers.from_[0] == "Sender Smith <sender@example.com>"
-
-    def test_get_headers__message_id(self, message_headers: _m.Headers):
+        assert headers.delivered_to[0] == "recipient@example.com"
+        assert headers.from_[0] == "Sender Smith <sender@example.com>"
         assert (
-            message_headers.message_id[0]
+            headers.message_id[0]
             == "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
         )
-
-    def test_get_headers__addtitional(self, message_headers: _m.Headers):
-        del message_headers.additional["Received"]  # Not predictable, bc current time
+        del headers.additional["Received"]  # Not predictable, bc current time
         # and hostnames included
-        assert message_headers.additional == {
+        assert headers.additional == {
             "Arc-Authentication-Results": [
                 "i=1; mx.google.com; dkim=pass header.i=@gmail.com header.s=20210112 "
                 "header.b=fpxRepVP; spf=pass (google.com: domain of sender@example.com "

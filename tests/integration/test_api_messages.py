@@ -2,6 +2,7 @@ import mailpit.client.models.messages as _c_messages
 import mailpit.client.models as _c_models
 
 
+# noinspection PyShadowingNames
 class TestAPIMessages:
     def test_messages_endpoint__empty(self, log, api):
         log.info("call `api.getmessages()`")
@@ -9,7 +10,9 @@ class TestAPIMessages:
         log.debug(f"messages: {messages}")
         assert len(messages.messages) == 0
 
-    def test_messages_endpoint__sendmessage(self, log, sent_message_id, api):
+    def test_messages_endpoint__sendmessage(
+        self, log, sent_message_id_without_attachment, api
+    ):
         log.info("reading mail from file")
 
         log.info("retrieving messages via API-endpoint")
