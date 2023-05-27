@@ -1,0 +1,72 @@
+Return-Path: <lars@familie-liedtke.net>
+Received: from www217.your-server.de
+	by www217.your-server.de with LMTP
+	id kJv1KfDZcWSvdwAACxUX2g
+	(envelope-from <lars@familie-liedtke.net>); Sat, 27 May 2023 12:22:40 +0200
+Envelope-to: lars@familie-liedtke.net
+Delivery-date: Sat, 27 May 2023 12:22:40 +0200
+Authentication-Results: www217.your-server.de;
+	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
+	spf=pass smtp.mailfrom=familie-liedtke.net;
+	dkim=pass header.d=familie-liedtke.net header.s=default_1807 header.a=rsa-sha256;
+	dmarc=skipped
+Received: from localhost ([127.0.0.1] helo=www217.your-server.de)
+	by www217.your-server.de with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <lars@familie-liedtke.net>)
+	id 1q2r4K-0008Un-Ly
+	for lars@familie-liedtke.net; Sat, 27 May 2023 12:22:40 +0200
+DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
+	d=familie-liedtke.net; s=default_1807; h=Subject:From:To:MIME-Version:Date:
+	Message-ID:Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:
+	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
+	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References;
+	bh=qTo9JblyucoD8QsxJ/QXtukTx2WjKHttTQ/PFFDyBl0=; b=wiBgLbeixvWUzKDxDHy6wTQcJh
+	JBeKjyamtWpDlSRQBRcLhN7DCtZMHLVonS47FS4QxHUjL3rH+yFn5cijv3RtmO10wMp4j9hEMw5Ed
+	z4ynzrUZX/hTpY6XMSvJHx9DrXXIVHZ2UEVzBVXoyKeLgvl8voVQyuI6BpyNglyn06hqEU+aBYitZ
+	juYJIoHpkVAZby3y0ni/6fSDfBzKAqfSrE+F0XJ/T5bF3r6MW2jiKbH8W3dOe232Ky/I/syeCdpDW
+	WleN63WbDelB7cOxJP8YAmbxqoD23TyyEb6SAunhQDf1ATrzRqgTuGR8Mc8Kt1Y+o76/mbhDGGrkJ
+	D73yohiQ==;
+Received: from sslproxy05.your-server.de ([78.46.172.2])
+	by www217.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
+	(Exim 4.94.2)
+	(envelope-from <lars@familie-liedtke.net>)
+	id 1q2r4K-0008Uk-JJ
+	for lars@familie-liedtke.net; Sat, 27 May 2023 12:22:40 +0200
+Received: from [2003:6:6150:ba4:e7bf:1157:550a:11a7] (helo=[IPV6:2003:c8:bf2d:dba4:e7bf:1157:550a:11a7])
+	by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
+	(Exim 4.92)
+	(envelope-from <lars@familie-liedtke.net>)
+	id 1q2r4K-000Tqo-Fl
+	for lars@familie-liedtke.net; Sat, 27 May 2023 12:22:40 +0200
+Content-Type: multipart/mixed; boundary="------------fHue5cpu4qz1g1wqH8bLqDL6"
+Message-ID: <4f96778b-75a6-3d6f-9844-5b4504b51e68@familie-liedtke.net>
+Date: Sat, 27 May 2023 12:22:38 +0200
+MIME-Version: 1.0
+User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
+ Thunderbird/102.10.0
+Content-Language: en-US
+To: Lars Liedtke <lars@familie-liedtke.net>
+From: Lars Liedtke <lars@familie-liedtke.net>
+Subject: This is a test with attachment
+X-Authenticated-Sender: lars@familie-liedtke.net
+X-Virus-Scanned: Clear (ClamAV 0.103.8/26920/Sat May 27 09:21:46 2023)
+X-local-sign: yes
+X-DKIM-Status: pass [(familie-liedtke.net) - 127.0.0.1]
+Delivered-To: fraktap-lars@familie-liedtke.net
+
+This is a multi-part message in MIME format.
+--------------fHue5cpu4qz1g1wqH8bLqDL6
+Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Transfer-Encoding: 7bit
+
+Test
+
+--------------fHue5cpu4qz1g1wqH8bLqDL6
+Content-Type: text/plain; charset=UTF-8; name="test.txt"
+Content-Disposition: attachment; filename="test.txt"
+Content-Transfer-Encoding: base64
+
+VGhpcyBpcyBhIHRlc3QgYXR0YWNobWVudAo=
+
+--------------fHue5cpu4qz1g1wqH8bLqDL6--
