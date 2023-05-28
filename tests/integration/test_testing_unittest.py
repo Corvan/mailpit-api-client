@@ -1,3 +1,5 @@
+import unittest as _unittest
+
 from mailpit.testing.unittest import EMailTestCase
 import mailpit.client.models.messages as _messages
 
@@ -25,7 +27,7 @@ class TestSetUpClassWithoutSuper(EMailTestCase):
         )
 
 
-class TestSetUpClassWithtSuper(EMailTestCase):
+class TestSetUpClassWithSuper(EMailTestCase):
     api_url = "http://mailpit:8025"
 
     @classmethod
@@ -35,3 +37,27 @@ class TestSetUpClassWithtSuper(EMailTestCase):
     def test_api_object(self):
         messages: _messages.Messages = self.api.get_messages()
         self.assertEqual(0, len(messages.messages))
+
+
+def test_unittest_from_pytest__test_mail():
+    test_loader = _unittest.TestLoader()
+    test_suite = test_loader.loadTestsFromTestCase(TestMail)
+    test_result = _unittest.TestResult()
+    test_result = test_suite.run(test_result)
+    assert test_result.wasSuccessful()
+
+
+def test_unittest_from_pytest__test_setup_class_without_super():
+    test_loader = _unittest.TestLoader()
+    test_suite = test_loader.loadTestsFromTestCase(TestSetUpClassWithoutSuper)
+    test_result = _unittest.TestResult()
+    test_result = test_suite.run(test_result)
+    assert test_result.wasSuccessful()
+
+
+def test_unittest_from_pytest__test_setup_class_with_super():
+    test_loader = _unittest.TestLoader()
+    test_suite = test_loader.loadTestsFromTestCase(TestSetUpClassWithSuper)
+    test_result = _unittest.TestResult()
+    test_result = test_suite.run(test_result)
+    assert test_result.wasSuccessful()
