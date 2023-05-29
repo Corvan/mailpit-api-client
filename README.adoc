@@ -1,0 +1,51 @@
+= mailpit-api-client
+Lars Liedtke <corvan@gmx.de>
+3.0, July 29, 2022: AsciiDoc article template
+:toc:
+:icons: font
+:url-quickref: https://docs.asciidoctor.org/asciidoc/latest/syntax-quick-reference/
+
+API-client for https://github.com/axllent/mailpit written in Python
+
+== Motivation
+
+For work, I thought about introducing integration testing.
+We are working with https://github.com/odoo/odoo[Odoo] and I wanted to test if e-mails created by Odoo really were sent.
+I remembered https://github.com/mailhog/MailHog[mailhog], which I discovered to be abandoned.
+Searching for an alternative, I found Mailpit - for which I decided to write an API-client in my free time.
+
+== Usage
+
+this library - as is Mailpit - is mostly meant for testing. Giving the url of Mailpit to a tool to send e-mail messages to and then use this client to check on the API if the mail was sent.
+
+=== Client
+
+The client itself consists of a class in the file:///./mailpit/client/api.py[API-module], that offers methods, which query the API-Endpoints and are named respectively. +
+To use this class, simply try something like this.footnote:[You have to have Mailpit running on localhost for this. If you have it running differently, you have to adjust the URL you pass.]
+```python
+import mailpit.client.api
+api = mailpit.client.api.API("localhost:8025")
+messages = api.get_messages()
+```
+
+
+Additionally, there are some model-classes that wrap the API's responses.
+For example with
+```python
+messages = api.get_messages()
+```
+messages will be an instance of the `Messages` class, which you can find in file:///./mailpit/client/models/messages.py[mailpit/client/models/messages.py]. +
+The model-classes' attributes are named the same as Mailpit's responses, as documented in the API's https://github.com/axllent/mailpit/blob/develop/docs/apiv1/README.md[README], but as is convention in Python in Snakecase.
+
+For examples have a look at the file://./tests[tests]
+
+== Testing
+
+To make testing easier I plan to provide testhelpers like TestCase-classes of  `unittest` and `pytest`-fixtures.
+
+=== unittest
+tbd
+
+=== pytest
+tbd
+
