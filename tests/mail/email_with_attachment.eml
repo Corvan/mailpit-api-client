@@ -1,59 +1,80 @@
-Return-Path: <lars@familie-liedtke.net>
-Received: from www217.your-server.de
-	by www217.your-server.de with LMTP
-	id kJv1KfDZcWSvdwAACxUX2g
-	(envelope-from <lars@familie-liedtke.net>); Sat, 27 May 2023 12:22:40 +0200
-Envelope-to: lars@familie-liedtke.net
-Delivery-date: Sat, 27 May 2023 12:22:40 +0200
-Authentication-Results: www217.your-server.de;
-	iprev=pass (localhost) smtp.remote-ip=127.0.0.1;
-	spf=pass smtp.mailfrom=familie-liedtke.net;
-	dkim=pass header.d=familie-liedtke.net header.s=default_1807 header.a=rsa-sha256;
-	dmarc=skipped
-Received: from localhost ([127.0.0.1] helo=www217.your-server.de)
-	by www217.your-server.de with esmtps  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <lars@familie-liedtke.net>)
-	id 1q2r4K-0008Un-Ly
-	for lars@familie-liedtke.net; Sat, 27 May 2023 12:22:40 +0200
-DKIM-Signature: v=1; a=rsa-sha256; q=dns/txt; c=relaxed/relaxed;
-	d=familie-liedtke.net; s=default_1807; h=Subject:From:To:MIME-Version:Date:
-	Message-ID:Content-Type:Sender:Reply-To:Cc:Content-Transfer-Encoding:
-	Content-ID:Content-Description:Resent-Date:Resent-From:Resent-Sender:
-	Resent-To:Resent-Cc:Resent-Message-ID:In-Reply-To:References;
-	bh=qTo9JblyucoD8QsxJ/QXtukTx2WjKHttTQ/PFFDyBl0=; b=wiBgLbeixvWUzKDxDHy6wTQcJh
-	JBeKjyamtWpDlSRQBRcLhN7DCtZMHLVonS47FS4QxHUjL3rH+yFn5cijv3RtmO10wMp4j9hEMw5Ed
-	z4ynzrUZX/hTpY6XMSvJHx9DrXXIVHZ2UEVzBVXoyKeLgvl8voVQyuI6BpyNglyn06hqEU+aBYitZ
-	juYJIoHpkVAZby3y0ni/6fSDfBzKAqfSrE+F0XJ/T5bF3r6MW2jiKbH8W3dOe232Ky/I/syeCdpDW
-	WleN63WbDelB7cOxJP8YAmbxqoD23TyyEb6SAunhQDf1ATrzRqgTuGR8Mc8Kt1Y+o76/mbhDGGrkJ
-	D73yohiQ==;
-Received: from sslproxy05.your-server.de ([78.46.172.2])
-	by www217.your-server.de with esmtpsa  (TLS1.3) tls TLS_AES_256_GCM_SHA384
-	(Exim 4.94.2)
-	(envelope-from <lars@familie-liedtke.net>)
-	id 1q2r4K-0008Uk-JJ
-	for lars@familie-liedtke.net; Sat, 27 May 2023 12:22:40 +0200
-Received: from [2003:6:6150:ba4:e7bf:1157:550a:11a7] (helo=[IPV6:2003:c8:bf2d:dba4:e7bf:1157:550a:11a7])
-	by sslproxy05.your-server.de with esmtpsa (TLSv1.3:TLS_AES_256_GCM_SHA384:256)
-	(Exim 4.92)
-	(envelope-from <lars@familie-liedtke.net>)
-	id 1q2r4K-000Tqo-Fl
-	for lars@familie-liedtke.net; Sat, 27 May 2023 12:22:40 +0200
-Content-Type: multipart/mixed; boundary="------------fHue5cpu4qz1g1wqH8bLqDL6"
-Message-ID: <4f96778b-75a6-3d6f-9844-5b4504b51e68@familie-liedtke.net>
-Date: Sat, 27 May 2023 12:22:38 +0200
-MIME-Version: 1.0
-User-Agent: Mozilla/5.0 (X11; Linux x86_64; rv:102.0) Gecko/20100101
- Thunderbird/102.10.0
-Content-Language: en-US
-To: Lars Liedtke <lars@familie-liedtke.net>
-From: Lars Liedtke <lars@familie-liedtke.net>
+Delivered-To: recipient@example.com
+Received: by 2002:a0c:fe87:0:0:0:0:0 with SMTP id d7csp146390qvs;
+        Tue, 26 Jul 2022 20:45:20 -0700 (PDT)
+X-Received: by 2002:a17:90a:1943:b0:1ef:8146:f32f with SMTP id 3-20020a17090a194300b001ef8146f32fmr2327371pjh.112.1658893508159;
+        Tue, 26 Jul 2022 20:45:08 -0700 (PDT)
+ARC-Seal: i=1; a=rsa-sha256; t=1658893507; cv=none;
+        d=google.com; s=arc-20160816;
+        b=KrXcumoy4Oldq3Ny6ZLUfED4+/+4ndNbrM3uw1COEhqCVWWv7lLfFeNHTyxJQJLBK3
+         tVgmPBX2XRmX+531CFRNquUDrqhsvc4kgIq0ExWPz99wG2vgsKWQ2x89AIfQ8sEYMwxY
+         HOwErTH6XQuJ45YE+5Lt4pjMP+7NqnJ1NTRQyc7FB/c1Wt1JdTWscgaJGqUMnIFSbCPG
+         xi0xpJnrIkh4giARIhabCRmVoo1g8BfzYrmy8uHtbIcDDuCJ8tN2lMLscwfw3u8hZWm6
+         e1nAx4iDYyShdMZPPoUVoMHDf9P39DKwhdfb/xP/cQ6ulv7ECzVSp5DM8aLpfjw6SU9G
+         JYJA==
+ARC-Message-Signature: i=1; a=rsa-sha256; c=relaxed/relaxed; d=google.com; s=arc-20160816;
+        h=content-disposition:mime-version:message-id:subject:to:from:date
+         :dkim-signature;
+        bh=8shE8duj4atyKhQhO1qlS4/NgHN4ubjWq86U+mmAH9M=;
+        b=TGK9vlNQRpyHvcpQonLjrFuLubL2mo9vT15CPwtC6ltsrYccKUozKiyb+id79dPatM
+         y2unMpJqJFB4rZnASRm20Ck9dFRulM8bowO4l9BWKAUti9+u7bmLYbOPQCgDmJRA88ij
+         YTkSKE8TuFMZQMJTkyZZTwE3F/Vrv84fAekWzGlwFoV3D6r6t1D5EUYUoR4xCVZdpMo1
+         Ic0bEqgmRXl44uEqyVNpIC0w86Hzz84zl2V+nca+gxfObMzbJheDkOwVKkNNmr0ja936
+         QZK+aO9s9VQGtqmjWtWhc1OWO50Bc5vE/krLFvZM6+vbMBEuDE5rkfHdf5mSD9Ix4xWl
+         6/Rg==
+ARC-Authentication-Results: i=1; mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20210112 header.b=fpxRepVP;
+       spf=pass (google.com: domain of sender@example.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=sender@example.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+Return-Path: <sender@example.com>
+Received: from mail-sor-f41.google.com (mail-sor-f41.google.com. [209.85.220.41])
+        by mx.google.com with SMTPS id t3-20020a17090a2f8300b001f25e258dfasor335081pjd.34.2022.07.26.20.45.07
+        for <recipient@example.com>
+        (Google Transport Security);
+        Tue, 26 Jul 2022 20:45:07 -0700 (PDT)
+Received-SPF: pass (google.com: domain of sender@example.com designates 209.85.220.41 as permitted sender) client-ip=209.85.220.41;
+Authentication-Results: mx.google.com;
+       dkim=pass header.i=@gmail.com header.s=20210112 header.b=fpxRepVP;
+       spf=pass (google.com: domain of sender@example.com designates 209.85.220.41 as permitted sender) smtp.mailfrom=sender@example.com;
+       dmarc=pass (p=NONE sp=QUARANTINE dis=NONE) header.from=gmail.com
+DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=gmail.com; s=20210112;
+        h=date:from:to:subject:message-id:mime-version:content-disposition;
+        bh=8shE8duj4atyKhQhO1qlS4/NgHN4ubjWq86U+mmAH9M=;
+        b=fpxRepVPdRgZF9VI4rCzO4n1l9+OHrm254/c1PaNcNnC1+0Rr78o1ASLvDKoQY4INc
+         gRN1kJIk+ozQumJSfQPEIe+rHbJxe+wzjbYhEfUwBUnFHZykqvYWl6Xmjwg61IhxwwWk
+         b3Gp/ODHkdQrm5QqIFACEn1fQmqkk4XBlcKMYEU/NOswGDOFULfbrhDcBWmR/gp2kHmT
+         DkqRA9UJ1Cc6GO9lG+McRi8uLNaTymuLwzBydVV0bZOQTLxHQcQBTfUFrp/fwjHc9V19
+         l9uQcn5rOOsh3vR37NGpv8WPi7BORLRFGjMVD0DZ7CtJwTDHz4EVvdLijt6YbUV9ecp1
+         df3Q==
+X-Google-DKIM-Signature: v=1; a=rsa-sha256; c=relaxed/relaxed;
+        d=1e100.net; s=20210112;
+        h=x-gm-message-state:date:from:to:subject:message-id:mime-version
+         :content-disposition;
+        bh=8shE8duj4atyKhQhO1qlS4/NgHN4ubjWq86U+mmAH9M=;
+        b=Z8ndxERf1NU67swjZ7cSjkSTTaa2YzhtrRyJkg0vnRxi87af7ECZNT+Zaxuxmxmqvb
+         5T3IN2ymjPu1Y52EqRdZQpnzS/E5OjHbA6AYSn5qneNXNDxqJwp5qVSXuyB265QOo/9M
+         bGp4fqfi8Qe5pmgkzyTqyrigWFOzcl23sCGXqvnrD8+0e+/n1dqo2tYk4v2KpSoAUxF0
+         SNwHocpTDBDxOMEulUkQpqNlyZsgqNGdRhZmUN+2tQnpCQULd4B7+pydyWBCp9o8J1W4
+         0IqmhJiNT8pB8MVzyUsWNG+WX9GBh8PK6XndOjmp2WvYh0LcUKeEYQ6zBsIdDFNEkMD1
+         dU9w==
+X-Gm-Message-State: AJIora+ZXWhiNwKn6ik6LuIUHc1hskP3Nneo2J0m0wSC9wwGXI1RPi1a
+	Ml5Ex/pAryQwTi7MXqbUQkCIrEe5kU0=
+X-Google-Smtp-Source: AGRyM1v7CWOR6/X4d18Wv11XTnkfT25QfmsqBowwGsebQlPqhR1ogD3bo1sZRs/OSAHP7AjywIebfw==
+X-Received: by 2002:a17:90a:5e0b:b0:1f0:5565:ee6e with SMTP id w11-20020a17090a5e0b00b001f05565ee6emr2290528pjf.128.1658893506447;
+        Tue, 26 Jul 2022 20:45:06 -0700 (PDT)
+Return-Path: <sender@example.com>
+Received: from localhost.localhost ([8.8.8.8])
+        by smtp.gmail.com with ESMTPSA id s7-20020a170902ea0700b0016a3f9e4865sm12488166plg.148.2022.07.26.20.45.04
+        for <recipient@example.com>
+        (version=TLS1_3 cipher=TLS_AES_256_GCM_SHA384 bits=256/256);
+        Tue, 26 Jul 2022 20:45:06 -0700 (PDT)
+Date: Wed, 27 Jul 2022 15:44:41 +1200
+From: Sender Smith <sender@example.com>
+To: Recipient Ross <recipient@example.com>
 Subject: This is a test with attachment
-X-Authenticated-Sender: lars@familie-liedtke.net
-X-Virus-Scanned: Clear (ClamAV 0.103.8/26920/Sat May 27 09:21:46 2023)
-X-local-sign: yes
-X-DKIM-Status: pass [(familie-liedtke.net) - 127.0.0.1]
-Delivered-To: fraktap-lars@familie-liedtke.net
+Message-ID: <20220727034441.7za34h6ljuzfpmj6@localhost.localhost>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="------------fHue5cpu4qz1g1wqH8bLqDL6"
 
 This is a multi-part message in MIME format.
 --------------fHue5cpu4qz1g1wqH8bLqDL6
@@ -63,8 +84,8 @@ Content-Transfer-Encoding: 7bit
 Test
 
 --------------fHue5cpu4qz1g1wqH8bLqDL6
-Content-Type: text/plain; charset=UTF-8; name="test.txt"
-Content-Disposition: attachment; filename="test.txt"
+Content-Type: text/plain; charset=UTF-8; name="attachment.txt"
+Content-Disposition: attachment; filename="attachment.txt"
 Content-Transfer-Encoding: base64
 
 VGhpcyBpcyBhIHRlc3QgYXR0YWNobWVudAo=
