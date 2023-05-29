@@ -1,7 +1,8 @@
 import datetime as _dt
 
+import pytest as _pt
+
 import mailpit.client.api as _api
-import mailpit.client.models.message as _m
 
 
 # noinspection PyShadowingNames
@@ -121,7 +122,40 @@ class TestMessageApiAttachments:
     ):
         message = api.get_message(sent_message_id_with_attachment)
         assert len(message.attachments) == 1
+        assert message.attachments[0].content_type == "text/plain"
+        assert message.attachments[0].content_id == ""
+        assert message.attachments[0].part_id == "2"
+        assert message.attachments[0].file_name == "attachment.txt"
+        assert message.attachments[0].size == 26
         assert len(message.inline) == 0
+
+    def test_get_message_with_inline_attachment(
+        self, sent_message_id_with_inline_attachment: str, api: _api.API
+    ):
+        message = api.get_message(sent_message_id_with_inline_attachment)
+        assert len(message.attachments) == 0
+        assert len(message.inline) == 1
+        assert message.inline[0].content_type == "text/plain"
+        assert message.inline[0].content_id == ""
+        assert message.inline[0].part_id == "2"
+        assert message.inline[0].file_name == "attachment.txt"
+        assert message.inline[0].size == 26
+
+    @_pt.mark.skip
+    def test_get_message_with_attachment_and_inline_attachment(self):
+        ...
+
+    def test_get_attachment(self, sent_message_id_with_attachment, api: _api.API):
+        attachment = api.get_message_attachment(sent_message_id_with_attachment, "2")
+        assert attachment == "This is a test attachment\n"
+
+    def test_get_attachment__inline_attachment(
+        self, sent_message_id_with_inline_attachment: str, api: _api.API
+    ):
+        attachment = api.get_message_attachment(
+            sent_message_id_with_inline_attachment, "2"
+        )
+        assert attachment == "This is a test attachment\n"
 
 
 # noinspection PyShadowingNames
