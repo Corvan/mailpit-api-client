@@ -4,7 +4,6 @@ import httpx
 import pytest
 import respx
 
-import mailpit.client.models.messages as _messages
 import mailpit.client.models as _models
 import mailpit.client.api as _api
 
@@ -48,15 +47,15 @@ class TestMessagesModels:
     }"""
 
     @pytest.fixture(scope="class")
-    def messages(self, response) -> _messages.Messages:
-        yield _messages.Messages.from_json(response)
+    def messages(self, response) -> _models.Messages:
+        yield _models.Messages.from_json(response)
 
     @pytest.fixture(scope="class")
-    def message(self, messages) -> _messages.Message:
+    def message(self, messages) -> _models.MessageSummary:
         yield messages.messages[0]
 
     def test_messages(self, messages):
-        assert isinstance(messages, _messages.Messages)
+        assert isinstance(messages, _models.Messages)
 
         assert messages.total == 500
         assert messages.unread == 500
@@ -64,7 +63,7 @@ class TestMessagesModels:
         assert messages.start == 0
 
     def test_message(self, message):
-        assert isinstance(message, _messages.Message)
+        assert isinstance(message, _models.MessageSummary)
         assert "1c575821-70ba-466f-8cee-2e1cf0fcdd0f" == message.id
         assert (
             "20220727034441.7za34h6ljuzfpmj6@localhost.localhost" == message.message_id
@@ -139,7 +138,7 @@ class TestMessagesAPI:
 
         messages = api.get_messages()
 
-        assert isinstance(messages, _messages.Messages)
+        assert isinstance(messages, _models.Messages)
         assert route.called is True
         assert api.last_response.status_code == 200
 

@@ -4,8 +4,7 @@ from typing import Optional, List, Any
 
 import httpx as _httpx
 
-import mailpit.client.models.message as _message
-import mailpit.client.models.messages as _messages
+import mailpit.client.models as _models
 
 _log = _logging.getLogger("mailpit_client")
 
@@ -25,7 +24,7 @@ class API:
         self.timeout = timeout
         self.last_response: Optional[_httpx.Response] = None
 
-    def get_messages(self, limit: int = 50, start: int = 0) -> _messages.Messages:
+    def get_messages(self, limit: int = 50, start: int = 0) -> _models.Messages:
         """
         send a GET request in order to retrieve messages
 
@@ -44,7 +43,7 @@ class API:
         self.last_response = response
         response.raise_for_status()
         _log.debug(response.text)
-        return _messages.Messages.from_json(response.text)  # type: ignore
+        return _models.Messages.from_json(response.text)  # type: ignore
 
     def delete_messages(self, ids: List[str]):
         """
@@ -79,7 +78,7 @@ class API:
         self.last_response = response
         response.raise_for_status()
 
-    def get_message(self, message_id: str) -> _message.Message:
+    def get_message(self, message_id: str) -> _models.Message:
         """
 
 
@@ -95,7 +94,7 @@ class API:
         self.last_response = response
         response.raise_for_status()
         _log.debug(response.text)
-        message = _message.Message.from_json(response.text)
+        message = _models.Message.from_json(response.text)
         return message
 
     def get_message_attachment(self, message_id: str, part_id: str):
@@ -125,4 +124,4 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
-        return _message.Headers.from_json(response.text)  # type: ignore
+        return _models.Headers.from_json(response.text)  # type: ignore
