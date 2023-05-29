@@ -57,7 +57,7 @@ def sent_message_id_without_attachment(smtp_server, api, log):
 @_pt.fixture(scope="class")
 def sent_message_id_with_attachment(smtp_server, api, log):
     log.info("reading mail from file")
-    with open(f"{_project_path}/tests/mail/email_without_attachment.eml") as fp:
+    with open(f"{_project_path}/tests/mail/email_with_attachment.eml") as fp:
         mail = email.message_from_file(fp)
     log.info("sending message")
     smtp_server.send_message(

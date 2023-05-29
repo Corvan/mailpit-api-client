@@ -119,7 +119,9 @@ class TestMessageApiAttachments:
     def test_get_message_with_attachment(
         self, sent_message_id_with_attachment: str, api: _api.API
     ):
-        ...
+        message = api.get_message(sent_message_id_with_attachment)
+        assert len(message.attachments) == 1
+        assert len(message.inline) == 0
 
 
 # noinspection PyShadowingNames
