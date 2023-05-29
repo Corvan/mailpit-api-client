@@ -1,5 +1,4 @@
 import datetime as _dt
-import pytest as _pt
 
 import mailpit.client.api as _api
 import mailpit.client.models.message as _m

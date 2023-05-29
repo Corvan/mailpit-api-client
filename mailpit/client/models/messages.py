@@ -44,9 +44,8 @@ def datetime_decoder(isoformat: str) -> _dt.datetime:
     return _dt.datetime.fromisoformat(result)
 
 
-@_dj.dataclass_json
 @_dc.dataclass(init=True)
-class Message:
+class Message(_dj.DataClassJsonMixin):
     """
     class representing a single message that has been returned by the messages endpoint
     """
@@ -89,9 +88,8 @@ class Message:
     )
 
 
-@_dj.dataclass_json
 @_dc.dataclass(init=True)
-class Messages:
+class Messages(_dj.DataClassJsonMixin):
     # pylint: disable=too-few-public-methods
     """
     class representing the returns of the messages endpoint

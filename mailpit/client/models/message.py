@@ -1,18 +1,17 @@
 """module containing classes for the message-endpoint"""
 import datetime as _dt
-import email.utils
+import email.utils as _email
 from typing import Optional, Iterable
 
 import dataclasses as _dc
 import dataclasses_json as _dj
 import marshmallow.fields
 
-import mailpit.client.models as _c_models
+import mailpit.client.models as _models
 
 
-@_dj.dataclass_json
 @_dc.dataclass(init=True)
-class Attachment:
+class Attachment(_dj.DataClassJsonMixin):
     """
     class representing an attachment of a message
     """
@@ -28,9 +27,8 @@ class Attachment:
     size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
 
 
-@_dj.dataclass_json
 @_dc.dataclass(init=True)
-class Message:
+class Message(_dj.DataClassJsonMixin):
     """
     class representing a Message returned by the message-endpoint
     """
@@ -43,16 +41,16 @@ class Message:
     message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
     read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
     """always true (message marked read on open)"""
-    from_: Optional[_c_models.Contact] = _dc.field(
+    from_: Optional[_models.Contact] = _dc.field(
         init=True, metadata=_dj.config(field_name="From")
     )
-    to: list[_c_models.Contact] = _dc.field(
+    to: list[_models.Contact] = _dc.field(
         init=True, metadata=_dj.config(field_name="To")
     )
-    cc: Optional[list[_c_models.Contact]] = _dc.field(
+    cc: Optional[list[_models.Contact]] = _dc.field(
         init=True, metadata=_dj.config(field_name="Cc")
     )
-    bcc: list[_c_models.Contact] = _dc.field(
+    bcc: list[_models.Contact] = _dc.field(
         init=True, metadata=_dj.config(field_name="Bcc")
     )
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
@@ -82,16 +80,16 @@ class Message:
 
 
 def _datelist_encoder(encodes: Iterable[_dt.datetime]) -> list[str]:
-    return list(map(lambda encode: email.utils.format_datetime(encode), encodes))
+    return list(map(lambda encode: _email.format_datetime(encode), encodes))
 
 
 def _datelist_decoder(decodes: Iterable[str]) -> list[_dt.datetime]:
-    return list(map(lambda decode: email.utils.parsedate_to_datetime(decode), decodes))
+    return list(map(lambda decode: _email.parsedate_to_datetime(decode), decodes))
 
 
 @_dj.dataclass_json(undefined=_dj.Undefined.INCLUDE)
 @_dc.dataclass(init=True)
-class Headers:
+class Headers(_dj.DataClassJsonMixin):
     content_type: list[str] = _dc.field(
         init=True, metadata=_dj.config(field_name="Content-Type")
     )

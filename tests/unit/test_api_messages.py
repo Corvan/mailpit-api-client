@@ -4,9 +4,9 @@ import httpx
 import pytest
 import respx
 
-import mailpit.client.models.messages as _c_messages
-import mailpit.client.models as _c_models
-import mailpit.client.api as _c_api
+import mailpit.client.models.messages as _messages
+import mailpit.client.models as _models
+import mailpit.client.api as _api
 
 
 class TestMessagesModels:
@@ -47,15 +47,15 @@ class TestMessagesModels:
     }"""
 
     @pytest.fixture(scope="class")
-    def messages(self, response) -> _c_messages.Messages:
-        yield _c_messages.Messages.from_json(response)
+    def messages(self, response) -> _messages.Messages:
+        yield _messages.Messages.from_json(response)
 
     @pytest.fixture(scope="class")
-    def message(self, messages) -> _c_messages.Message:
+    def message(self, messages) -> _messages.Message:
         yield messages.messages[0]
 
     def test_messages(self, messages):
-        assert isinstance(messages, _c_messages.Messages)
+        assert isinstance(messages, _messages.Messages)
 
         assert messages.total == 500
         assert messages.unread == 500
@@ -63,7 +63,7 @@ class TestMessagesModels:
         assert messages.start == 0
 
     def test_message(self, message):
-        assert isinstance(message, _c_messages.Message)
+        assert isinstance(message, _messages.Message)
         assert "1c575821-70ba-466f-8cee-2e1cf0fcdd0f" == message.id
         assert message.read is False
         assert message.subject == "Message subject"
@@ -81,17 +81,17 @@ class TestMessagesModels:
         assert 0 == message.attachments
 
     def test_message_from(self, message):
-        assert isinstance(message.from_, _c_models.Contact)
+        assert isinstance(message.from_, _models.Contact)
         assert message.from_.name == "John Doe"
         assert message.from_.address == "john@example.com"
 
     def test_message_to(self, message):
-        assert isinstance(message.to[0], _c_models.Contact)
+        assert isinstance(message.to[0], _models.Contact)
         assert message.to[0].name == "Jane Smith"
         assert message.to[0].address == "jane@example.com"
 
     def test_message_cc(self, message):
-        assert isinstance(message.cc[0], _c_models.Contact)
+        assert isinstance(message.cc[0], _models.Contact)
         assert message.cc[0].name == "Accounts"
         assert message.cc[0].address == "accounts@example.com"
 
@@ -124,8 +124,8 @@ class TestMessagesAPI:
         }
 
     @pytest.fixture
-    def api(self) -> _c_api.API:
-        yield _c_api.API("https://example.com")
+    def api(self) -> _api.API:
+        yield _api.API("https://example.com")
 
     @respx.mock
     def test_messages_get(self, api, response):
@@ -134,7 +134,7 @@ class TestMessagesAPI:
 
         messages = api.get_messages()
 
-        assert isinstance(messages, _c_messages.Messages)
+        assert isinstance(messages, _messages.Messages)
         assert route.called is True
         assert api.last_response.status_code == 200
 

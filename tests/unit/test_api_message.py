@@ -4,9 +4,9 @@ import httpx
 import pytest
 import respx
 
-import mailpit.client.api as _c_api
-import mailpit.client.models.message as _c_message
-import mailpit.client.models as _c_models
+import mailpit.client.api as _api
+import mailpit.client.models.message as _message
+import mailpit.client.models as _models
 
 
 class TestMessageModel:
@@ -46,7 +46,7 @@ class TestMessageModel:
     }"""
 
     def test_message(self, response):
-        assert _c_message.Message.from_json(response) == _c_message.Message(
+        assert _message.Message.from_json(response) == _message.Message(
             id="d7a5543b-96dd-478b-9b60-2b465c9884de",
             message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             read=True,
@@ -63,12 +63,12 @@ class TestMessageModel:
             text="Plain text MIME part of the email",
             html="HTML MIME part (if exists)",
             size=79499,
-            from_=_c_models.Contact(name="John Doe", address="john@example.com"),
-            to=[_c_models.Contact(name="Jane Smith", address="jane@example.com")],
+            from_=_models.Contact(name="John Doe", address="john@example.com"),
+            to=[_models.Contact(name="Jane Smith", address="jane@example.com")],
             cc=[],
             bcc=[],
             inline=[
-                _c_message.Attachment(
+                _message.Attachment(
                     part_id="1.2",
                     file_name="filename.gif",
                     content_type="image/gif",
@@ -77,7 +77,7 @@ class TestMessageModel:
                 )
             ],
             attachments=[
-                _c_message.Attachment(
+                _message.Attachment(
                     part_id="2",
                     file_name="filename.doc",
                     content_type="application/msword",
@@ -89,8 +89,8 @@ class TestMessageModel:
 
 
 @pytest.fixture
-def api() -> _c_api.API:
-    yield _c_api.API("https://example.com")
+def api() -> _api.API:
+    yield _api.API("https://example.com")
 
 
 class TestMessageAPI:
@@ -138,7 +138,7 @@ class TestMessageAPI:
 
         message = api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
-        assert isinstance(message, _c_message.Message)
+        assert isinstance(message, _message.Message)
         assert api.last_response.status_code == 200
 
 
@@ -313,7 +313,7 @@ class TestHeadersAPI:
         headers = api.get_message_headers(
             "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
         )
-        assert isinstance(headers, _c_message.Headers)
+        assert isinstance(headers, _message.Headers)
         assert headers.from_[0] == "Sender Smith <sender@example.com>"
         assert (
             headers.additional["Received"][1]
