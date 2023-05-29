@@ -111,7 +111,7 @@ class API:
         )
         self.last_response = response
         response.raise_for_status()
-        return _c_message.Attachment.from_json(response.text)
+        return response.text
 
     def get_message_headers(self, message_id: str):
         """
