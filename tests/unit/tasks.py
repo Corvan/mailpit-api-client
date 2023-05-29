@@ -9,7 +9,7 @@ logger = logging.getLogger("test_runner")
 def run_tool_in_container(
     c: inv.Context, env: dict, profile: str, project_name: str, tool: str
 ):
-    command = (
+    up_command = (
         f"docker compose "
         f"-p {project_name} "
         f"--profile {profile} "
@@ -18,5 +18,14 @@ def run_tool_in_container(
         f"--exit-code-from {tool} "
         f"{tool}"
     )
-    logger.debug(f"command: {command}")
-    c.run(command, env=env, pty=True)
+    logger.debug(f"command: {up_command}")
+    c.run(up_command, env=env, pty=True)
+    down_command = (
+        f"docker compose "
+        f"-p {project_name} "
+        f"--profile {profile} "
+        f"-f {DOCKER_COMPOSE_PATH} "
+        f"down "
+    )
+    logger.debug(f"command: {down_command}")
+    c.run(down_command, env=env, pty=True)
