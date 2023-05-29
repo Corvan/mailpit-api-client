@@ -87,3 +87,23 @@ def sent_message_id_with_inline_attachment(smtp_server, api, log):
     log.debug(f"Message ID: {messages.messages[0].id}")
     yield messages.messages[0].id
     api.delete_messages([message.id for message in messages.messages])
+
+
+# noinspection PyShadowingNames
+@_pt.fixture(scope="class")
+def sent_message_id_with_attachment_and_inline_attachment(smtp_server, api, log):
+    log.info("reading mail from file")
+    with open(
+        f"{_project_path}/tests/mail/email_with_attachment_and_inline_attachment.eml"
+    ) as fp:
+        mail = email.message_from_file(fp)
+    log.info("sending message")
+    smtp_server.send_message(
+        mail,
+        from_addr="Sender Smith <sender@example.com>",
+        to_addrs="Recipient Ross <recipient@example.com>",
+    )
+    messages = api.get_messages()
+    log.debug(f"Message ID: {messages.messages[0].id}")
+    yield messages.messages[0].id
+    api.delete_messages([message.id for message in messages.messages])
