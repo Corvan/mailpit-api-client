@@ -5,7 +5,6 @@ import pytest
 import respx
 
 import mailpit.client.api as _api
-import mailpit.client.models.message as _message
 import mailpit.client.models as _models
 
 
@@ -46,7 +45,7 @@ class TestMessageModel:
     }"""
 
     def test_message(self, response):
-        assert _message.Message.from_json(response) == _message.Message(
+        assert _models.Message.from_json(response) == _models.Message(
             id="d7a5543b-96dd-478b-9b60-2b465c9884de",
             message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             read=True,
@@ -68,7 +67,7 @@ class TestMessageModel:
             cc=[],
             bcc=[],
             inline=[
-                _message.Attachment(
+                _models.Attachment(
                     part_id="1.2",
                     file_name="filename.gif",
                     content_type="image/gif",
@@ -77,7 +76,7 @@ class TestMessageModel:
                 )
             ],
             attachments=[
-                _message.Attachment(
+                _models.Attachment(
                     part_id="2",
                     file_name="filename.doc",
                     content_type="application/msword",
@@ -138,7 +137,7 @@ class TestMessageAPI:
 
         message = api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
-        assert isinstance(message, _message.Message)
+        assert isinstance(message, _models.Message)
         assert api.last_response.status_code == 200
 
 
@@ -313,7 +312,7 @@ class TestHeadersAPI:
         headers = api.get_message_headers(
             "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
         )
-        assert isinstance(headers, _message.Headers)
+        assert isinstance(headers, _models.Headers)
         assert headers.from_[0] == "Sender Smith <sender@example.com>"
         assert (
             headers.additional["Received"][1]

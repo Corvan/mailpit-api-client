@@ -1,4 +1,3 @@
-import mailpit.client.models.messages as _messages
 import mailpit.client.models as _models
 
 
@@ -20,13 +19,13 @@ class TestAPIMessages:
         log.debug(f"messages: {messages}")
 
         log.info("checking asserts")
-        messages_expected = _messages.Messages(
+        messages_expected = _models.Messages(
             total=1,
             count=1,
             unread=1,
             start=0,
             messages=[
-                _messages.Message(
+                _models.MessageSummary(
                     # NOTE: this is on purpose,
                     # because those next 3 values cannot be predicted
                     id=messages.messages[0].id,

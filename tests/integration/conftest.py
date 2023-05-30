@@ -5,7 +5,7 @@ import smtplib
 import logging518.config
 import pytest as _pt
 
-import mailpit.client.api as _c_api
+import mailpit.client.api as _api
 
 
 _project_path = "/root/mailpit-api-client"
@@ -19,7 +19,7 @@ def log():
 
 @_pt.fixture(scope="module")
 def api():
-    client_api = _c_api.API("http://mailpit:8025")
+    client_api = _api.API("http://mailpit:8025")
     yield client_api
     messages = client_api.get_messages()
     client_api.delete_messages([message.id for message in messages.messages])
