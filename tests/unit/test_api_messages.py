@@ -20,6 +20,7 @@ class TestMessagesModels:
         "messages": [
             {
               "ID": "1c575821-70ba-466f-8cee-2e1cf0fcdd0f",
+              "MessageID": "20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
               "Read": false,
               "From": {
                 "Name": "John Doe",
@@ -65,6 +66,9 @@ class TestMessagesModels:
     def test_message(self, message):
         assert isinstance(message, _messages.Message)
         assert "1c575821-70ba-466f-8cee-2e1cf0fcdd0f" == message.id
+        assert (
+            "20220727034441.7za34h6ljuzfpmj6@localhost.localhost" == message.message_id
+        )
         assert message.read is False
         assert message.subject == "Message subject"
         assert message.created == datetime.datetime(
@@ -110,6 +114,7 @@ class TestMessagesAPI:
             "messages": [
                 {
                     "ID": "1c575821-70ba-466f-8cee-2e1cf0fcdd0f",
+                    "MessageID": "20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
                     "Read": False,
                     "From": {"Name": "John Doe", "Address": "john@example.com"},
                     "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],

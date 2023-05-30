@@ -30,6 +30,7 @@ class TestAPIMessages:
                     # NOTE: this is on purpose,
                     # because those next 3 values cannot be predicted
                     id=messages.messages[0].id,
+                    message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
                     created=messages.messages[0].created,
                     size=messages.messages[0].size,
                     from_=_models.Contact(
