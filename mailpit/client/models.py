@@ -1,4 +1,3 @@
-from __future__ import annotations
 import dataclasses as _dc
 import datetime as _dt
 import decimal as _d
@@ -164,6 +163,7 @@ class MessageSummary(_dj.DataClassJsonMixin):
     # pylint: disable=invalid-name
 
     id: str = _dc.field(init=True, metadata=_dj.config(field_name="ID"))
+    message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
     read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
     """always true (message marked read on open)"""
     from_: Optional[Contact] = _dc.field(
