@@ -61,7 +61,7 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: pytest -slx --log-level=DEBUG /root/mailpit-api-client/tests/unit
+    command: pytest -slx -vv --log-level=DEBUG /root/mailpit-api-client/tests/unit
 
   mailpit:
     image: axllent/mailpit:latest
@@ -85,5 +85,5 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: pytest --showlocals --exitfirst -s /root/mailpit-api-client/tests/integration
+    command: pytest --showlocals --exitfirst -vv -s /root/mailpit-api-client/tests/integration
 

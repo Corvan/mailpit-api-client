@@ -8,6 +8,11 @@ import mailpit.client.api as _api
 import mailpit.client.models as _models
 
 
+@pytest.fixture
+def api() -> _api.API:
+    yield _api.API("https://example.com")
+
+
 class TestMessageModel:
     @pytest.fixture(scope="class")
     def response(self) -> str:
@@ -17,8 +22,8 @@ class TestMessageModel:
         "Read": true,
         "From": {"Name": "John Doe", "Address": "john@example.com"},
         "To": [{"Name": "Jane Smith", "Address": "jane@example.com"}],
-        "Cc": [],
-        "Bcc": [],
+        "Cc": [{"Name": "Testy C. C. McTestface", "Address": "testycc@mctestface.com"}],
+        "Bcc": [{"Name": "Testy B. C. C. McTestface", "Address": "testybccc@mctestface.com"}],
         "Subject": "Message subject",
         "Date": "2016-09-07T16:46:00+13:00",
         "Text": "Plain text MIME part of the email",
@@ -44,8 +49,9 @@ class TestMessageModel:
         ]
     }"""
 
-    def test_message(self, response):
-        assert _models.Message.from_json(response) == _models.Message(
+    @pytest.fixture(scope="class")
+    def message(self):
+        return _models.Message(
             id="d7a5543b-96dd-478b-9b60-2b465c9884de",
             message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             read=True,
@@ -64,8 +70,16 @@ class TestMessageModel:
             size=79499,
             from_=_models.Contact(name="John Doe", address="john@example.com"),
             to=[_models.Contact(name="Jane Smith", address="jane@example.com")],
-            cc=[],
-            bcc=[],
+            cc=[
+                _models.Contact(
+                    name="Testy C. C. McTestface", address="testycc@mctestface.com"
+                )
+            ],
+            bcc=[
+                _models.Contact(
+                    name="Testy B. C. C. McTestface", address="testybccc@mctestface.com"
+                )
+            ],
             inline=[
                 _models.Attachment(
                     part_id="1.2",
@@ -86,10 +100,177 @@ class TestMessageModel:
             ],
         )
 
+    def test_equal__same_object(self, message):
+        assert message == message
 
-@pytest.fixture
-def api() -> _api.API:
-    yield _api.API("https://example.com")
+    def test_equal__different_objects(self, message):
+        assert message == _models.Message(
+            id="d7a5543b-96dd-478b-9b60-2b465c9884de",
+            message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
+            read=True,
+            subject="Message subject",
+            date=datetime.datetime(
+                year=2016,
+                month=9,
+                day=7,
+                hour=16,
+                minute=46,
+                second=00,
+                tzinfo=datetime.timezone(datetime.timedelta(hours=13)),
+            ),
+            text="Plain text MIME part of the email",
+            html="HTML MIME part (if exists)",
+            size=79499,
+            from_=_models.Contact(name="John Doe", address="john@example.com"),
+            to=[_models.Contact(name="Jane Smith", address="jane@example.com")],
+            cc=[
+                _models.Contact(
+                    name="Testy C. C. McTestface", address="testycc@mctestface.com"
+                )
+            ],
+            bcc=[
+                _models.Contact(
+                    name="Testy B. C. C. McTestface", address="testybccc@mctestface.com"
+                )
+            ],
+            inline=[
+                _models.Attachment(
+                    part_id="1.2",
+                    file_name="filename.gif",
+                    content_type="image/gif",
+                    content_id="919564503@07092006-1525",
+                    size=7760,
+                )
+            ],
+            attachments=[
+                _models.Attachment(
+                    part_id="2",
+                    file_name="filename.doc",
+                    content_type="application/msword",
+                    content_id="",
+                    size=43520,
+                )
+            ],
+        )
+
+    @pytest.mark.parametrize(
+        "inequal",
+        [
+            {"message_id": "inequal"},
+            {"subject": "inequal"},
+            {
+                "date": datetime.datetime(
+                    year=2016,
+                    month=9,
+                    day=8,
+                    hour=17,
+                    minute=47,
+                    second=1,
+                    tzinfo=datetime.timezone(datetime.timedelta(hours=13)),
+                ).isoformat()
+            },
+            {"from_": {"name": "inequal", "address": "inequal@inequal.org"}},
+            {"to": [{"name": "inequal", "address": "inequal@inequal.org"}]},
+            {
+                "to": [
+                    {"name": "Jane Smith", "address": "jane@example.com"},
+                    {"name": "inequal", "address": "inequal@inequal.org"},
+                ],
+            },
+            {"cc": []},
+            {"cc": None},
+            {"cc": [{"name": "inequal", "address": "inequal@inequal.org"}]},
+            {
+                "cc": [
+                    {"name": "Jane Smith", "address": "jane@example.com"},
+                    {"name": "inequal", "address": "inequal@inequal.org"},
+                ],
+            },
+            {"bcc": []},
+            {"bcc": None},
+            {"bcc": [{"name": "inequal", "address": "inequal@inequal.org"}]},
+            {
+                "bcc": [
+                    {"name": "Jane Smith", "address": "jane@example.com"},
+                    {"name": "inequal", "address": "inequal@inequal.org"},
+                ],
+            },
+            {"text": None},
+            {"text": ""},
+            {"text": "inequal"},
+            {"html": None},
+            {"html": ""},
+            {"html": "<html><head></head><body><p>inequal</p></body></html>"},
+            {"inline": []},
+            {
+                "inline": [
+                    {
+                        "part_id": "inequal",
+                        "file_name": "filename.gif",
+                        "content_type": "image/gif",
+                        "content_id": "919564503@07092006-1525",
+                        "size": 7760,
+                    }
+                ]
+            },
+            {
+                "inline": [
+                    {
+                        "part_id": "1.2",
+                        "file_name": "filename.gif",
+                        "content_type": "image/gif",
+                        "content_id": "919564503@07092006-1525",
+                        "size": 7760,
+                    },
+                    {
+                        "part_id": "inequal",
+                        "file_name": "filename.gif",
+                        "content_type": "image/gif",
+                        "content_id": "919564503@07092006-1525",
+                        "size": 7760,
+                    },
+                ]
+            },
+            {"attachments": []},
+            {
+                "attachments": [
+                    {
+                        "part_id": "inequal",
+                        "file_name": "filename.doc",
+                        "content_type": "application/msword",
+                        "content_id": "",
+                        "size": 43520,
+                    }
+                ]
+            },
+            {
+                "attachments": [
+                    {
+                        "part_id": "2",
+                        "file_name": "filename.doc",
+                        "content_type": "application/msword",
+                        "content_id": "",
+                        "size": 43520,
+                    },
+                    {
+                        "part_id": "inequal",
+                        "file_name": "filename.doc",
+                        "content_type": "application/msword",
+                        "content_id": "",
+                        "size": 43520,
+                    },
+                ]
+            },
+        ],
+    )
+    def test_equal__not_equal(self, message, inequal):
+        message_dict = message.to_dict()
+        message_dict.update(inequal)
+        inequal_message = _models.Message.from_dict(message_dict)
+        assert message != inequal_message
+
+    def test_message_from_json(self, response, message):
+        assert _models.Message.from_json(response) == message
 
 
 class TestMessageAPI:

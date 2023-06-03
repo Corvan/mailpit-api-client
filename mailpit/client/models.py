@@ -26,6 +26,12 @@ class Contact:
     name: str = _dc.field(init=True, metadata=_dj.config(field_name="Name"))
     address: str = _dc.field(init=True, metadata=_dj.config(field_name="Address"))
 
+    def __lt__(self, other):
+        return f"{other.name} {other.address}".__lt__(f"{self.name} {self.address}")
+
+    def __hash__(self):
+        return f"{self.name} {self.address}".__hash__()
+
 
 @_dc.dataclass(init=True)
 class Attachment(_dj.DataClassJsonMixin):
@@ -43,6 +49,21 @@ class Attachment(_dj.DataClassJsonMixin):
     content_id: str = _dc.field(init=True, metadata=_dj.config(field_name="ContentID"))
     size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
 
+    def __lt__(self, other: "Attachment"):
+        return (
+            f"{other.part_id} {other.file_name} {other.content_type} "
+            f"{other.content_id} {other.size}".__lt__(
+                f"{self.part_id} {self.file_name} {self.content_type} "
+                f"{self.content_id} {self.size}"
+            )
+        )
+
+    def __hash__(self):
+        return (
+            f"{self.part_id} {self.file_name} {self.content_type} "
+            f"{self.content_id} {self.size}"
+        ).__hash__()
+
 
 @_dc.dataclass(init=True)
 class Message(_dj.DataClassJsonMixin):
@@ -55,17 +76,26 @@ class Message(_dj.DataClassJsonMixin):
     # pylint: disable=invalid-name
 
     id: str = _dc.field(init=True, metadata=_dj.config(field_name="ID"))
+    """The message's database ID, of Mailpit's message-database"""
     message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
+    """The message's RFC-5322 message-id"""
     read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
     """always true (message marked read on open)"""
     from_: Optional[Contact] = _dc.field(
         init=True, metadata=_dj.config(field_name="From")
     )
+    """The :Contact: the message is from"""
     to: list[Contact] = _dc.field(init=True, metadata=_dj.config(field_name="To"))
+    """Message To-Header, the list of :Contact: the message is addressed to"""
     cc: Optional[list[Contact]] = _dc.field(
         init=True, metadata=_dj.config(field_name="Cc")
     )
-    bcc: list[Contact] = _dc.field(init=True, metadata=_dj.config(field_name="Bcc"))
+    """Message CC-Header, the list of :Contact: that the message is coal-copied to"""
+    bcc: Optional[list[Contact]] = _dc.field(
+        init=True, metadata=_dj.config(field_name="Bcc")
+    )
+    """Message BCC-Header, the list of :Contact:, that the message is blindly 
+    coal-copied to"""
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
     """Message subject"""
     date: _dt.date = _dc.field(
@@ -87,9 +117,79 @@ class Message(_dj.DataClassJsonMixin):
     inline: list[Attachment] = _dc.field(
         init=True, metadata=_dj.config(field_name="Inline")
     )
+    """Inline Attachments"""
     attachments: list[Attachment] = _dc.field(
         init=True, metadata=_dj.config(field_name="Attachments")
     )
+    """Attachments"""
+
+    def __eq__(self, other):
+        """check if a message is equal to another message. Fields not included are
+        Mailpit's Database-ID because it might not be known and the size in bytes,
+        because it might be differently depending on the way messages are saved
+
+        :returns: :py:class:`True` if two messages are equal, :py:class:`False` if not
+        """
+        if not isinstance(other, Message):
+            raise NotImplementedError
+        if other is None:
+            return False
+        if other.message_id is None and self.message_id is not None:
+            return False
+        if other is not None and self.message_id is None:
+            return False
+        if other.message_id is not None and self.message_id is not None:
+            if other.message_id != self.message_id:
+                return False
+        if other.from_ != self.from_:
+            return False
+        if other.subject != self.subject:
+            return False
+        if other.date != self.date:
+            return False
+        if other.text != self.text:
+            return False
+        if other.html != self.html:
+            return False
+        if set(sorted(other.to)).difference(sorted(self.to)):
+            return False
+        if (
+            other.cc is None
+            and self.cc is not None
+            or other.cc is not None
+            and self.cc is None
+        ):
+            return False
+        if len(other.cc) != len(self.cc):
+            return False
+        if set(sorted(other.cc)).difference(sorted(self.cc)):
+            return False
+        if (
+            other.bcc is None
+            and self.bcc is not None
+            or other.bcc is not None
+            and self.bcc is None
+        ):
+            return False
+        if len(other.bcc) != len(self.bcc):
+            return False
+        if set(sorted(other.bcc)).difference(sorted(self.bcc)) or set(
+            sorted(self.bcc)
+        ).difference(sorted(other.bcc)):
+            return False
+        if len(other.inline) != len(self.inline):
+            return False
+        if set(sorted(other.inline)).difference(sorted(self.inline)) or set(
+            sorted(self.inline)
+        ).difference(sorted(other.inline)):
+            return False
+        if len(other.attachments) != len(self.attachments):
+            return False
+        if set(sorted(other.attachments)).difference(sorted(self.attachments)) or set(
+            sorted(self.attachments)
+        ).difference(sorted(other.attachments)):
+            return False
+        return True
 
 
 def _datelist_encoder(encodes: Iterable[_dt.datetime]) -> list[str]:
