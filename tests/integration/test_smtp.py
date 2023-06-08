@@ -1,3 +1,4 @@
+import os
 import re
 
 import pytest as _pt
@@ -7,7 +8,11 @@ class TestSMTPConnect:
     @_pt.fixture
     def connection_response(self, log, smtp_server):
         log.info("connecting to smtp_server")
-        response = smtp_server.connect("mailpit", 1025)
+        if os.environ["HOME"] == "/root":
+            response = smtp_server.connect("mailpit", 1025)
+        else:
+            response = smtp_server.connect("localhost", 1025)
+
         log.debug(f"response: {response}")
         return response
 

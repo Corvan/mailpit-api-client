@@ -64,6 +64,16 @@ class EMailTestCase(unittest.TestCase):
                 self._formatMessage(msg, f"{first} != {second}")
             )
 
-    def assertMessageReceived(self, message: _message.Message):
+    def assertMessageReceived(self, message: _models.Message):
         """Fail if the passed message has not been sent to Mailpit"""
-        ...
+        if self.api is None:
+            raise self.failureException(
+                self._formatMessage(msg, "self.api may not be None")
+            )
+        messages: _models.Messages = self.api.get_messages()
+        if message_id not in [message.message_id for message in messages.messages]:
+            raise self.failureException(
+                self._formatMessage(
+                    msg, "Message not found, so it has not been received"
+                )
+            )

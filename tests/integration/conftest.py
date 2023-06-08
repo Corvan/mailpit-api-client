@@ -1,5 +1,6 @@
 import email
 import logging
+import os
 import smtplib
 
 import logging518.config
@@ -7,8 +8,10 @@ import pytest as _pt
 
 import mailpit.client.api as _api
 
-
-_project_path = "/root/mailpit-api-client"
+if os.environ["HOME"] == "/root":
+    _project_path = "/root/mailpit-api-client"
+else:
+    _project_path = "."
 
 
 @_pt.fixture(scope="session")
@@ -19,7 +22,10 @@ def log():
 
 @_pt.fixture(scope="module")
 def api():
-    client_api = _api.API("http://mailpit:8025")
+    if os.environ["HOME"] == "/root":
+        client_api = _api.API("http://mailpit:8025")
+    else:
+        client_api = _api.API("http://localhost:8025")
     yield client_api
     messages = client_api.get_messages()
     client_api.delete_messages([message.id for message in messages.messages])
@@ -29,7 +35,10 @@ def api():
 @_pt.fixture(scope="module")
 def smtp_server(log, api):
     log.info("connecting to smtp_server")
-    server = smtplib.SMTP("mailpit", 1025)
+    if os.environ["HOME"] == "/root":
+        server = smtplib.SMTP("mailpit", 1025)
+    else:
+        server = smtplib.SMTP("localhost", 1025)
     yield server
     log.info("closing smtp server connection")
     server.quit()

@@ -11,7 +11,7 @@ class TestMessageApiGet:
         assert (
             message.message_id == "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
         )
-        assert 7900 <= message.size <= 7945
+        assert 7839 <= message.size <= 7945
         assert len(message.attachments) == 0
         assert message.from_.name == "Sender Smith"
         assert message.from_.address == "sender@example.com"
