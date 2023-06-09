@@ -1,3 +1,35 @@
+[project]
+name = "mailpit-api-client"
+version = "0.1.0"
+description = ""
+authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
+requires-python = ">=3.8"
+#readme = "README.adoc"
+license = {file = "LICENSE"}
+
+dependencies = [
+    "dataclasses_json",
+    "httpx",
+    "ruff",
+    "invoke >= 2.0.0",
+    "logging518 >= 1.0.0",
+    "pytest >= 7.3.1",
+    "pytest-docker >= 1.0.1",
+]
+
+
+[project.optional-dependencies]
+dev = [
+    "black",
+    "mypy>=1.1.1",
+    "pylint",
+    "respx"
+]
+
+[project.urls]
+repository = "https://github.com/Corvan/mailpit-api-client"
+
+
 [tool.poetry]
 name = "mailpit-api-client"
 version = "0.1.0"
