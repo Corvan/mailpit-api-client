@@ -1,3 +1,6 @@
+import pathlib as _pathlib
+from typing import Callable
+
 import mailpit.client.models as _models
 
 
@@ -10,9 +13,14 @@ class TestAPIMessages:
         assert len(messages.messages) == 0
 
     def test_messages_endpoint__sendmessage(
-        self, log, sent_message_id_without_attachment, api
+        self,
+        log,
+        sent_message_id: Callable,
+        message_without_attachment: _pathlib.Path,
+        api,
     ):
         log.info("reading mail from file")
+        sent_message_id(message_without_attachment)
 
         log.info("retrieving messages via API-endpoint")
         messages = api.get_messages()
