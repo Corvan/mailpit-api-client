@@ -3,7 +3,7 @@ Mailpit-API"""
 from typing import Optional
 import unittest
 
-import mailpit.client.models.message as _message
+import mailpit.client.models as _models
 import mailpit.client.api as _api
 
 
@@ -32,7 +32,7 @@ class EMailTestCase(unittest.TestCase):
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.addTypeEqualityFunc(_message.Message, self.assertMessageEqual)
+        self.addTypeEqualityFunc(_models.Message, self.assertMessageEqual)
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -64,7 +64,11 @@ class EMailTestCase(unittest.TestCase):
                 self._formatMessage(msg, f"{first} != {second}")
             )
 
-    def assertMessageReceived(self, message: _models.Message):
+    def assertMessageReceived(
+        self,
+        message_id: str,
+        msg: str = None,
+    ):
         """Fail if the passed message has not been sent to Mailpit"""
         if self.api is None:
             raise self.failureException(

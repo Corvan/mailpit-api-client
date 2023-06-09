@@ -8,7 +8,7 @@ import unittest as _unittest
 import logging518.config
 
 from mailpit.testing.unittest import EMailTestCase
-import mailpit.client.models.messages as _messages
+import mailpit.client.models as _models
 
 if _os.environ["HOME"] == "/root":
     PROJECT_PATH = "/root/mailpit-api-client"
