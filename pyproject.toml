@@ -4,7 +4,7 @@ version = "0.10.1"
 description = ""
 authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
 requires-python = ">=3.8"
-#readme = "README.adoc"
+readme = "README.rst"
 license = {file = "LICENSE"}
 
 dependencies = [
