@@ -6,6 +6,7 @@ import smtplib as _smtplib
 import unittest as _unittest
 
 import logging518.config
+import pytest as _pytest
 
 from mailpit.testing.unittest import EMailTestCase
 import mailpit.client.models as _models
@@ -269,33 +270,18 @@ class TestSetUpClassWithoutSuper(EMailTestCase):
         )
 
 
-def test_unittest_from_pytest__test_setup_class_without_super():
+@_pytest.mark.parametrize(
+    "unittest_class",
+    [
+        TestSetUpClassWithoutSuper,
+        TestSetUpClassWithSuper,
+        TestMail,
+        TestMailSend,
+    ],
+)
+def test_unittest_from_pytest(unittest_class):
     test_loader = _unittest.TestLoader()
-    test_suite = test_loader.loadTestsFromTestCase(TestSetUpClassWithoutSuper)
-    test_result = _unittest.TestResult()
-    test_result = test_suite.run(test_result)
-    assert test_result.wasSuccessful()
-
-
-def test_unittest_from_pytest__test_setup_class_with_super():
-    test_loader = _unittest.TestLoader()
-    test_suite = test_loader.loadTestsFromTestCase(TestSetUpClassWithSuper)
-    test_result = _unittest.TestResult()
-    test_result = test_suite.run(test_result)
-    assert test_result.wasSuccessful()
-
-
-def test_unittest_from_pytest__test_mail():
-    test_loader = _unittest.TestLoader()
-    test_suite = test_loader.loadTestsFromTestCase(TestMail)
-    test_result = _unittest.TestResult()
-    test_result = test_suite.run(test_result)
-    assert test_result.wasSuccessful()
-
-
-def test_unittest_from_pytest__test_mail_received():
-    test_loader = _unittest.TestLoader()
-    test_suite = test_loader.loadTestsFromTestCase(TestMailSend)
+    test_suite = test_loader.loadTestsFromTestCase(unittest_class)
     test_result = _unittest.TestResult()
     test_result = test_suite.run(test_result)
     assert test_result.wasSuccessful()
