@@ -1,3 +1,4 @@
+"""Testing unittest test-helpers with pytest"""
 import datetime as _datetime
 import email as _email
 import os as _os
@@ -11,7 +12,8 @@ import mailpit.client.models as _models
 
 
 class TestMail(EMailTestCase):
-    _log.debug(f"HOME={_os.environ['HOME']}")
+    """class to test :py:method:`EMailTestCase.assert_message_equal()`"""
+
     if _os.environ["HOME"] == "/root":
         api_url = "http://mailpit:8025"
     else:
@@ -190,6 +192,8 @@ class TestMail(EMailTestCase):
 
 
 class TestMailSend(EMailTestCase):
+    """class to test :py:method:`EmailTestCase.assert_message_received()`"""
+
     if _os.environ["HOME"] == "/root":
         api_url = "http://mailpit:8025"
         project_path = "/root/mailpit-api-client"
@@ -198,6 +202,9 @@ class TestMailSend(EMailTestCase):
         project_path = "."
 
     def setUp(self) -> None:
+        """send a single mail in order to be able to call
+        :py:method:`EmailTestCase.assert_message_received()` and check if the method
+        passes on success and fails on error"""
         if _os.environ["HOME"] == "/root":
             self.smtp_server = _smtplib.SMTP("mailpit", 1025)
         else:
@@ -228,6 +235,9 @@ class TestMailSend(EMailTestCase):
 
 
 class TestSetUpClassWithSuper(EMailTestCase):
+    """Test :py:method:`EmailTestCase.assert_message_received()` with a
+    :py:method:`setUpClass()`, that calls `super()`"""
+
     if _os.environ["HOME"] == "/root":
         api_url = "http://mailpit:8025"
     else:
@@ -243,6 +253,9 @@ class TestSetUpClassWithSuper(EMailTestCase):
 
 
 class TestSetUpClassWithoutSuper(EMailTestCase):
+    """Test :py:method:`EmailTestCase.assert_message_received()` with a
+    :py:method:`setUpClass()`, that does _not_ call `super()`"""
+
     if _os.environ["HOME"] == "/root":
         api_url = "http://mailpit:8025"
     else:
@@ -270,6 +283,8 @@ class TestSetUpClassWithoutSuper(EMailTestCase):
     ],
 )
 def test_unittest_from_pytest(unittest_class):
+    """:py:module:`pytest` function that calls all TestCase-classes above
+    via unittest, to be sure, that they work with unittest as well"""
     test_loader = _unittest.TestLoader()
     test_suite = test_loader.loadTestsFromTestCase(unittest_class)
     test_result = _unittest.TestResult()
