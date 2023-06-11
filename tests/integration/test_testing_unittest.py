@@ -1,23 +1,13 @@
 import datetime as _datetime
 import email as _email
-import logging as _logging
 import os as _os
 import smtplib as _smtplib
 import unittest as _unittest
 
-import logging518.config
 import pytest as _pytest
 
 from mailpit.testing.unittest import EMailTestCase
 import mailpit.client.models as _models
-
-if _os.environ["HOME"] == "/root":
-    PROJECT_PATH = "/root/mailpit-api-client"
-else:
-    PROJECT_PATH = "."
-
-logging518.config.fileConfig(f"{PROJECT_PATH}/pyproject.toml")
-_log = _logging.getLogger("tests")
 
 
 class TestMail(EMailTestCase):
