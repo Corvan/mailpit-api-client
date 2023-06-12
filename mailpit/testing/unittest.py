@@ -67,7 +67,7 @@ class EMailTestCase(_unittest.TestCase):
     def assertMessageReceived(
         self,
         message_id: str,
-        msg: str = None,
+        msg: Optional[str] = None,
     ):
         """Fail if the passed message has not been sent to Mailpit"""
         if self.api is None:
