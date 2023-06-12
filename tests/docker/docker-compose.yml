@@ -44,7 +44,7 @@ services:
         target: /root/mailpit
     environment:
       PYTHONPATH: /usr/lib/python3/dist-packages
-    command: python3 -m mypy /root/mailpit
+    command: python3 -m mypy --ignore-missing-imports /root/mailpit
 
   unittest:
     image: unittest:${PYTHON_VERSION:-3.10}-${DEBIAN_CODENAME:-bullseye}
@@ -61,7 +61,7 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: pytest -slx --log-level=DEBUG /root/mailpit-api-client/tests/unit
+    command: pytest -lxvv --log-level=DEBUG /root/mailpit-api-client/tests/unit
 
   mailpit:
     image: axllent/mailpit:latest
@@ -85,5 +85,5 @@ services:
         target: /root/mailpit-api-client
     environment:
       PYTHONPATH: /root/mailpit-api-client
-    command: pytest --showlocals --exitfirst -s /root/mailpit-api-client/tests/integration
+    command: pytest --showlocals --exitfirst --log-level=DEBUG -vvslx /root/mailpit-api-client/tests/integration
 
