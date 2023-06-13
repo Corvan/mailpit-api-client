@@ -31,7 +31,6 @@ jobs:
         black $GITHUB_WORKSPACE/mailpit
 
   lint:
-    needs: ["black"]
     runs-on: ubuntu-latest
     strategy:
       matrix:
@@ -44,6 +43,45 @@ jobs:
         password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
     steps:
       - uses: actions/checkout@v3
-      - name: black
+      - name: lint
         run: |
           ruff check $GITHUB_WORKSPACE/mailpit
+
+  mypy:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
+        debian_codename: [ "buster", "bullseye" ]
+    container:
+      image: ghcr.io/corvan/mypy:${{ matrix.python_version }}-${{ matrix.debian_codename }}
+      credentials:
+        username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+        password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: mypy
+        env:
+          PYTHONPATH: /usr/lib/python3/dist-packages
+        run: |
+           python3 -m mypy --ignore-missing-imports $GITHUB_WORKSPACE/mailpit
+
+  unittest:
+    needs: ["black", "lint", "mypy"]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
+        debian_codename: [ "buster", "bullseye" ]
+    container:
+      image: ghcr.io/corvan/unittest:${{ matrix.python_version }}-${{ matrix.debian_codename }}
+      credentials:
+        username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+        password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+    steps:
+      - uses: actions/checkout@v3
+      - name: unittest
+        env:
+          PYTHONPATH: $GITHUB_WORKSPACE/mailpit-api-client
+        run: |
+          pytest -lxvv --log-level=DEBUG $GITHUB_WORKSPACE/mailpit-api-client/tests/unit
