@@ -83,4 +83,29 @@ jobs:
       - name: unittest
         run: |
           export PYTHONPATH=$GITHUB_WORKSPACE
-          pytest -lxvv --log-level=DEBUG tests/unit
+          pytest --showlocals --exitfirst --log-level=DEBUG -vv tests/unit
+
+  integration:
+    needs: ["black", "lint", "mypy"]
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
+        debian_codename: [ "buster", "bullseye" ]
+    container:
+      image: ghcr.io/corvan/unittest:${{ matrix.python_version }}-${{ matrix.debian_codename }}
+      credentials:
+        username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+        password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+    services:
+      mailpit:
+        image: axllent/mailpit:latest
+        ports:
+          - 8025:8025
+          - 1025:1025
+    steps:
+      - uses: actions/checkout@v3
+      - name: unittest
+        run: |
+          export PYTHONPATH=$GITHUB_WORKSPACE
+          pytest --showlocals --exitfirst --log-level=DEBUG -vvs tests/integration
