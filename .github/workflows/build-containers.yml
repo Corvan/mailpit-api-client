@@ -1,7 +1,6 @@
 name: build container images
 on:
   schedule:
-    #- cron: "23 13 3 * *"
     - cron: "20 13 * * *"
 
 jobs:
