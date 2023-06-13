@@ -30,7 +30,7 @@ jobs:
         with:
           push: true
           file: ./tests/docker/${{ matrix.task }}.Dockerfile
-          tags: Corvan/${{ matrix.task }}:${{ matrix.python_version }}-${{ matrix.debian_codename }}
+          tags: corvan/${{ matrix.task }}:${{ matrix.python_version }}-${{ matrix.debian_codename }}
           build-args: PYTHON_VERSION=${{ matrix.python_version }}-${{ matrix.debian_codename }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
