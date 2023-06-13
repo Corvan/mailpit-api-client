@@ -36,8 +36,8 @@ def api():
 @_pt.fixture(scope="module")
 def smtp_server(log, api):
     log.info("connecting to smtp_server")
-    if os.environ["HOME"] == "/root" or pathlib.Path("/github").is_relative_to(
-        pathlib.Path(os.environ["HOME"])
+    if os.environ["HOME"] == "/root" or pathlib.Path(os.environ["HOME"]).is_relative_to(
+        pathlib.Path("/github")
     ):
         server = smtplib.SMTP("mailpit", 1025)
     else:
