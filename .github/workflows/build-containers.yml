@@ -2,6 +2,8 @@ name: build container images
 on:
   schedule:
     - cron: "42 13 2 * *"
+  push:
+    branches: ["ci"]
 
 jobs:
   build:
