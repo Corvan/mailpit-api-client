@@ -21,7 +21,9 @@ jobs:
         debian_codename: ["buster", "bullseye"]
     container:
       image: ghcr.io/corvan/black:${{ matrix.python_version }}-${{ matrix.debian_codename }}
-
+      credentials:
+        username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
+        password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
     steps:
     - uses: actions/checkout@v3
 
