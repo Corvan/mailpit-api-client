@@ -8,6 +8,7 @@ class TestSMTPConnect:
     @_pt.fixture
     def connection_response(self, log, smtp_server):
         log.info("connecting to smtp_server")
+        log.debug(os.environ["HOME"])
         if os.environ["HOME"] == "/root":
             response = smtp_server.connect("mailpit", 1025)
         else:

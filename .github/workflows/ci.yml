@@ -105,7 +105,7 @@ jobs:
           - 1025:1025
     steps:
       - uses: actions/checkout@v3
-      - name: unittest
+      - name: integration tests
         run: |
           export PYTHONPATH=$GITHUB_WORKSPACE
           pytest --showlocals --exitfirst --log-level=DEBUG -vvs tests/integration
