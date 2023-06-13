@@ -1,5 +1,4 @@
 import datetime as _dt
-import pathlib
 import pathlib as _pathlib
 from typing import Callable
 

@@ -1,4 +1,5 @@
 import os
+import pathlib as _pathlib
 import re
 
 import pytest as _pt
@@ -8,7 +9,9 @@ class TestSMTPConnect:
     @_pt.fixture
     def connection_response(self, log, smtp_server):
         log.info("connecting to smtp_server")
-        if os.environ["HOME"] == "/root":
+        if os.environ["HOME"] == "/root" or _pathlib.Path(
+            os.environ["HOME"]
+        ).is_relative_to(_pathlib.Path("/github")):
             response = smtp_server.connect("mailpit", 1025)
         else:
             response = smtp_server.connect("localhost", 1025)
