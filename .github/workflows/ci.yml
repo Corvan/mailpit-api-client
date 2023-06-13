@@ -81,5 +81,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: unittest
+        env:
+          PYTHONPATH: $GITHUB_WORKSPACE
         run: |
           pytest -lxvv --log-level=DEBUG $GITHUB_WORKSPACE/tests/unit
