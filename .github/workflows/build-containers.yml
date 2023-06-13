@@ -12,8 +12,7 @@ jobs:
       matrix:
         python_version: ["3.9", "3.10", "3.11", "3.12-rc"]
         debian_codename: ["buster", "bullseye"]
-        #task: ["black", "lint", "mypy", "unittest", "integration"]
-        task: ["black", "lint", "mypy"]
+        task: ["black", "lint", "mypy", "unittest", "integration"]
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
