@@ -36,6 +36,7 @@ def api():
 @_pt.fixture(scope="module")
 def smtp_server(log, api):
     log.info("connecting to smtp_server")
+    log.debug(f"HOME={os.environ['HOME']}")
     if os.environ["HOME"] == "/root":
         server = smtplib.SMTP("mailpit", 1025)
     else:
