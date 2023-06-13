@@ -86,7 +86,7 @@ jobs:
           pytest --showlocals --exitfirst --log-level=DEBUG -vv tests/unit
 
   integration:
-    needs: ["black", "lint", "mypy"]
+    needs: [unittest]
     runs-on: ubuntu-latest
     strategy:
       matrix:
