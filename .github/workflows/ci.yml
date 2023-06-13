@@ -93,7 +93,7 @@ jobs:
         python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
         debian_codename: [ "buster", "bullseye" ]
     container:
-      image: ghcr.io/corvan/unittest:${{ matrix.python_version }}-${{ matrix.debian_codename }}
+      image: ghcr.io/corvan/integration:${{ matrix.python_version }}-${{ matrix.debian_codename }}
       credentials:
         username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
         password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
