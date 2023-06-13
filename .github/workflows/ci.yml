@@ -27,4 +27,4 @@ jobs:
 
     - name: black
       run: |
-        black ${{ GITHUB_WORKSPACE }}/mailpit
+        black $GITHUB_WORKSPACE/mailpit
