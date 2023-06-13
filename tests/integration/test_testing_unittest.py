@@ -197,14 +197,15 @@ class TestMail(EMailTestCase):
 class TestMailSend(EMailTestCase):
     """class to test :py:method:`EmailTestCase.assert_message_received()`"""
 
-    if _os.environ["HOME"] == "/root" or _pathlib.Path(
-        _os.environ["HOME"]
-    ).is_relative_to(_pathlib.Path("/github")):
+    if _os.environ["HOME"] == "/root":
         api_url = "http://mailpit:8025"
-        project_path = "/root/mailpit-api-client"
+        project_path = _pathlib.Path("/root/mailpit-api-client")
+    elif _pathlib.Path(_os.environ["HOME"]).is_relative_to(_pathlib.Path("/github")):
+        api_url = "http://mailpit:8025"
+        project_path = _pathlib.Path(_os.environ["GITHUB_WORKSPACE"])
     else:
         api_url = "http://localhost:8025"
-        project_path = "."
+        project_path = _pathlib.Path(".")
 
     def setUp(self) -> None:
         """send a single mail in order to be able to call
