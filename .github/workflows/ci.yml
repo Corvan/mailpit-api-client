@@ -81,7 +81,5 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: unittest
-        env:
-          PYTHONPATH: $GITHUB_WORKSPACE/mailpit-api-client
         run: |
-          pytest -lxvv --log-level=DEBUG $GITHUB_WORKSPACE/mailpit-api-client/tests/unit
+          pytest -lxvv --log-level=DEBUG $GITHUB_WORKSPACE/tests/unit
