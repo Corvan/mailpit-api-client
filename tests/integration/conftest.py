@@ -9,7 +9,9 @@ import pytest as _pt
 
 import mailpit.client.api as _api
 
-if os.environ["HOME"] == "/root":
+if os.environ["HOME"] == "/root" or pathlib.Path(os.environ["HOME"]).is_relative_to(
+    pathlib.Path("/github")
+):
     _project_path = pathlib.Path("/root/mailpit-api-client")
 else:
     _project_path = pathlib.Path(".")
@@ -23,7 +25,9 @@ def log():
 
 @_pt.fixture(scope="module")
 def api():
-    if os.environ["HOME"] == "/root":
+    if os.environ["HOME"] == "/root" or pathlib.Path(os.environ["HOME"]).is_relative_to(
+        pathlib.Path("/github")
+    ):
         client_api = _api.API("http://mailpit:8025")
     else:
         client_api = _api.API("http://localhost:8025")

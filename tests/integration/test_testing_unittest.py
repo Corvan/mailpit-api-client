@@ -2,6 +2,7 @@
 import datetime as _datetime
 import email as _email
 import os as _os
+import pathlib as _pathlib
 import smtplib as _smtplib
 import unittest as _unittest
 
@@ -14,7 +15,9 @@ import mailpit.client.models as _models
 class TestMail(EMailTestCase):
     """class to test :py:method:`EMailTestCase.assert_message_equal()`"""
 
-    if _os.environ["HOME"] == "/root":
+    if _os.environ["HOME"] == "/root" or _pathlib.Path(
+        _os.environ["HOME"]
+    ).is_relative_to(_pathlib.Path("/github")):
         api_url = "http://mailpit:8025"
     else:
         api_url = "http://localhost:8025"
@@ -194,7 +197,9 @@ class TestMail(EMailTestCase):
 class TestMailSend(EMailTestCase):
     """class to test :py:method:`EmailTestCase.assert_message_received()`"""
 
-    if _os.environ["HOME"] == "/root":
+    if _os.environ["HOME"] == "/root" or _pathlib.Path(
+        _os.environ["HOME"]
+    ).is_relative_to(_pathlib.Path("/github")):
         api_url = "http://mailpit:8025"
         project_path = "/root/mailpit-api-client"
     else:
@@ -238,7 +243,9 @@ class TestSetUpClassWithSuper(EMailTestCase):
     """Test :py:method:`EmailTestCase.assert_message_received()` with a
     :py:method:`setUpClass()`, that calls `super()`"""
 
-    if _os.environ["HOME"] == "/root":
+    if _os.environ["HOME"] == "/root" or _pathlib.Path(
+        _os.environ["HOME"]
+    ).is_relative_to(_pathlib.Path("/github")):
         api_url = "http://mailpit:8025"
     else:
         api_url = "http://localhost:8025"
@@ -256,7 +263,9 @@ class TestSetUpClassWithoutSuper(EMailTestCase):
     """Test :py:method:`EmailTestCase.assert_message_received()` with a
     :py:method:`setUpClass()`, that does _not_ call `super()`"""
 
-    if _os.environ["HOME"] == "/root":
+    if _os.environ["HOME"] == "/root" or _pathlib.Path(
+        _os.environ["HOME"]
+    ).is_relative_to(_pathlib.Path("/github")):
         api_url = "http://mailpit:8025"
     else:
         api_url = "http://localhost:8025"
