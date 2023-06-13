@@ -1,4 +1,4 @@
-name: build container images
+name: Build container images
 on:
   schedule:
     - cron: "10 1 3 * *"
