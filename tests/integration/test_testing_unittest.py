@@ -210,7 +210,9 @@ class TestMailSend(EMailTestCase):
         """send a single mail in order to be able to call
         :py:method:`EmailTestCase.assert_message_received()` and check if the method
         passes on success and fails on error"""
-        if _os.environ["HOME"] == "/root":
+        if _os.environ["HOME"] == "/root" or _pathlib.Path(
+            _os.environ["HOME"]
+        ).is_relative_to(_pathlib.Path("/github")):
             self.smtp_server = _smtplib.SMTP("mailpit", 1025)
         else:
             self.smtp_server = _smtplib.SMTP("localhost", 1025)
