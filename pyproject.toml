@@ -1,7 +1,9 @@
 [project]
 name = "mailpit-api-client"
 version = "0.10.1"
-description = ""
+description = "A Mailpit API Client"
+long_description = """API Client with test-helpers for unittest and pytest to be used
+with https://github.com/axllent/mailpit"""
 authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
 requires-python = ">=3.8"
 readme = "README.rst"
