@@ -1,6 +1,6 @@
 [project]
 name = "mailpit-api-client"
-version = "0.1.0"
+version = "0.10.1"
 description = ""
 authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
 requires-python = ">=3.8"
@@ -27,6 +27,9 @@ test = [
 pytest = [
     "pytest>=7",
 ]
+build = [
+    "build"
+]
 
 [project.urls]
 repository = "https://github.com/Corvan/mailpit-api-client"
@@ -34,7 +37,7 @@ repository = "https://github.com/Corvan/mailpit-api-client"
 
 [tool.poetry]
 name = "mailpit-api-client"
-version = "0.1.0"
+version = "0.10.1"
 description = ""
 authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 
@@ -56,6 +59,9 @@ pytest = "^7"
 
 [tool.poetry.group.pytest.dependencies]
 pytest = "^7"
+
+[tool.poetry.group.build.dependencies]
+build = "*"
 
 [tool.invoke.test]
 python_versions = [
