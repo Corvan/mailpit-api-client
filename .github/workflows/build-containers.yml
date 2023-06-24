@@ -2,6 +2,7 @@ name: Build container images
 on:
   schedule:
     - cron: "10 1 * * 3"
+  workflow_dispatch:
 
 
 jobs:
