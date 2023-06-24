@@ -1,0 +1,7 @@
+name: Create Package & upload to PyPI
+
+on:
+  release:
+    types: [published]
+
+jobs:
