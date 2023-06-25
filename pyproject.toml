@@ -48,7 +48,8 @@ pytest = [
     "pytest>=7",
 ]
 build = [
-    "build"
+    "build",
+    "twine",
 ]
 
 [project.urls]
@@ -86,6 +87,7 @@ pytest = "^7"
 
 [tool.poetry.group.build.dependencies]
 build = "*"
+twine = "*"
 
 [tool.invoke.test]
 python_versions = [
