@@ -19,8 +19,8 @@ class EMailTestCase(_unittest.TestCase):
         class ExampleTestCase(EMailTestCase):
 
             def test_api_object(self):
-            messages: mailpit.client.models.Messages = self.api.get_messages()
-            self.assertEqual(0, len(messages.messages))
+                messages: mailpit.client.models.Messages = self.api.get_messages()
+                self.assertEqual(0, len(messages.messages))
     """
 
     api_url: str = "http://localhost:8025"
