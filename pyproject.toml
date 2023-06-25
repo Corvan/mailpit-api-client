@@ -22,8 +22,6 @@ classifiers = [
     "Topic :: Utilities",
 ]
 
-
-
 dependencies = [
     "dataclasses_json",
     "httpx",
@@ -31,7 +29,6 @@ dependencies = [
     "invoke >= 2.0.0",
     "logging518 >= 1.0.0",
 ]
-
 
 [project.optional-dependencies]
 docs = [
