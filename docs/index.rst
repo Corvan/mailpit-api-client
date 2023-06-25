@@ -7,10 +7,14 @@ Welcome to mailpit-api-client's documentation!
 ==============================================
 
 .. toctree::
-   :maxdepth: 2
+   :maxdepth: 4
    :caption: Contents:
 
-   README.rst
+   about
+   usage
+   testing
+   development
+   generated/modules
 
 
 Indices and tables
