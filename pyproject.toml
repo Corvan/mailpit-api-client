@@ -1,11 +1,28 @@
 [project]
 name = "mailpit-api-client"
 version = "0.10.1"
-description = ""
+description = "A Mailpit API Client"
 authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
 requires-python = ">=3.8"
-#readme = "README.adoc"
+readme = "README.rst"
 license = {file = "LICENSE"}
+classifiers = [
+    "Framework :: Pytest",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: GNU Lesser General Public License v3 (LGPLv3)",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Communications :: Email",
+    "Topic :: Communications :: Email :: Mail Transport Agents",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Software Development :: Testing",
+    "Topic :: Utilities",
+]
+
+
 
 dependencies = [
     "dataclasses_json",
@@ -17,6 +34,9 @@ dependencies = [
 
 
 [project.optional-dependencies]
+docs = [
+    "sphinx",
+]
 test = [
     "black",
     "mypy>=1.1.1",
@@ -48,7 +68,12 @@ httpx = "*"
 ruff = "^0"
 invoke = "^2.1.3"
 logging518 = "^1.0.0"
+pytest = "^7.3.1"
+pytest-docker = "^1.0.1"
+twine = "^4.0.2"
 
+[tool.poetry.group.docs.dependencies]
+sphinx = "*"
 
 [tool.poetry.group.test.dependencies]
 black = "*"
