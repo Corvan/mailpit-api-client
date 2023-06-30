@@ -1,6 +1,6 @@
 [project]
 name = "mailpit-api-client"
-version = "0.10.2"
+version = "0.10.3"
 description = "A Mailpit API Client"
 authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
 requires-python = ">=3.8"
@@ -77,7 +77,7 @@ sphinx = "*"
 
 [tool.poetry.group.test.dependencies]
 black = "*"
-mypy = "^1.1.1"
+mypy = "^1.4.1"
 pylint = "*"
 respx = "*"
 pytest = "^7"

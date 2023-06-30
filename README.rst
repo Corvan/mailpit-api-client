@@ -8,7 +8,7 @@ API-client for https://github.com/axllent/mailpit written in Python
 :Authors:
     Lars Liedtke <corvan@gmx.de>
 :Version:
-    0.10.2
+    0.10.3
 
 ----------
 Motivation
