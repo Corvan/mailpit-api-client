@@ -11,6 +11,7 @@ Welcome to mailpit-api-client's documentation!
    :caption: Contents:
 
    about
+   installation
    usage
    testing
    development
