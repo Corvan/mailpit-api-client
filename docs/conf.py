@@ -21,7 +21,10 @@ release = "0.10.1"
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
 
-extensions = ["sphinx.ext.autodoc"]
+extensions = [
+    "sphinx.ext.autodoc",
+    "sphinx.ext.intersphinx",
+]
 
 templates_path = ["_templates"]
 exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
@@ -33,3 +36,8 @@ source_path = "mailpit"
 
 html_theme = "alabaster"
 html_static_path = ["_static"]
+
+intersphinx_mapping = {
+    "pytest": ("https://docs.pytest.org/en/stable", None),
+    "python": ("https://docs.python.org/3/", None),
+}
