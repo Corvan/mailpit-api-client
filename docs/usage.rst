@@ -7,7 +7,7 @@ this library - as is Mailpit - is mostly meant for testing. Giving the url of Ma
 Client
 ------
 
-The client itself consists of the class :py:class:`API` in `mailpit/client/api.py <mailpit/client/api.py>`_, that offers methods, which query the API-Endpoints and are named respectively.
+The client itself consists of the class :py:class:`mailpit.client.api.API`, that offers methods, which query the API-Endpoints and are named respectively.
 To use this class, simply try something like this.
 You have to have Mailpit running on localhost for this [1]_ .
 
@@ -24,7 +24,7 @@ For example with
 
     messages = api.get_messages()
 
-messages will be an instance of :py:class:`mailpit.client.models.Messages` , which you can find in link:mailpit/client/models/messages.py[mailpit/client/models.py]. +
+messages will be an instance of :py:class:`mailpit.client.models.Messages`.
 The model-classes' attributes are named the same as Mailpit's responses, as documented in the API's `README.md <https://github.com/axllent/mailpit/blob/develop/docs/apiv1/README.md>`_, but as is convention in Python in Snakecase.
 
 For examples have a look at the link:tests[tests]
