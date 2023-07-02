@@ -241,3 +241,4 @@ cython_debug/
 
 .ruff_cache/
 /docs/output/
+/docs/generated/

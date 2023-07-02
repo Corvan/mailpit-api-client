@@ -13,7 +13,7 @@ Welcome to mailpit-api-client's documentation!
    about
    installation
    usage
-   testing
+   testing/testing
    development
    generated/modules
 

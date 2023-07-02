@@ -29,4 +29,4 @@ More information can be found in :doc:`usage`.
 Additionally there are ``unittest`` Test-Cases and ``pytest`` Fixtures, which can be used to write (integration-) tests.
 These helpers can be used to e.g. trigger sending an E-Mail message in a test and then
 to check, if the message has been received by Mailpit. If it has not been received by mailpit your test will fail.
-More information can be found in :doc:`testing`.
+More information can be found in :doc:`testing/testing`.
