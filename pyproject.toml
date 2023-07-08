@@ -55,7 +55,7 @@ repository = "https://github.com/Corvan/mailpit-api-client"
 
 [tool.poetry]
 name = "mailpit-api-client"
-version = "0.11.0"
+version = "0.12.0"
 description = ""
 authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 
