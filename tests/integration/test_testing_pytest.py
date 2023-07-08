@@ -22,8 +22,7 @@ def test_api(mailpit_api):
 def test_pytest_helpers_default_api_url(pytester):
     pytester.makeconftest("""pytest_plugins = ["mailpit.testing.pytest"]""")
     pytester.makepyfile(
-        """import pytest as _pytest
-import os as _os
+        """import os as _os
 import pathlib as _pathlib
 
 def test_api(mailpit_api):
