@@ -1,4 +1,4 @@
-"""Module providing helpers for :py:module:`unittest` kind of testing against the
+"""Provides helpers for :py:mod:`unittest` kind of testing against the
 Mailpit-API"""
 from typing import Optional
 import unittest as _unittest
@@ -8,7 +8,7 @@ import mailpit.client.api as _api
 
 
 class EMailTestCase(_unittest.TestCase):
-    """:py:class:`unittest.TestCase` derived class with added test-helper methods and
+    """:py:class:`unittest.TestCase`-derived class with added test-helper methods and
     attributes, in order to test against the Mailpit-API. Simply derive from this class,
     as you would from :py:class:`unittest.TestCase` and write your tests as you are used
     to.
