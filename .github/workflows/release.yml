@@ -5,7 +5,7 @@ name: Create Package & upload to PyPI
 # https://docs.pypi.org/trusted-publishers/
 on:
   release:
-    types: [published]
+    types: [released]
 
 jobs:
   pypi_publish:
