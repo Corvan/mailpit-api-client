@@ -6,9 +6,11 @@ API-client for https://github.com/axllent/mailpit written in Python
 -------------------------------------------------------------------
 
 :Authors:
-    Lars Liedtke <lars@familie-liedtke.net>
+    Lars Liedtke <corvan@gmx.de>
 :Version:
     0.12.0
+
+Go to the `documentation <https://corvan.github.io/mailpit-api-client/>`_
 
 ----------
 Motivation
