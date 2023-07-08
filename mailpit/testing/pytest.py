@@ -14,9 +14,15 @@ if _pytest:
 
     @_pytest.fixture(scope="session")
     def mailpit_api(request):
-        """fixture creating a connection to the mailpit API. This fixture is meant to be
-        called parametrized, in order to pass the url for which an
-        :py:class:`mailpit.client.api.API` instance is created and yielded"""
+        """:py:func:`pytest.fixture` creating a connection to the mailpit API.
+        This fixture has got a default of ``http://localhost:8025`` but it is possible
+        to be called `parametrized <https://docs.pytest.org/en/stable/example/
+        parametrize.html #indirect-parametrization>`_ with the parameter
+        ``indirect`` set to ``True``, in order to pass the url for which an
+        :py:class:`mailpit.client.api.API` instance is created and yielded.
+        The fixture has got a scope of ``session`` and it will call
+        :py:meth:`API.delete_messages() <mailpit.client.api.API.delete_messages>`
+        with an empty list to delete all messages, when it goes out of scope."""
         try:
             client_api = _api.API(request.param)
         except AttributeError:
@@ -33,4 +39,5 @@ if _pytest:
         client_api.delete_messages([message.id for message in messages.messages])
 
     def assert_message_equal(first: _models.Message, second: _models.Message):
+        """"""
         assert first == second
