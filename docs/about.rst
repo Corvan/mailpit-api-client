@@ -5,7 +5,7 @@ About
 :Authors:
     Lars Liedtke <lars@familie-liedtke.net>
 :Version:
-    0.10.3
+    0.11.0
 
 For work, I thought about introducing integration testing.
 We are working with `Odoo <https://github.com/odoo/odoo>`_  and I wanted to test if e-mails created by Odoo really were sent.
