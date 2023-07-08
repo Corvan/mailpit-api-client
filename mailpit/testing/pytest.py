@@ -10,7 +10,6 @@ if _pytest:
     import pathlib as _pathlib
     import os as _os
     import mailpit.client.api as _api
-    import mailpit.client.models as _models
 
     @_pytest.fixture(scope="session")
     def mailpit_api(request):
@@ -37,7 +36,3 @@ if _pytest:
 
         messages = client_api.get_messages()
         client_api.delete_messages([message.id for message in messages.messages])
-
-    def assert_message_equal(first: _models.Message, second: _models.Message):
-        """"""
-        assert first == second

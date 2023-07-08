@@ -1,7 +1,8 @@
 ======
 pytest
 ======
-In order to provide some convenience some :py:func:`pytest.fixtures <pytest.fixture>` and assertion-helpers have been created.
+In order to provide some convenience a :py:func:`pytest.fixtures <pytest.fixture>` has
+been created.
 
 -------------------
 Mailpit-API fixture
@@ -40,7 +41,3 @@ In order to pass the api url to this fixture, you have to parametrize your test 
 
 
 
-------------------------------
-Assert that messages are equal
-------------------------------
-:py:func:`~mailpit.testing.pytest.assert_message_equal` is an assertion-helper, that
