@@ -55,7 +55,7 @@ They will provide you with the :py:attr:`~mailpit.testing.unittest.EmailTestCase
 -------------------------
 Assert messages are equal
 -------------------------
-In order to check, whether to E-Mail messages are equal you can use :py:meth:`~mailpit.testing.unittest.EmailTestCase.assertMessageEqual`
+In order to check, whether two E-Mail messages are equal you can use :py:meth:`~mailpit.testing.unittest.EmailTestCase.assertMessageEqual`
 
 .. code-block:: python
 
@@ -69,6 +69,29 @@ In order to check, whether to E-Mail messages are equal you can use :py:meth:`~m
 
             self.assertMessageEqual(message1, message2)
 
-----------------------------
-Assert message has been sent
-----------------------------
+--------------------------------
+Assert message has been received
+--------------------------------
+In order to check, whether an E-Mail message has been received by Mailpit, you can use
+    :py:meth:~mailpit.testing.unittest.EmailTestCase.assertMessageReceived`
+
+.. code-block:: python
+
+    import email
+    import smtplib
+    from mailpit.testing.unittest import EMailTestCase
+
+    class MyTest(EMailTestCase):
+
+        def test_messages_received(self):
+            smtp_server = smtplib.SMTP("localhost", 1025)
+            with open(f"tests/mail/email_without_attachment.eml") as fp:
+                mail = email.message_from_file(fp)
+            smtp_server.send_message(
+                mail,
+                from_addr="Sender Smith <sender@example.com>",
+                to_addrs="Recipient Ross <recipient@example.com>",
+            )
+            self.assertMessageReceived(
+            "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
+        )
