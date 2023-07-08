@@ -1,3 +1,6 @@
+"""Definitions of model classes, that wrap Mailpit's API data-structures. Defined with 
+:py:mod:`dataclasses` and :py:mod:`dataclasses_json`, in order to use them as json over 
+the API and be used as objects in the Python domain."""
 import dataclasses as _dc
 import datetime as _dt
 import decimal as _d
@@ -16,15 +19,15 @@ _log = logging.getLogger("mailpit_client")
 @_dj.dataclass_json
 @_dc.dataclass(init=True)
 class Contact:
-    """
-    class representing a mail contact splitting 'Test User <test@example.com> into
-    its name and address parts
-    """
+    """Represents a mail contact splitting 'Test User <test@example.com> into
+    its name and address parts"""
 
     # pylint: disable=too-few-public-methods
 
     name: str = _dc.field(init=True, metadata=_dj.config(field_name="Name"))
+    """Contact's Name"""
     address: str = _dc.field(init=True, metadata=_dj.config(field_name="Address"))
+    """Contact's E-Mail address"""
 
     def __lt__(self, other):
         return f"{other.name} {other.address}".__lt__(f"{self.name} {self.address}")
@@ -35,19 +38,21 @@ class Contact:
 
 @_dc.dataclass(init=True)
 class Attachment(_dj.DataClassJsonMixin):
-    """
-    class representing an attachment of a message
-    """
+    """Represents an attachment of a :py:class:`Message`"""
 
     # pylint: disable=too-few-public-methods
 
     part_id: str = _dc.field(init=True, metadata=_dj.config(field_name="PartID"))
+    """Attachment's part ID"""
     file_name: str = _dc.field(init=True, metadata=_dj.config(field_name="FileName"))
+    """Attachment's file name"""
     content_type: str = _dc.field(
         init=True, metadata=_dj.config(field_name="ContentType")
     )
+    """Attachment's MIME content-type"""
     content_id: str = _dc.field(init=True, metadata=_dj.config(field_name="ContentID"))
     size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
+    """Attachment's size in bytes"""
 
     def __lt__(self, other: "Attachment"):
         return (
@@ -67,37 +72,35 @@ class Attachment(_dj.DataClassJsonMixin):
 
 @_dc.dataclass(init=True)
 class Message(_dj.DataClassJsonMixin):
-    """
-    class representing a Message returned by the message-endpoint
-    """
+    """Represents a message returned by the message-endpoint"""
 
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-few-public-methods
     # pylint: disable=invalid-name
 
     id: str = _dc.field(init=True, metadata=_dj.config(field_name="ID"))
-    """The message's database ID, of Mailpit's message-database"""
+    """Message's database ID, of Mailpit's message-database"""
     message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
-    """The message's RFC-5322 message-id"""
+    """Message's RFC-5322 message-id"""
     read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
-    """always true (message marked read on open)"""
+    """Always true (message marked read on open)"""
     from_: Optional[Contact] = _dc.field(
         init=True, metadata=_dj.config(field_name="From")
     )
-    """The :Contact: the message is from"""
+    """The :py:class`Contact`: the message is from"""
     to: list[Contact] = _dc.field(init=True, metadata=_dj.config(field_name="To"))
-    """Message To-Header, the list of :Contact: the message is addressed to"""
+    """Message's To-Header, the list of :Contact: the message is addressed to"""
     cc: Optional[list[Contact]] = _dc.field(
         init=True, metadata=_dj.config(field_name="Cc")
     )
-    """Message CC-Header, the list of :Contact: that the message is coal-copied to"""
+    """Message's CC-Header, the list of :Contact: that the message is coal-copied to"""
     bcc: Optional[list[Contact]] = _dc.field(
         init=True, metadata=_dj.config(field_name="Bcc")
     )
-    """Message BCC-Header, the list of :Contact:, that the message is blindly 
+    """Message's BCC-Header, the list of :Contact:, that the message is blindly 
     coal-copied to"""
     subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
-    """Message subject"""
+    """Message's subject"""
     date: _dt.date = _dc.field(
         init=True,
         metadata=_dj.config(
@@ -113,7 +116,7 @@ class Message(_dj.DataClassJsonMixin):
     html: Optional[str] = _dc.field(init=True, metadata=_dj.config(field_name="HTML"))
     """HTML MIME part (if exists)"""
     size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
-    """Total size of raw email"""
+    """Total size of raw email in bytes"""
     inline: list[Attachment] = _dc.field(
         init=True, metadata=_dj.config(field_name="Inline")
     )
@@ -254,9 +257,8 @@ def datetime_decoder(isoformat: str) -> _dt.datetime:
 
 @_dc.dataclass(init=True)
 class MessageSummary(_dj.DataClassJsonMixin):
-    """
-    class representing a single message that has been returned by the messages endpoint
-    """
+    """class representing a single message that has been returned by the messages
+    endpoint"""
 
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-few-public-methods
@@ -296,9 +298,7 @@ class MessageSummary(_dj.DataClassJsonMixin):
 @_dc.dataclass(init=True)
 class Messages(_dj.DataClassJsonMixin):
     # pylint: disable=too-few-public-methods
-    """
-    class representing the returns of the messages endpoint
-    """
+    """class representing the returns of the messages endpoint"""
 
     total: int = _dc.field(init=True)
     """Total messages in mailbox"""

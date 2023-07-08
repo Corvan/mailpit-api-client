@@ -6,7 +6,7 @@ API-client for https://github.com/axllent/mailpit written in Python
 -------------------------------------------------------------------
 
 :Authors:
-    Lars Liedtke <corvan@gmx.de>
+    Lars Liedtke <lars@familie-liedtke.net>
 :Version:
     0.10.3
 
@@ -17,6 +17,21 @@ For work, I thought about introducing integration testing.
 We are working with `Odoo <https://github.com/odoo/odoo>`_  and I wanted to test if e-mails created by Odoo really were sent.
 I remembered `mailhog <https://github.com/mailhog/MailHog>`_, which I discovered to be abandoned.
 Searching for an alternative, I found Mailpit - for which I decided to write an API-client in my free time.
+
+-------
+Install
+-------
+If you want to use the library with ``unittest``:
+
+.. code-block:: bash
+
+    pip install mailpit-api-client
+
+If you want to use the library with ``pytest``:
+
+.. code-block:: bash
+
+    pip install mailpit-api-client[pytest]
 
 -----
 Usage
@@ -50,14 +65,33 @@ The model-classes' attributes are named the same as Mailpit's responses, as docu
 
 For examples have a look at the link:tests[tests]
 
-== Testing
+-------
+Testing
+-------
 
-To make testing easier I plan to provide testhelpers like TestCase-classes of ``unittest`` and ``pytest``-fixtures.
+To make testing easier there are test-helpers inside the ``mailpit.testing`` package.
 
-=== unittest
-tbd
+________
+unittest
+________
 
-=== pytest
+In order to provide some convenience a test-case class has been created with the name ``EMailTestCase`` deriving from ``unittest.TestCase``, which is meant to be inherited from, as you would do from ``TestCase``:
+
+.. code-block:: python
+
+    from mailpit.testing.unittest import EMailTestCase
+
+    class MyTest(EMailTestCase):
+
+         def test_sending_email():
+            ...
+
+The class adds a few methods and attributes, so that you are able to assert, if your message has been sent, or if two messages are equal.
+
+______
+pytest
+______
+
 tbd
 
 .. [1] If you have it running differently, you have to adjust the URL you pass.
