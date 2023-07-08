@@ -32,7 +32,7 @@ dependencies = [
 
 [project.optional-dependencies]
 docs = [
-    "sphinx",
+    "Sphinx",
 ]
 test = [
     "black",
