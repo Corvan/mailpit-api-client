@@ -233,7 +233,9 @@ def millis_to_3_digit(isoformat: str) -> str:
     three-digits long value using zero padding before"""
     millis = _re.search(r"\.\d{0,3}", isoformat)
     if not millis:
-        raise ValueError("No milliseconds provided in isoformat string")
+        seconds = _re.search(r":\d+(:\d+)", isoformat)
+        _log.debug(f"seconds: {seconds}")
+        return isoformat.replace(seconds.group(0), f"{seconds.group(0)}.000")
     _log.debug(f"millis: {millis.group(0)}, {_d.Decimal(millis.group(0)):.03f}")
     return isoformat.replace(
         f"{millis.group(0)}", f".{int(_d.Decimal(millis.group(0)) * 1000):03}"
