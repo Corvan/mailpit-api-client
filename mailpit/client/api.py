@@ -11,7 +11,7 @@ _log = _logging.getLogger("mailpit_client")
 
 class API:
     """
-    class representing the message-endpoint of the API
+    class representing the different endpoints of the API
     """
 
     # pylint: disable=too-few-public-methods
@@ -80,9 +80,9 @@ class API:
 
     def get_message(self, message_id: str) -> _models.Message:
         """
+        Send a GET request to get a certain Message by its Message-ID
 
-
-        :param message_id:
+        :param message_id: The Message-ID to get the message by
         """
 
         # pylint: disable = no-member
@@ -97,12 +97,14 @@ class API:
         message = _models.Message.from_json(response.text)
         return message
 
-    def get_message_attachment(self, message_id: str, part_id: str):
+    def get_message_attachment(self, message_id: str, part_id: str) -> str:
         """
+        Send a GET request to the message endpoint with querying for the part_id
+        of an attachment
 
-
-        :param message_id:
-        :param part_id:
+        :param message_id: the Message-ID the attachment belongs to
+        :param part_id: the Part-ID of the attachment to receive
+        :return the attachment's data
         """
         response = _httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/part/{part_id}",
@@ -112,11 +114,11 @@ class API:
         response.raise_for_status()
         return response.text
 
-    def get_message_headers(self, message_id: str):
+    def get_message_headers(self, message_id: str) -> _models.Headers:
         """
+        Send a GET request to get a message's Headers
 
-
-        :param message_id:
+        :param message_id: The Message-ID to get the headers for
         """
         response = _httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/headers",

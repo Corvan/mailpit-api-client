@@ -39,9 +39,9 @@ test = [
     "mypy>=1.1.1",
     "pylint",
     "respx",
-    "pytest>=7",
 ]
 pytest = [
+    "mailpit-api-client[test]",
     "pytest>=7",
 ]
 build = [
@@ -50,7 +50,7 @@ build = [
 ]
 
 [project.urls]
-repository = "https://github.com/Corvan/mailpit-api-client"
+Repository = "https://github.com/Corvan/mailpit-api-client"
 Documentation = "https://corvan.github.io/mailpit-api-client/"
 
 [tool.poetry]
@@ -77,9 +77,12 @@ black = "*"
 mypy = "^1.4.1"
 pylint = "*"
 respx = "*"
-pytest = "^7"
 
 [tool.poetry.group.pytest.dependencies]
+black = "*"
+mypy = "^1.4.1"
+pylint = "*"
+respx = "*"
 pytest = "^7"
 
 [tool.poetry.group.build.dependencies]
