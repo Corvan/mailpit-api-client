@@ -18,7 +18,7 @@ jobs:
     strategy:
       matrix:
         python_version: ["3.9", "3.10", "3.11", "3.12-rc"]
-        debian_codename: ["buster", "bullseye"]
+        debian_codename: ["bullseye", "bookworm"]
     container:
       image: ghcr.io/corvan/black:${{ matrix.python_version }}-${{ matrix.debian_codename }}
       credentials:
@@ -35,7 +35,7 @@ jobs:
     strategy:
       matrix:
         python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
-        debian_codename: [ "buster", "bullseye" ]
+        debian_codename: ["bullseye", "bookworm"]
     container:
       image: ghcr.io/corvan/lint:${{ matrix.python_version }}-${{ matrix.debian_codename }}
       credentials:
@@ -52,7 +52,7 @@ jobs:
     strategy:
       matrix:
         python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
-        debian_codename: [ "buster", "bullseye" ]
+        debian_codename: ["bullseye", "bookworm"]
     container:
       image: ghcr.io/corvan/mypy:${{ matrix.python_version }}-${{ matrix.debian_codename }}
       credentials:
@@ -72,7 +72,7 @@ jobs:
     strategy:
       matrix:
         python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
-        debian_codename: [ "buster", "bullseye" ]
+        debian_codename: ["bullseye", "bookworm"]
     container:
       image: ghcr.io/corvan/unittest:${{ matrix.python_version }}-${{ matrix.debian_codename }}
       credentials:
@@ -91,7 +91,7 @@ jobs:
     strategy:
       matrix:
         python_version: [ "3.9", "3.10", "3.11", "3.12-rc" ]
-        debian_codename: [ "buster", "bullseye" ]
+        debian_codename: ["bullseye", "bookworm"]
     container:
       image: ghcr.io/corvan/integration:${{ matrix.python_version }}-${{ matrix.debian_codename }}
       credentials:
