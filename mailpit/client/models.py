@@ -235,6 +235,8 @@ def millis_to_3_digit(isoformat: str) -> str:
     if not millis:
         seconds = _re.search(r":\d+(:\d+)", isoformat)
         _log.debug(f"seconds: {seconds}")
+        if seconds is None:
+            raise ValueError("seconds may not be None")
         return isoformat.replace(seconds.group(0), f"{seconds.group(0)}.000")
     _log.debug(f"millis: {millis.group(0)}, {_d.Decimal(millis.group(0)):.03f}")
     return isoformat.replace(
