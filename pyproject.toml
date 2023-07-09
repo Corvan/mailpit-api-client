@@ -1,6 +1,6 @@
 [project]
 name = "mailpit-api-client"
-version = "0.12.0"
+version = "0.12.1"
 description = "A Mailpit API Client"
 authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
 requires-python = ">=3.8"
@@ -55,7 +55,7 @@ Documentation = "https://corvan.github.io/mailpit-api-client/"
 
 [tool.poetry]
 name = "mailpit-api-client"
-version = "0.12.0"
+version = "0.12.1"
 description = ""
 authors = ["Lars Liedtke <lars@familie-liedtke.net>"]
 
