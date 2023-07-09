@@ -1,12 +1,12 @@
 """module containing API related"""
-import logging as _logging
+import logging
 from typing import Optional, List, Any
 
-import httpx as _httpx
+import httpx
 
-import mailpit.client.models as _models
+import mailpit.client.models as models
 
-_log = _logging.getLogger("mailpit_client")
+_log = logging.getLogger("mailpit_client")
 
 
 class API:
@@ -22,9 +22,9 @@ class API:
     def __init__(self, mailpit_url: str, timeout: Optional[int] = None):
         self.mailpit_url = mailpit_url
         self.timeout = timeout
-        self.last_response: Optional[_httpx.Response] = None
+        self.last_response: Optional[httpx.Response] = None
 
-    def get_messages(self, limit: int = 50, start: int = 0) -> _models.Messages:
+    def get_messages(self, limit: int = 50, start: int = 0) -> models.Messages:
         """
         send a GET request in order to retrieve messages
 
@@ -35,7 +35,7 @@ class API:
 
         # pylint: disable = no-member
 
-        response = _httpx.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
             params={"limit": limit, "start": start},
             timeout=self.timeout,
@@ -43,7 +43,7 @@ class API:
         self.last_response = response
         response.raise_for_status()
         _log.debug(response.text)
-        return _models.Messages.from_json(response.text)  # type: ignore
+        return models.Messages.from_json(response.text)  # type: ignore
 
     def delete_messages(self, ids: List[str]):
         """
@@ -52,7 +52,7 @@ class API:
         :param ids: the IDs of the messages to delete;
                     NOTE: passing an empty list will delete *all* messages
         """
-        response = _httpx.request(
+        response = httpx.request(
             method="DELETE",
             url=f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
             data={"ids": ids},
@@ -70,7 +70,7 @@ class API:
         :param key: the message's attribute to update
         :param value: the value to update the attribute with
         """
-        response = _httpx.put(
+        response = httpx.put(
             f"{self.mailpit_url}/{API.MESSAGES_ENDPOINT}",
             data={"ids": ids, key: value},
             timeout=self.timeout,
@@ -78,7 +78,7 @@ class API:
         self.last_response = response
         response.raise_for_status()
 
-    def get_message(self, message_id: str) -> _models.Message:
+    def get_message(self, message_id: str) -> models.Message:
         """
         Send a GET request to get a certain Message by its Message-ID
 
@@ -87,14 +87,14 @@ class API:
 
         # pylint: disable = no-member
 
-        response = _httpx.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}",
             timeout=self.timeout,
         )
         self.last_response = response
         response.raise_for_status()
         _log.debug(response.text)
-        message = _models.Message.from_json(response.text)
+        message = models.Message.from_json(response.text)
         return message
 
     def get_message_attachment(self, message_id: str, part_id: str) -> str:
@@ -106,7 +106,7 @@ class API:
         :param part_id: the Part-ID of the attachment to receive
         :return the attachment's data
         """
-        response = _httpx.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/part/{part_id}",
             timeout=self.timeout,
         )
@@ -114,16 +114,16 @@ class API:
         response.raise_for_status()
         return response.text
 
-    def get_message_headers(self, message_id: str) -> _models.Headers:
+    def get_message_headers(self, message_id: str) -> models.Headers:
         """
         Send a GET request to get a message's Headers
 
         :param message_id: The Message-ID to get the headers for
         """
-        response = _httpx.get(
+        response = httpx.get(
             f"{self.mailpit_url}/{API.MESSAGE_ENDPOINT}/{message_id}/headers",
             timeout=self.timeout,
         )
         self.last_response = response
         response.raise_for_status()
-        return _models.Headers.from_json(response.text)  # type: ignore
+        return models.Headers.from_json(response.text)  # type: ignore

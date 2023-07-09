@@ -1,14 +1,14 @@
-import pathlib as _pathlib
+import pathlib
 from typing import Callable
 
-import mailpit.client.models as _models
+import mailpit.client.models as models
 
 
 # noinspection PyShadowingNames
 class TestAPIMessages:
-    def test_messages_endpoint__empty(self, log, api):
+    def test_messages_endpoint__empty(self, log, mailpit_api):
         log.info("call `api.getmessages()`")
-        messages = api.get_messages()
+        messages = mailpit_api.get_messages()
         log.debug(f"messages: {messages}")
         assert len(messages.messages) == 0
 
@@ -16,35 +16,35 @@ class TestAPIMessages:
         self,
         log,
         sent_message_id: Callable,
-        message_without_attachment: _pathlib.Path,
-        api,
+        message_without_attachment: pathlib.Path,
+        mailpit_api,
     ):
         log.info("reading mail from file")
         sent_message_id(message_without_attachment)
 
         log.info("retrieving messages via API-endpoint")
-        messages = api.get_messages()
+        messages = mailpit_api.get_messages()
         log.debug(f"messages: {messages}")
 
         log.info("checking asserts")
-        messages_expected = _models.Messages(
+        messages_expected = models.Messages(
             total=1,
             count=1,
             unread=1,
             start=0,
             messages=[
-                _models.MessageSummary(
+                models.MessageSummary(
                     # NOTE: this is on purpose,
                     # because those next 3 values cannot be predicted
                     id=messages.messages[0].id,
                     message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
                     created=messages.messages[0].created,
                     size=messages.messages[0].size,
-                    from_=_models.Contact(
+                    from_=models.Contact(
                         name="Sender Smith", address="sender@example.com"
                     ),
                     to=[
-                        _models.Contact(
+                        models.Contact(
                             name="Recipient Ross", address="recipient@example.com"
                         )
                     ],
