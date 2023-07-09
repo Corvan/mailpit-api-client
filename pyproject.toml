@@ -97,8 +97,8 @@ python_versions = [
     "3.12-rc"
 ]
 debian_codenames = [
-    "buster",
     "bullseye",
+    "bookworm"
 ]
 
 checkers = [
