@@ -4,13 +4,13 @@ import httpx
 import pytest
 import respx
 
-import mailpit.client.api as _api
-import mailpit.client.models as _models
+import mailpit.client.api as api
+import mailpit.client.models as models
 
 
 @pytest.fixture
-def api() -> _api.API:
-    yield _api.API("https://example.com")
+def mailpit_api() -> api.API:
+    yield api.API("https://example.com")
 
 
 class TestMessageModel:
@@ -51,7 +51,7 @@ class TestMessageModel:
 
     @pytest.fixture(scope="class")
     def message(self):
-        return _models.Message(
+        return models.Message(
             id="d7a5543b-96dd-478b-9b60-2b465c9884de",
             message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             read=True,
@@ -68,20 +68,20 @@ class TestMessageModel:
             text="Plain text MIME part of the email",
             html="HTML MIME part (if exists)",
             size=79499,
-            from_=_models.Contact(name="John Doe", address="john@example.com"),
-            to=[_models.Contact(name="Jane Smith", address="jane@example.com")],
+            from_=models.Contact(name="John Doe", address="john@example.com"),
+            to=[models.Contact(name="Jane Smith", address="jane@example.com")],
             cc=[
-                _models.Contact(
+                models.Contact(
                     name="Testy C. C. McTestface", address="testycc@mctestface.com"
                 )
             ],
             bcc=[
-                _models.Contact(
+                models.Contact(
                     name="Testy B. C. C. McTestface", address="testybccc@mctestface.com"
                 )
             ],
             inline=[
-                _models.Attachment(
+                models.Attachment(
                     part_id="1.2",
                     file_name="filename.gif",
                     content_type="image/gif",
@@ -90,7 +90,7 @@ class TestMessageModel:
                 )
             ],
             attachments=[
-                _models.Attachment(
+                models.Attachment(
                     part_id="2",
                     file_name="filename.doc",
                     content_type="application/msword",
@@ -104,7 +104,7 @@ class TestMessageModel:
         assert message == message
 
     def test_equal__different_objects(self, message):
-        assert message == _models.Message(
+        assert message == models.Message(
             id="d7a5543b-96dd-478b-9b60-2b465c9884de",
             message_id="20220727034441.7za34h6ljuzfpmj6@localhost.localhost",
             read=True,
@@ -121,20 +121,20 @@ class TestMessageModel:
             text="Plain text MIME part of the email",
             html="HTML MIME part (if exists)",
             size=79499,
-            from_=_models.Contact(name="John Doe", address="john@example.com"),
-            to=[_models.Contact(name="Jane Smith", address="jane@example.com")],
+            from_=models.Contact(name="John Doe", address="john@example.com"),
+            to=[models.Contact(name="Jane Smith", address="jane@example.com")],
             cc=[
-                _models.Contact(
+                models.Contact(
                     name="Testy C. C. McTestface", address="testycc@mctestface.com"
                 )
             ],
             bcc=[
-                _models.Contact(
+                models.Contact(
                     name="Testy B. C. C. McTestface", address="testybccc@mctestface.com"
                 )
             ],
             inline=[
-                _models.Attachment(
+                models.Attachment(
                     part_id="1.2",
                     file_name="filename.gif",
                     content_type="image/gif",
@@ -143,7 +143,7 @@ class TestMessageModel:
                 )
             ],
             attachments=[
-                _models.Attachment(
+                models.Attachment(
                     part_id="2",
                     file_name="filename.doc",
                     content_type="application/msword",
@@ -266,11 +266,11 @@ class TestMessageModel:
     def test_equal__not_equal(self, message, inequal):
         message_dict = message.to_dict()
         message_dict.update(inequal)
-        inequal_message = _models.Message.from_dict(message_dict)
+        inequal_message = models.Message.from_dict(message_dict)
         assert message != inequal_message
 
     def test_message_from_json(self, response, message):
-        assert _models.Message.from_json(response) == message
+        assert models.Message.from_json(response) == message
 
 
 class TestMessageAPI:
@@ -310,28 +310,28 @@ class TestMessageAPI:
         }
 
     @respx.mock
-    def test_message_get(self, response, api):
+    def test_message_get(self, response, mailpit_api):
         route = respx.get(
             "https://example.com/api/v1/message/d7a5543b-96dd-478b-9b60-2b465c9884de",
         )
         route.mock(return_value=httpx.Response(200, json=response))
 
-        message = api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
+        message = mailpit_api.get_message("d7a5543b-96dd-478b-9b60-2b465c9884de")
 
-        assert isinstance(message, _models.Message)
-        assert api.last_response.status_code == 200
+        assert isinstance(message, models.Message)
+        assert mailpit_api.last_response.status_code == 200
 
 
 class TestAttachmentAPI:
     @respx.mock
-    def test_attachment_get(self, api):
+    def test_attachment_get(self, mailpit_api):
         route = respx.get(
             "https://example.com/api/v1/message/"
             "d7a5543b-96dd-478b-9b60-2b465c9884de/part/2"
         )
         route.mock(return_value=httpx.Response(200, text="Test"))
 
-        attachment = api.get_message_attachment(
+        attachment = mailpit_api.get_message_attachment(
             "d7a5543b-96dd-478b-9b60-2b465c9884de", "2"
         )
 
@@ -452,7 +452,7 @@ class TestHeadersAPI:
         }
 
     @respx.mock
-    def test_header_get(self, api, response):
+    def test_header_get(self, mailpit_api, response):
         route = respx.get(
             "https://example.com/api/v1/message/"
             "d7a5543b-96dd-478b-9b60-2b465c9884de/headers"
@@ -460,7 +460,9 @@ class TestHeadersAPI:
 
         route.mock(return_value=httpx.Response(200, json=response))
 
-        headers = api.get_message_headers("d7a5543b-96dd-478b-9b60-2b465c9884de")
+        headers = mailpit_api.get_message_headers(
+            "d7a5543b-96dd-478b-9b60-2b465c9884de"
+        )
 
         assert headers.content_type[0] == (
             'multipart/related; type="multipart/alternative"; '
@@ -483,17 +485,17 @@ class TestHeadersAPI:
         )
 
     @respx.mock
-    def test_header_additional(self, api, response_additional):
+    def test_header_additional(self, mailpit_api, response_additional):
         route = respx.get(
             "https://example.com/api/v1/message/"
             "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>/headers"
         )
         route.mock(return_value=httpx.Response(200, json=response_additional))
 
-        headers = api.get_message_headers(
+        headers = mailpit_api.get_message_headers(
             "<20220727034441.7za34h6ljuzfpmj6@localhost.localhost>"
         )
-        assert isinstance(headers, _models.Headers)
+        assert isinstance(headers, models.Headers)
         assert headers.from_[0] == "Sender Smith <sender@example.com>"
         assert (
             headers.additional["Received"][1]

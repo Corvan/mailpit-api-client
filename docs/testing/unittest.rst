@@ -40,7 +40,7 @@ api
 ___
 
 Classes inherited from :py:class:`~mailpit.testing.unittest.EMailTestCase` will connect to the Mailpit-API automatically on creation.
-They will provide you with the :py:attr:`~mailpit.testing.unittest.EmailTestCase.api` attribute, which is an instance of :py:class:`~mailpit.client.api.API`:
+They will provide you with the :py:attr:`~mailpit.testing.unittest.EmailTestCase.mailpit_api` attribute, which is an instance of :py:class:`~mailpit.client.api.API`:
 
 .. code-block:: python
 

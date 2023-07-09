@@ -2,16 +2,16 @@
 Mailpit-API"""
 
 try:
-    import pytest as _pytest
+    import pytest
 except ImportError:
-    _pytest = None
+    pytest = None
 
-if _pytest:
+if pytest:
     import pathlib as _pathlib
     import os as _os
     import mailpit.client.api as _api
 
-    @_pytest.fixture(scope="session")
+    @pytest.fixture(scope="session")
     def mailpit_api(request):
         """:py:func:`pytest.fixture` creating a connection to the mailpit API.
         This fixture has got a default of ``http://localhost:8025`` but it is possible

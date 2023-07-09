@@ -1,13 +1,13 @@
 """Provides helpers for :py:mod:`unittest` kind of testing against the
 Mailpit-API"""
 from typing import Optional
-import unittest as _unittest
+import unittest
 
-import mailpit.client.models as _models
-import mailpit.client.api as _api
+import mailpit.client.models as models
+import mailpit.client.api as api
 
 
-class EMailTestCase(_unittest.TestCase):
+class EMailTestCase(unittest.TestCase):
     """:py:class:`unittest.TestCase`-derived class with added test-helper methods and
     attributes, in order to test against the Mailpit-API. Simply derive from this class,
     as you would from :py:class:`unittest.TestCase` and write your tests as you are used
@@ -18,7 +18,7 @@ class EMailTestCase(_unittest.TestCase):
 
         class ExampleTestCase(EMailTestCase):
 
-            def test_api_object(self):
+            def testapi_object(self):
                 messages: mailpit.client.models.Messages = self.api.get_messages()
                 self.assertEqual(0, len(messages.messages))
     """
@@ -26,13 +26,13 @@ class EMailTestCase(_unittest.TestCase):
     api_url: str = "http://localhost:8025"
     """URL pointing to the Mailpit-API to test, if you need to use another url,
     override this attribute in your derived class"""
-    api: Optional[_api.API] = None
+    mailpit_api: Optional[api.API] = None
     """API object created on class setup for testing against Mailpit's API, access this
     object if you need to communicate directly with the API in your tests. """
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.addTypeEqualityFunc(_models.Message, self.assertMessageEqual)
+        self.addTypeEqualityFunc(models.Message, self.assertMessageEqual)
 
     @classmethod
     def setUpClass(cls) -> None:
@@ -40,10 +40,10 @@ class EMailTestCase(_unittest.TestCase):
         classes derived from it. Remember to call :py:func:`super().setUpClass()` while
         subclassing and overriding this method"""
         super().setUpClass()
-        cls.api = _api.API(cls.api_url)
+        cls.mailpit_api = api.API(cls.api_url)
 
     def assertMessageEqual(
-        self, first: _models.Message, second: _models.Message, msg: Optional[str] = None
+        self, first: models.Message, second: models.Message, msg: Optional[str] = None
     ):
         """Fail if two instances of :py:class:`Message` are not equal as determined
         by the '==' operator
@@ -70,11 +70,11 @@ class EMailTestCase(_unittest.TestCase):
         msg: Optional[str] = None,
     ):
         """Fail if the passed message has not been sent to Mailpit"""
-        if self.api is None:
+        if self.mailpit_api is None:
             raise self.failureException(
                 self._formatMessage(msg, "self.api may not be None")
             )
-        messages: _models.Messages = self.api.get_messages()
+        messages: models.Messages = self.mailpit_api.get_messages()
         if message_id not in [message.message_id for message in messages.messages]:
             raise self.failureException(
                 self._formatMessage(
