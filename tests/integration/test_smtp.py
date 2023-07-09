@@ -1,17 +1,17 @@
 import os
-import pathlib as _pathlib
+import pathlib
 import re
 
-import pytest as _pt
+import pytest as pytest
 
 
 class TestSMTPConnect:
-    @_pt.fixture
+    @pytest.fixture
     def connection_response(self, log, smtp_server):
         log.info("connecting to smtp_server")
-        if os.environ["HOME"] == "/root" or _pathlib.Path(
+        if os.environ["HOME"] == "/root" or pathlib.Path(
             os.environ["HOME"]
-        ).is_relative_to(_pathlib.Path("/github")):
+        ).is_relative_to(pathlib.Path("/github")):
             response = smtp_server.connect("mailpit", 1025)
         else:
             response = smtp_server.connect("localhost", 1025)
@@ -30,14 +30,14 @@ class TestSMTPConnect:
 
 
 class TestSMTP:
-    @_pt.fixture
+    @pytest.fixture
     def server_helo_response(self, log, smtp_server):
         log.info("sending HELO to SMTP-server")
         response = smtp_server.helo("integration")
         log.debug(f"response: {response}")
         return response
 
-    @_pt.fixture
+    @pytest.fixture
     def server_ehlo_response(self, log, smtp_server):
         log.info("sending EHLO to SMTP-server")
         response = smtp_server.ehlo("integration")

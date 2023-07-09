@@ -1,32 +1,36 @@
 """Definitions of model classes, that wrap Mailpit's API data-structures. Defined with 
 :py:mod:`dataclasses` and :py:mod:`dataclasses_json`, in order to use them as json over 
 the API and be used as objects in the Python domain."""
-import dataclasses as _dc
-import datetime as _dt
-import decimal as _d
-import email.utils as _email
+import dataclasses
+import datetime
+import decimal
+import email.utils as email
 import logging
-import re as _re
+import re
 from typing import Optional, Iterable
 
-import dataclasses_json as _dj
+import dataclasses_json
 import marshmallow.fields
 
 
 _log = logging.getLogger("mailpit_client")
 
 
-@_dj.dataclass_json
-@_dc.dataclass(init=True)
+@dataclasses_json.dataclass_json
+@dataclasses.dataclass(init=True)
 class Contact:
     """Represents a mail contact splitting 'Test User <test@example.com> into
     its name and address parts"""
 
     # pylint: disable=too-few-public-methods
 
-    name: str = _dc.field(init=True, metadata=_dj.config(field_name="Name"))
+    name: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Name")
+    )
     """Contact's Name"""
-    address: str = _dc.field(init=True, metadata=_dj.config(field_name="Address"))
+    address: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Address")
+    )
     """Contact's E-Mail address"""
 
     def __lt__(self, other):
@@ -36,22 +40,30 @@ class Contact:
         return f"{self.name} {self.address}".__hash__()
 
 
-@_dc.dataclass(init=True)
-class Attachment(_dj.DataClassJsonMixin):
+@dataclasses.dataclass(init=True)
+class Attachment(dataclasses_json.DataClassJsonMixin):
     """Represents an attachment of a :py:class:`Message`"""
 
     # pylint: disable=too-few-public-methods
 
-    part_id: str = _dc.field(init=True, metadata=_dj.config(field_name="PartID"))
+    part_id: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="PartID")
+    )
     """Attachment's part ID"""
-    file_name: str = _dc.field(init=True, metadata=_dj.config(field_name="FileName"))
+    file_name: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="FileName")
+    )
     """Attachment's file name"""
-    content_type: str = _dc.field(
-        init=True, metadata=_dj.config(field_name="ContentType")
+    content_type: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="ContentType")
     )
     """Attachment's MIME content-type"""
-    content_id: str = _dc.field(init=True, metadata=_dj.config(field_name="ContentID"))
-    size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
+    content_id: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="ContentID")
+    )
+    size: int = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Size")
+    )
     """Attachment's size in bytes"""
 
     def __lt__(self, other: "Attachment"):
@@ -70,59 +82,75 @@ class Attachment(_dj.DataClassJsonMixin):
         ).__hash__()
 
 
-@_dc.dataclass(init=True)
-class Message(_dj.DataClassJsonMixin):
+@dataclasses.dataclass(init=True)
+class Message(dataclasses_json.DataClassJsonMixin):
     """Represents a message returned by the message-endpoint"""
 
     # pylint: disable=too-many-instance-attributes
     # pylint: disable=too-few-public-methods
     # pylint: disable=invalid-name
 
-    id: str = _dc.field(init=True, metadata=_dj.config(field_name="ID"))
+    id: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="ID")
+    )
     """Message's database ID, of Mailpit's message-database"""
-    message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
+    message_id: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="MessageID")
+    )
     """Message's RFC-5322 message-id"""
-    read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
+    read: bool = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Read")
+    )
     """Always true (message marked read on open)"""
-    from_: Optional[Contact] = _dc.field(
-        init=True, metadata=_dj.config(field_name="From")
+    from_: Optional[Contact] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="From")
     )
     """The :py:class`Contact`: the message is from"""
-    to: list[Contact] = _dc.field(init=True, metadata=_dj.config(field_name="To"))
+    to: list[Contact] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="To")
+    )
     """Message's To-Header, the list of :Contact: the message is addressed to"""
-    cc: Optional[list[Contact]] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Cc")
+    cc: Optional[list[Contact]] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Cc")
     )
     """Message's CC-Header, the list of :Contact: that the message is coal-copied to"""
-    bcc: Optional[list[Contact]] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Bcc")
+    bcc: Optional[list[Contact]] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Bcc")
     )
     """Message's BCC-Header, the list of :Contact:, that the message is blindly 
     coal-copied to"""
-    subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
+    subject: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Subject")
+    )
     """Message's subject"""
-    date: _dt.date = _dc.field(
+    date: datetime.date = dataclasses.field(
         init=True,
-        metadata=_dj.config(
+        metadata=dataclasses_json.config(
             field_name="Date",
-            encoder=_dt.datetime.isoformat,
-            decoder=_dt.datetime.fromisoformat,
+            encoder=datetime.datetime.isoformat,
+            decoder=datetime.datetime.fromisoformat,
             mm_field=marshmallow.fields.DateTime("iso"),
         ),
     )
     """Parsed email local date & time from headers"""
-    text: Optional[str] = _dc.field(init=True, metadata=_dj.config(field_name="Text"))
+    text: Optional[str] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Text")
+    )
     """Plain text MIME part of the email"""
-    html: Optional[str] = _dc.field(init=True, metadata=_dj.config(field_name="HTML"))
+    html: Optional[str] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="HTML")
+    )
     """HTML MIME part (if exists)"""
-    size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
+    size: int = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Size")
+    )
     """Total size of raw email in bytes"""
-    inline: list[Attachment] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Inline")
+    inline: list[Attachment] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Inline")
     )
     """Inline Attachments"""
-    attachments: list[Attachment] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Attachments")
+    attachments: list[Attachment] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Attachments")
     )
     """Attachments"""
 
@@ -195,52 +223,54 @@ class Message(_dj.DataClassJsonMixin):
         return True
 
 
-def _datelist_encoder(encodes: Iterable[_dt.datetime]) -> list[str]:
-    return list(map(lambda encode: _email.format_datetime(encode), encodes))
+def datelist_encoder(encodes: Iterable[datetime.datetime]) -> list[str]:
+    return list(map(lambda encode: email.format_datetime(encode), encodes))
 
 
-def _datelist_decoder(decodes: Iterable[str]) -> list[_dt.datetime]:
-    return list(map(lambda decode: _email.parsedate_to_datetime(decode), decodes))
+def datelist_decoder(decodes: Iterable[str]) -> list[datetime.datetime]:
+    return list(map(lambda decode: email.parsedate_to_datetime(decode), decodes))
 
 
-@_dj.dataclass_json(undefined=_dj.Undefined.INCLUDE)
-@_dc.dataclass(init=True)
+@dataclasses_json.dataclass_json(undefined=dataclasses_json.Undefined.INCLUDE)
+@dataclasses.dataclass(init=True)
 class Headers:
-    content_type: list[str] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Content-Type")
+    content_type: list[str] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Content-Type")
     )
-    date: list[_dt.date] = _dc.field(
+    date: list[datetime.date] = dataclasses.field(
         init=True,
-        metadata=_dj.config(
+        metadata=dataclasses_json.config(
             field_name="Date",
-            encoder=_datelist_encoder,
-            decoder=_datelist_decoder,
+            encoder=datelist_encoder,
+            decoder=datelist_decoder,
             mm_field=marshmallow.fields.List(marshmallow.fields.DateTime("iso")),
         ),
     )
-    delivered_to: list[str] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Delivered-To")
+    delivered_to: list[str] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Delivered-To")
     )
-    from_: list[str] = _dc.field(init=True, metadata=_dj.config(field_name="From"))
-    message_id: list[str] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Message-Id")
+    from_: list[str] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="From")
     )
-    additional: _dj.CatchAll = _dc.field(init=True)
+    message_id: list[str] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Message-Id")
+    )
+    additional: dataclasses_json.CatchAll = dataclasses.field(init=True)
 
 
 def millis_to_3_digit(isoformat: str) -> str:
     """replaces milliseconds with
     three-digits long value using zero padding before"""
-    millis = _re.search(r"\.\d{0,3}", isoformat)
+    millis = re.search(r"\.\d{0,3}", isoformat)
     if not millis:
-        seconds = _re.search(r":\d+(:\d+)", isoformat)
+        seconds = re.search(r":\d+(:\d+)", isoformat)
         _log.debug(f"seconds: {seconds}")
         if seconds is None:
             raise ValueError("seconds may not be None")
         return isoformat.replace(seconds.group(0), f"{seconds.group(0)}.000")
-    _log.debug(f"millis: {millis.group(0)}, {_d.Decimal(millis.group(0)):.03f}")
+    _log.debug(f"millis: {millis.group(0)}, {decimal.Decimal(millis.group(0)):.03f}")
     return isoformat.replace(
-        f"{millis.group(0)}", f".{int(_d.Decimal(millis.group(0)) * 1000):03}"
+        f"{millis.group(0)}", f".{int(decimal.Decimal(millis.group(0)) * 1000):03}"
     )
 
 
@@ -249,18 +279,18 @@ def zulu_to_utc_shift(isoformat: str) -> str:
     return isoformat.replace("Z", "+00:00")
 
 
-def datetime_decoder(isoformat: str) -> _dt.datetime:
+def datetime_decoder(isoformat: str) -> datetime.datetime:
     """replaces golang isoformat with Python parsable isoformat
     and decodes it to `datetime.datetime`"""
     _log.debug(f"old isdoformat: {isoformat}")
 
     result = zulu_to_utc_shift(millis_to_3_digit(isoformat))
     _log.debug(f"new isoformat: {result}")
-    return _dt.datetime.fromisoformat(result)
+    return datetime.datetime.fromisoformat(result)
 
 
-@_dc.dataclass(init=True)
-class MessageSummary(_dj.DataClassJsonMixin):
+@dataclasses.dataclass(init=True)
+class MessageSummary(dataclasses_json.DataClassJsonMixin):
     """class representing a single message that has been returned by the messages
     endpoint"""
 
@@ -268,49 +298,63 @@ class MessageSummary(_dj.DataClassJsonMixin):
     # pylint: disable=too-few-public-methods
     # pylint: disable=invalid-name
 
-    id: str = _dc.field(init=True, metadata=_dj.config(field_name="ID"))
-    message_id: str = _dc.field(init=True, metadata=_dj.config(field_name="MessageID"))
-    read: bool = _dc.field(init=True, metadata=_dj.config(field_name="Read"))
+    id: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="ID")
+    )
+    message_id: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="MessageID")
+    )
+    read: bool = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Read")
+    )
     """always true (message marked read on open)"""
-    from_: Optional[Contact] = _dc.field(
-        init=True, metadata=_dj.config(field_name="From")
+    from_: Optional[Contact] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="From")
     )
-    to: list[Contact] = _dc.field(init=True, metadata=_dj.config(field_name="To"))
-    cc: Optional[list[Contact]] = _dc.field(
-        init=True, metadata=_dj.config(field_name="Cc")
+    to: list[Contact] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="To")
     )
-    bcc: list[Contact] = _dc.field(init=True, metadata=_dj.config(field_name="Bcc"))
-    subject: str = _dc.field(init=True, metadata=_dj.config(field_name="Subject"))
+    cc: Optional[list[Contact]] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Cc")
+    )
+    bcc: list[Contact] = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Bcc")
+    )
+    subject: str = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Subject")
+    )
     """Message subject"""
-    created: _dt.date = _dc.field(
+    created: datetime.date = dataclasses.field(
         init=True,
-        metadata=_dj.config(
+        metadata=dataclasses_json.config(
             field_name="Created",
-            encoder=_dt.datetime.isoformat,
+            encoder=datetime.datetime.isoformat,
             decoder=datetime_decoder,
             mm_field=marshmallow.fields.DateTime("iso"),
         ),
     )
     """Parsed email local date & time from headers"""
-    size: int = _dc.field(init=True, metadata=_dj.config(field_name="Size"))
+    size: int = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Size")
+    )
     """Total size of raw email"""
-    attachments: int = _dc.field(
-        init=True, metadata=_dj.config(field_name="Attachments")
+    attachments: int = dataclasses.field(
+        init=True, metadata=dataclasses_json.config(field_name="Attachments")
     )
 
 
-@_dc.dataclass(init=True)
-class Messages(_dj.DataClassJsonMixin):
+@dataclasses.dataclass(init=True)
+class Messages(dataclasses_json.DataClassJsonMixin):
     # pylint: disable=too-few-public-methods
     """class representing the returns of the messages endpoint"""
 
-    total: int = _dc.field(init=True)
+    total: int = dataclasses.field(init=True)
     """Total messages in mailbox"""
-    unread: int = _dc.field(init=True)
+    unread: int = dataclasses.field(init=True)
     """Total unread messages in mailbox"""
-    count: int = _dc.field(init=True)
+    count: int = dataclasses.field(init=True)
     """Number of messages returned in request"""
-    start: int = _dc.field(init=True)
+    start: int = dataclasses.field(init=True)
     """The offset (default=0) for pagination"""
     messages: list[MessageSummary]
 

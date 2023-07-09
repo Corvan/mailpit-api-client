@@ -1,8 +1,8 @@
-import datetime as _dt
-import pathlib as _pathlib
+import datetime
+import pathlib
 from typing import Callable
 
-import mailpit.client.api as _api
+import mailpit.client.api as api
 
 
 # noinspection PyShadowingNames
@@ -10,10 +10,10 @@ class TestMessageApiGet:
     def test_get_message(
         self,
         sent_message_id: Callable,
-        message_without_attachment: _pathlib.Path,
-        api: _api.API,
+        message_without_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        message = api.get_message(sent_message_id(message_without_attachment))
+        message = mailpit_api.get_message(sent_message_id(message_without_attachment))
         assert message.subject == "Plain text message"
         assert (
             message.message_id == "20220727034441.7za34h6ljuzfpmj6@localhost.localhost"
@@ -27,7 +27,7 @@ class TestMessageApiGet:
         assert message.to[0].address == "recipient@example.com"
         assert len(message.cc) == 0
         assert len(message.bcc) == 0
-        assert message.date == _dt.datetime.fromisoformat(
+        assert message.date == datetime.datetime.fromisoformat(
             "2022-07-27 15:44:41.000000+12:00"
         )
         assert message.read is True
@@ -118,20 +118,20 @@ class TestMessageApiAttachments:
     def test_get_message_without_attachment(
         self,
         sent_message_id: Callable,
-        message_without_attachment: _pathlib.Path,
-        api: _api.API,
+        message_without_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        message = api.get_message(sent_message_id(message_without_attachment))
+        message = mailpit_api.get_message(sent_message_id(message_without_attachment))
         assert len(message.attachments) == 0
         assert len(message.inline) == 0
 
     def test_get_message_with_attachment(
         self,
         sent_message_id: Callable,
-        message_with_attachment: _pathlib.Path,
-        api: _api.API,
+        message_with_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        message = api.get_message(sent_message_id(message_with_attachment))
+        message = mailpit_api.get_message(sent_message_id(message_with_attachment))
         assert len(message.attachments) == 1
         assert message.attachments[0].content_type == "text/plain"
         assert message.attachments[0].content_id == ""
@@ -143,10 +143,12 @@ class TestMessageApiAttachments:
     def test_get_message_with_inline_attachment(
         self,
         sent_message_id: Callable,
-        message_with_inline_attachment: _pathlib.Path,
-        api: _api.API,
+        message_with_inline_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        message = api.get_message(sent_message_id(message_with_inline_attachment))
+        message = mailpit_api.get_message(
+            sent_message_id(message_with_inline_attachment)
+        )
         assert len(message.attachments) == 0
         assert len(message.inline) == 1
         assert message.inline[0].content_type == "text/plain"
@@ -158,10 +160,10 @@ class TestMessageApiAttachments:
     def test_get_message_with_attachment_and_inline_attachment(
         self,
         sent_message_id: Callable,
-        message_with_attachment_and_inline_attachment: _pathlib.Path,
-        api: _api.API,
+        message_with_attachment_and_inline_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        message = api.get_message(
+        message = mailpit_api.get_message(
             sent_message_id(message_with_attachment_and_inline_attachment)
         )
         assert len(message.attachments) == 1
@@ -178,9 +180,9 @@ class TestMessageApiAttachments:
         assert message.inline[0].size == 29
 
     def test_get_attachment(
-        self, sent_message_id, message_with_attachment, api: _api.API
+        self, sent_message_id, message_with_attachment, mailpit_api: api.API
     ):
-        attachment = api.get_message_attachment(
+        attachment = mailpit_api.get_message_attachment(
             sent_message_id(message_with_attachment), "2"
         )
         assert attachment == "This is a test attachment\n"
@@ -188,10 +190,10 @@ class TestMessageApiAttachments:
     def test_get_attachment__inline_attachment(
         self,
         sent_message_id: Callable,
-        message_with_inline_attachment: _pathlib.Path,
-        api: _api.API,
+        message_with_inline_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        attachment = api.get_message_attachment(
+        attachment = mailpit_api.get_message_attachment(
             sent_message_id(message_with_inline_attachment), "2"
         )
         assert attachment == "This is a test attachment\n"
@@ -199,13 +201,13 @@ class TestMessageApiAttachments:
     def test_get_attachment__both_kinds(
         self,
         sent_message_id: Callable,
-        message_with_attachment_and_inline_attachment: _pathlib.Path,
-        api: _api.API,
+        message_with_attachment_and_inline_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        attachment = api.get_message_attachment(
+        attachment = mailpit_api.get_message_attachment(
             sent_message_id(message_with_attachment_and_inline_attachment), "2"
         )
-        inline_attachment = api.get_message_attachment(
+        inline_attachment = mailpit_api.get_message_attachment(
             sent_message_id(message_with_attachment_and_inline_attachment), "3"
         )
         assert attachment == "This is a test attachment\n"
@@ -217,13 +219,21 @@ class TestMessageApiHeaders:
     def test_get_headers(
         self,
         sent_message_id: Callable,
-        message_without_attachment: _pathlib.Path,
-        api: _api.API,
+        message_without_attachment: pathlib.Path,
+        mailpit_api: api.API,
     ):
-        headers = api.get_message_headers(sent_message_id(message_without_attachment))
+        headers = mailpit_api.get_message_headers(
+            sent_message_id(message_without_attachment)
+        )
         assert headers.content_type[0] == "text/plain; charset=us-ascii"
-        assert headers.date[0] == _dt.datetime(
-            2022, 7, 27, 15, 44, 41, tzinfo=_dt.timezone(_dt.timedelta(seconds=43200))
+        assert headers.date[0] == datetime.datetime(
+            2022,
+            7,
+            27,
+            15,
+            44,
+            41,
+            tzinfo=datetime.timezone(datetime.timedelta(seconds=43200)),
         )
         assert headers.delivered_to[0] == "recipient@example.com"
         assert headers.from_[0] == "Sender Smith <sender@example.com>"
