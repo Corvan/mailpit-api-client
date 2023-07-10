@@ -2,7 +2,7 @@
 name = "mailpit-api-client"
 version = "1.0.0"
 description = "A Mailpit API Client"
-authors = [{name = "Lars Liedtke", email = "lars@familie-liedtke.net"}]
+authors = [{name = "Lars Liedtke", email = "corvan@gmx.de"}]
 requires-python = ">=3.8"
 readme = "README.rst"
 license = {file = "LICENSE"}

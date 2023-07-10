@@ -9,8 +9,11 @@ API-client for https://github.com/axllent/mailpit written in Python
     Lars Liedtke <corvan@gmx.de>
 :Version:
     1.0.0
+:Documentation:
+    `<https://corvan.github.io/mailpit-api-client/>`_
+:PyPI:
+    `<https://pypi.org/project/mailpit-api-client/>`_
 
-Go to the `documentation <https://corvan.github.io/mailpit-api-client/>`_
 
 ----------
 Motivation
@@ -45,7 +48,7 @@ this library - as is Mailpit - is mostly meant for testing. Giving the url of Ma
 Client
 ------
 
-The client itself consists of the class ``API`` in `mailpit/client/api.py <mailpit/client/api.py>`_, that offers methods, which query the API-Endpoints and are named respectively.
+The client itself consists of the class ``API`` in `<mailpit/client/api.py>`_, that offers methods, which query the API-Endpoints and are named respectively.
 To use this class, simply try something like this.
 You have to have Mailpit running on localhost for this [1]_ .
 
@@ -62,10 +65,11 @@ For example with
 
     messages = api.get_messages()
 
-messages will be an instance of ``mailpit.client.models.Messages`` , which you can find in link:mailpit/client/models/messages.py[mailpit/client/models.py]. +
+messages will be an instance of ``mailpit.client.models.Messages`` , which you can find in `<mailpit/client/models.py>`_.
+
 The model-classes' attributes are named the same as Mailpit's responses, as documented in the API's `README.md <https://github.com/axllent/mailpit/blob/develop/docs/apiv1/README.md>`_, but as is convention in Python in Snakecase.
 
-For examples have a look at the link:tests[tests]
+For examples have a look at the `<tests>`_
 
 -------
 Testing
@@ -94,6 +98,44 @@ ______
 pytest
 ______
 
-tbd
+In order to provide some convenience a :py:func:`pytest.fixtures <pytest.fixture>` has
+been created.
+
+
+Mailpit-API fixture
+^^^^^^^^^^^^^^^^^^^
+
+``mailpit.testing.pytest.mailpit_api`` is a ``pytest`` `fixture <https://docs.pytest.org/en/stable/reference/reference.html#fixtures>`_, that sets up an API connection and returns it as ``mailpit.client.api.API`` object.
+
+The fixture has got a scope of ``session`` and it will call ``API.delete_messages()`` with an empty list to delete all messages, when it goes out of scope.
+
+As with other pytest plugins you have to enable this library in your ``conftest.py``:
+
+.. code-block:: python
+
+    pytest_plugins = ["mailpit.testing.pytest"]
+
+
+Now it is possible to use the fixture:
+
+.. code-block:: python
+
+    def test_example(mailpit_api):
+        mailpit_api.get_messages([])
+
+
+The fixture has got a default of ``http://localhost:8025``.
+In order to pass the api url to this fixture, you have to parametrize your test function with the ``indirect`` parameter set to ``True``.
+
+.. code-block:: python
+
+    import pytest
+
+    api_url = "localhost:8025"
+
+    @pytest.mark.parametrize("mailpit_api", [api_url], indirect=True)
+    def test_example(mailpit_api):
+        mailpit_api.get_messages([])
+
 
 .. [1] If you have it running differently, you have to adjust the URL you pass.
