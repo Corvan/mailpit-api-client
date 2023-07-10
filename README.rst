@@ -98,7 +98,7 @@ ______
 pytest
 ______
 
-In order to provide some convenience a :py:func:`pytest.fixtures <pytest.fixture>` has
+In order to provide some convenience a `pytest.fixture` has
 been created.
 
 
