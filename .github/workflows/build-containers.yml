@@ -8,7 +8,9 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    continue-on-error: true
     strategy:
+      max-parallel: 1
       matrix:
         python_version: ["3.9", "3.10", "3.11", "3.12-rc"]
         debian_codename: ["bullseye", "bookworm"]
