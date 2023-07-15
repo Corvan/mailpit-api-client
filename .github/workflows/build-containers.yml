@@ -13,6 +13,7 @@ jobs:
         python_version: ["3.9", "3.10", "3.11", "3.12-rc"]
         debian_codename: ["bullseye", "bookworm"]
         task: ["black", "lint", "mypy", "unittest", "integration"]
+        concurrency: ["build_containers"]
     steps:
       - name: Checkout Project
         uses: actions/checkout@v3
