@@ -13,9 +13,4 @@ updates:
       pip:
         patterns:
           - "*"
-registries:
-  github_container_registry:
-    type: docker-registry
-    url: ghcr.io
-    username: ${{ secrets.CONTAINER_REGISTRY_USERNAME }}
-    password: ${{ secrets.CONTAINER_REGISTRY_TOKEN }}
+
