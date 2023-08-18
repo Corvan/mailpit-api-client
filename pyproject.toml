@@ -74,13 +74,13 @@ sphinx = "*"
 
 [tool.poetry.group.test.dependencies]
 black = "*"
-mypy = "^1.4.1"
+mypy = "^1.5.1"
 pylint = "*"
 respx = "*"
 
 [tool.poetry.group.pytest.dependencies]
 black = "*"
-mypy = "^1.4.1"
+mypy = "^1.5.1"
 pylint = "*"
 respx = "*"
 pytest = "^7"
