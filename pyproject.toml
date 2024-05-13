@@ -67,20 +67,20 @@ ruff = "^0"
 invoke = "^2.2.0"
 logging518 = "^1.0.0"
 pytest = "^7.3.1"
-pytest-docker = "^2.0.0"
+pytest-docker = "^3.1.1"
 
 [tool.poetry.group.docs.dependencies]
 sphinx = "*"
 
 [tool.poetry.group.test.dependencies]
 black = "*"
-mypy = "^1.4.1"
+mypy = "^1.10.0"
 pylint = "*"
 respx = "*"
 
 [tool.poetry.group.pytest.dependencies]
 black = "*"
-mypy = "^1.4.1"
+mypy = "^1.10.0"
 pylint = "*"
 respx = "*"
 pytest = "^7"
