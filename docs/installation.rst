@@ -22,7 +22,7 @@ simply type
 
 .. code-block:: bash
 
-    pip install maiilpit-api-client
+    pip install mailpit-api-client
 
 ______
 pytest
